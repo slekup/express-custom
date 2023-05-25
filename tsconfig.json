@@ -1,0 +1,66 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": [
+      "ESNext"
+    ],
+    "module": "NodeNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@builders/*": [
+        "builders/*"
+      ],
+      "@typings/*": [
+        "typings/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ]
+    },
+  },
+  "include": [
+    "config/**/*",
+    "src/**/*",
+    "environment.d.ts",
+    "package.json",
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ],
+  "typedocOptions": {
+    "name": "Express Custom Documentation",
+    "customTitle": "Express Custom Documentation",
+    "customTitleLink": "https://slekup.github.io/express-custom/",
+    "customDescription": "The type documentation for Express Custom",
+    "plugin": [
+      "typedoc-plugin-mdn-links",
+      "typedoc-plugin-extras",
+    ],
+    "entryPoints": [
+      "src"
+    ],
+    "entryPointStrategy": "Expand",
+    "exclude": [
+      "node_modules",
+      "**/*.spec.ts"
+    ],
+    "externalPattern": [
+      "**/node_modules/**"
+    ],
+    "includes": [
+      "src"
+    ],
+    "out": "docs",
+    "includeVersion": true,
+    "readme": "README.md",
+    "showConfig": false,
+  }
+}
