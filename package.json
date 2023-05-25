@@ -1,13 +1,18 @@
 {
   "name": "express-custom",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Easily define and document custom express routes and endpoints.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --minify --clean --sourcemap",
-    "lint": "tsc"
+    "lint": "eslint src/**/*.ts --ext .ts && tsc",
+    "lint:fix": "eslint --fix src/**/*.ts --ext .ts && tsc",
+    "copyfiles": "copyfiles -u 1 --exclude site/node_modules/** site/**/* dist/site",
+    "build": "rimraf dist && tsup src/index.ts --format cjs,esm --dts --minify --clean --sourcemap && npm run copyfiles",
+    "docs": "rimraf docs && typedoc",
+    "format": "prettier --write \"**/*.js\"",
+    "format:check": "prettier --check \"**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -62,5 +67,8 @@
     "logform": "^2.5.1",
     "mongoose": "^7.2.1",
     "winston": "^3.8.2"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
