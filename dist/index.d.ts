@@ -2,14 +2,10 @@ import express, { Request, Response, NextFunction, Router } from 'express';
 export { default } from 'express';
 import { ClientSession } from 'mongoose';
 
-declare enum SchemaTest {
-    Email = "email",
-    Username = "username",
-    PasswordStrength = "passwordStrength",
-    PhoneNumber = "phoneNumber",
-    IPAddress = "ipAddress",
-    URL = "url"
-}
+type Middleware = (req: Request, res: Response, next: NextFunction) => void;
+type PathType = `/${string}`;
+
+type SchemaTest = 'email' | 'username' | 'passwordStrength' | 'phoneNumber' | 'ipAddress' | 'url';
 type SchemaOption = string | number | boolean | null | undefined;
 type SchemaBaseTypes = 'number' | 'integer' | 'boolean' | 'object' | 'array' | 'image';
 type SchemaTypes = SchemaBaseTypes | 'string';
@@ -41,181 +37,6 @@ interface SchemaWithoutTest<T> extends BaseSchema<T> {
     type: SchemaBaseTypes;
 }
 type Schema = Record<string, SchemaWithTest<Schema> | SchemaWithoutTest<Schema>>;
-
-type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'OPTIONS' | 'HEAD' | 'TRACE' | 'CONNECT';
-type EndpointMessageType = 'INFO' | 'WARNING' | 'DANGER' | 'SUCCESS';
-interface EndpointNote {
-    type: EndpointMessageType;
-    text: string;
-}
-type StatusCode = 200 | 201 | 204 | 301 | 400 | 401 | 403 | 404 | 405 | 409 | 500 | 501;
-interface EndpointResponse {
-    status: StatusCode;
-    message: string;
-    [key: string]: unknown;
-}
-/**
- * The endpoint builder class.
- */
-declare class EndpointBuilder {
-    disabled: boolean;
-    name: string;
-    description: string;
-    url: `/${string}`;
-    method: RequestMethod;
-    notes: EndpointNote[];
-    paramSchema?: Schema;
-    querySchema?: Schema;
-    bodySchema?: Schema;
-    responses: EndpointResponse[];
-    controller: (req: Request, res: Response, next: NextFunction) => void;
-    /**
-     * Creates a new endpoint.
-     */
-    constructor();
-    /**
-     * Sets the disabled state of the endpoint.
-     * @param disabled The disabled state of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setDisabled(disabled: boolean): this;
-    /**
-     * Sets the name of the endpoint.
-     * @param name The name of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setName(name: string): this;
-    /**
-     * Sets the description of the endpoint.
-     * @param description The description of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setDescription(description: string): this;
-    /**
-     * Sets the url of the endpoint.
-     * @param url The url of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setUrl(url: `/${string}`): this;
-    /**
-     * Sets the method of the endpoint.
-     * @param method The method of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setMethod(method: RequestMethod): this;
-    /**
-     * Sets the notes of the endpoint.
-     * @param notes The notes of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setNotes(notes: EndpointNote[]): this;
-    /**
-     * Sets the schema to validate the provided request parameters against.
-     * @param prop The schema to be validated against.
-     * @param prop.schema The schema to be validated against.
-     * @returns The endpoint builder.
-     */
-    setParamSchema(prop: {
-        schema: Schema;
-    }): this;
-    /**
-     * Sets the schema to validate the provided request queries against.
-     * @param prop The schema to be validated against.
-     * @param prop.schema The schema to be validated against.
-     * @returns The endpoint builder.
-     */
-    setQuerySchema(prop: {
-        schema: Schema;
-    }): this;
-    /**
-     * Sets the schema to validate the provided request body against.
-     * @param prop The schema to be validated against.
-     * @param prop.schema The schema to be validated against.
-     * @returns The endpoint builder.
-     */
-    setBodySchema(prop: {
-        schema: Schema;
-    }): this;
-    /**
-     * Sets the responses of the endpoint.
-     * @param responses The responses of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setResponses(responses: EndpointResponse[]): this;
-    /**
-     * Sets the controler to run.
-     * @param controller The controlller function to run.
-     * @returns The endpoint builder.
-     */
-    setController(controller: (req: Request, res: Response, session: ClientSession) => Promise<unknown> | unknown): this;
-    /**
-     * Executes the endpoint function.
-     * @param req The request.
-     * @param res The response.
-     * @param next The next function.
-     */
-    execute: (req: Request, res: Response, next: NextFunction) => void;
-}
-
-type Middleware = (req: Request, res: Response, next: NextFunction) => void;
-/**
- * The route builder class.
- */
-declare class RouteBuilder {
-    raw: Router;
-    private route;
-    private name;
-    private description;
-    private endpoints;
-    private middlewares;
-    /**
-     * Creates a new route builder.
-     */
-    constructor();
-    /**
-     * Sets the name of the route.
-     * @param name The name of the route.
-     * @returns The route builder.
-     */
-    setName(name: string): this;
-    /**
-     * Sets the description of the route.
-     * @param description The description of the route.
-     * @returns The route builder.
-     */
-    setDescription(description: string): this;
-    /**
-     * Builds the route.
-     * @param route The route to set.
-     * @returns The route builder.
-     */
-    setRoute(route: `/${string}`): this;
-    /**
-     * Adds a middleware to the route.
-     * @param middleware The middleware to add to the route.
-     * @returns The route builder.
-     */
-    addMiddleware(middleware: Middleware): this;
-    /**
-     * Adds an endpoint to the route.
-     * @param endpoint The endpoint to add to the route.
-     * @returns The route builder.
-     */
-    addEndpoint(endpoint: EndpointBuilder): this;
-    /**
-     * Adds all endpoints from an endpoint file to the route.
-     * @param endpointFile The endpoint file to add endpoints from.
-     * @returns The route builder.
-     */
-    addEndpointFile(endpointFile: Record<string, EndpointBuilder>): this;
-    /**
-     * Uses a router.
-     * @param route The route to use.
-     * @param router The router to use.
-     * @returns The route builder.
-     */
-    use(route: string, router: RouteBuilder): this;
-}
 
 /**
  * The value builder class.
@@ -312,6 +133,7 @@ declare class ValueBuilder implements BaseSchema {
      */
     setTest(test: SchemaTest): this;
 }
+
 /**
  * The Schema Builder class.
  */
@@ -326,43 +148,310 @@ declare class SchemaBuilder {
      * @param callback The callback to build the string value.
      * @returns The schema builder.
      */
-    addStringValue: (callback: (value: ValueBuilder) => void) => this;
+    addStringValue(callback: (value: ValueBuilder) => void): this;
     /**
      * Adds a number value to the schema.
      * @param callback The callback to build the number value.
      * @returns The schema builder.
      */
-    addNumberValue: (callback: (value: ValueBuilder) => void) => this;
+    addNumberValue(callback: (value: ValueBuilder) => void): this;
     /**
      * Adds a integer value to the schema.
      * @param callback The callback to build the integer value.
      * @returns The schema builder.
      */
-    addIntegerValue: (callback: (value: ValueBuilder) => void) => this;
+    addIntegerValue(callback: (value: ValueBuilder) => void): this;
     /**
      * Adds a boolean value to the schema.
      * @param callback The callback to build the boolean value.
      * @returns The schema builder.
      */
-    addBooleanValue: (callback: (value: ValueBuilder) => void) => this;
+    addBooleanValue(callback: (value: ValueBuilder) => void): this;
     /**
      * Adds a object value to the schema.
      * @param callback The callback to build the object value.
      * @returns The schema builder.
      */
-    addObjectValue: (callback: (value: ValueBuilder) => void) => this;
+    addObjectValue(callback: (value: ValueBuilder) => void): this;
     /**
      * Adds a array value to the schema.
      * @param callback The callback to build the array value.
      * @returns The schema builder.
      */
-    addArrayValue: (callback: (value: ValueBuilder) => void) => this;
+    addArrayValue(callback: (value: ValueBuilder) => void): this;
     /**
      * Adds a image value to the schema.
      * @param callback The callback to build the image value.
      * @returns The schema builder.
      */
-    addImageValue: (callback: (value: ValueBuilder) => void) => this;
+    addImageValue(callback: (value: ValueBuilder) => void): this;
 }
 
-export { EndpointBuilder, RouteBuilder, SchemaBuilder };
+type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'OPTIONS' | 'HEAD' | 'TRACE' | 'CONNECT';
+type EndpointMessageType = 'INFO' | 'WARNING' | 'DANGER' | 'SUCCESS';
+interface EndpointNote {
+    type: EndpointMessageType;
+    text: string;
+}
+type StatusCode = 200 | 201 | 204 | 301 | 400 | 401 | 403 | 404 | 405 | 409 | 500 | 501;
+interface EndpointResponse {
+    status: StatusCode;
+    message: string;
+    [key: string]: unknown;
+}
+interface ExportedEndpoint {
+    name: string;
+    description: string;
+    path: `/${string}`;
+    notes: EndpointNote[];
+    params: Schema;
+    query: Schema;
+    body: Schema;
+    responses: EndpointResponse[];
+}
+/**
+ * The endpoint builder class.
+ */
+declare class EndpointBuilder {
+    disabled: boolean;
+    name: string;
+    description: string;
+    path: PathType;
+    method: RequestMethod;
+    notes: EndpointNote[];
+    paramSchema?: Schema;
+    querySchema?: Schema;
+    bodySchema?: Schema;
+    responses: EndpointResponse[];
+    controller: (req: Request, res: Response, next: NextFunction) => void;
+    /**
+     * Creates a new endpoint.
+     */
+    constructor();
+    /**
+     * Sets the disabled state of the endpoint.
+     * @param disabled The disabled state of the endpoint.
+     * @returns The endpoint builder.
+     */
+    setDisabled(disabled: boolean): this;
+    /**
+     * Sets the name of the endpoint.
+     * @param name The name of the endpoint.
+     * @returns The endpoint builder.
+     */
+    setName(name: string): this;
+    /**
+     * Sets the description of the endpoint.
+     * @param description The description of the endpoint.
+     * @returns The endpoint builder.
+     */
+    setDescription(description: string): this;
+    /**
+     * Sets the path of the endpoint.
+     * @param path The path of the endpoint.
+     * @returns The endpoint builder.
+     */
+    setPath(path: PathType): this;
+    /**
+     * Sets the method of the endpoint.
+     * @param method The method of the endpoint.
+     * @returns The endpoint builder.
+     */
+    setMethod(method: RequestMethod): this;
+    /**
+     * Sets the notes of the endpoint.
+     * @param notes The notes of the endpoint.
+     * @returns The endpoint builder.
+     */
+    setNotes(notes: EndpointNote[]): this;
+    /**
+     * Sets the schema to validate the provided request parameters against.
+     * @param callback The callback to build the schema.
+     * @returns The endpoint builder.
+     */
+    setParamSchema(callback: (schema: SchemaBuilder) => void): this;
+    /**
+     * Sets the schema to validate the provided request queries against.
+     * @param callback The callback to build the schema.
+     * @returns The endpoint builder.
+     */
+    setQuerySchema(callback: (schema: SchemaBuilder) => void): this;
+    /**
+     * Sets the schema to validate the provided request body against.
+     * @param callback The callback to build the schema.
+     * @returns The endpoint builder.
+     */
+    setBodySchema(callback: (schema: SchemaBuilder) => void): this;
+    /**
+     * Sets the responses of the endpoint.
+     * @param responses The responses of the endpoint.
+     * @returns The endpoint builder.
+     */
+    setResponses(responses: EndpointResponse[]): this;
+    /**
+     * Sets the controler to run.
+     * @param controller The controlller function to run.
+     * @returns The endpoint builder.
+     */
+    setController(controller: (req: Request, res: Response, session: ClientSession) => Promise<unknown> | unknown): this;
+    /**
+     * Executes the endpoint function.
+     * @param req The request.
+     * @param res The response.
+     * @param next The next function.
+     */
+    execute(req: Request, res: Response, next: NextFunction): void;
+    /**
+     * Exports the endpoint.
+     * @returns The exported endpoint.
+     */
+    export(): ExportedEndpoint;
+}
+
+interface ExportedRoute {
+    name: string;
+    description: string;
+    path: PathType;
+    endpoints: ExportedEndpoint[];
+}
+/**
+ * The route builder class.
+ */
+declare class RouteBuilder {
+    raw: Router;
+    private path;
+    private name;
+    private description;
+    private endpoints;
+    private middlewares;
+    private afterwares;
+    /**
+     * Creates a new route.
+     * @param path The path of the route.
+     */
+    constructor(path?: PathType);
+    /**
+     * Sets the path of the route.
+     * @param name The name of the route.
+     * @returns The route builder.
+     */
+    setName(name: string): this;
+    /**
+     * Sets the description of the route.
+     * @param description The description of the route.
+     * @returns The route builder.
+     */
+    setDescription(description: string): this;
+    /**
+     * Sets the path of the route.
+     * @param path The path to set the router to.
+     * @returns The router builder.
+     */
+    setPath(path: `/${string}`): this;
+    /**
+     * Adds a middleware to the route. Add it before adding the route.
+     * @param middleware The middleware to add to the route.
+     * @returns The router builder.
+     */
+    addMiddleware(middleware: Middleware): this;
+    /**
+     * Adds an afterware to the route. Add it before adding the route.
+     * @param afterware The afterware to add to the route.
+     * @returns The router builder.
+     */
+    addAfterware(afterware: Middleware): this;
+    /**
+     * Adds an endpoint to the route.
+     * @param endpoint The endpoint to add to the route.
+     * @returns The router builder.
+     */
+    addEndpoint(endpoint: EndpointBuilder): this;
+    /**
+     * Adds all endpoints from an endpoint file to the route.
+     * @param endpointFile The endpoint file to add endpoints from.
+     * @returns The route builder.
+     */
+    addEndpointFile(endpointFile: Record<string, EndpointBuilder>): this;
+    /**
+     * Gets the middlewares and afterwares of the route.
+     * @returns The middlewares and afterwares of the route.
+     */
+    access(): {
+        middlewares: Middleware[];
+        afterwares: Middleware[];
+    };
+    /**
+     * Exports the route.
+     * @returns The exported route.
+     */
+    export(): ExportedRoute;
+}
+
+interface ExportedRouter {
+    name: string;
+    path: PathType;
+    routes: ExportedRoute[];
+}
+/**
+ * The router builder class.
+ */
+declare class RouterBuilder {
+    raw: Router;
+    private path;
+    private name;
+    private routes;
+    private middlewares;
+    private afterwares;
+    /**
+     * Creates a new router builder.
+     */
+    constructor();
+    /**
+     * Sets the name of the route.
+     * @param name The name of the route.
+     * @returns The router builder.
+     */
+    setName(name: string): this;
+    /**
+     * Sets the path of the route.
+     * @param path The path to set the router to.
+     * @returns The router builder.
+     */
+    setPath(path: PathType): this;
+    /**
+     * Adds a middleware to the route. Add it before adding the route.
+     * @param middleware The middleware to add to the route.
+     * @returns The router builder.
+     */
+    addMiddleware(middleware: Middleware): this;
+    /**
+     * Adds an afterware to the route. Add it before adding the route.
+     * @param afterware The afterware to add to the route.
+     * @returns The router builder.
+     */
+    addAfterware(afterware: Middleware): this;
+    /**
+     * Uses a router.
+     * @param path The path to use.
+     * @param route The router to use.
+     * @returns The router builder.
+     */
+    addRoute(path: string, route: RouteBuilder): this;
+    /**
+     * Gets the express router.
+     * @returns The express router.
+     */
+    getRouter: () => Router;
+    /**
+     * Exports the routes and endpoints data.
+     * @returns The exported data.
+     */
+    export(): ExportedRouter;
+    /**
+     * Generates the site with next.js.
+     * @returns The router builder.
+     */
+    generateSite(): Promise<this>;
+}
+
+export { EndpointBuilder, RouteBuilder, RouterBuilder };
