@@ -1,0 +1,66 @@
+{
+  "name": "express-custom",
+  "version": "1.0.0",
+  "description": "Easily define and document custom express routes and endpoints.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --minify --clean --sourcemap",
+    "lint": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slekup/express-custom+git.git"
+  },
+  "keywords": [
+    "express",
+    "custom",
+    "docs",
+    "documentation",
+    "api",
+    "nodejs"
+  ],
+  "author": "Slekup",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/slekup/express-custom+git/issues"
+  },
+  "homepage": "https://github.com/slekup/express-custom+git#readme",
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.21.8",
+    "@changesets/cli": "^2.26.1",
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.2.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.7",
+    "copyfiles": "^2.4.1",
+    "eslint": "^8.41.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsdoc": "^44.2.5",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-tsdoc": "^0.2.17",
+    "eslint-prettier": "^0.0.0-empty",
+    "husky": "^8.0.3",
+    "prettier": "^2.8.8",
+    "rimraf": "^5.0.1",
+    "tsconfig-paths": "^4.2.0",
+    "tsup": "^6.7.0",
+    "typedoc": "^0.24.7",
+    "typedoc-plugin-extras": "^2.3.3",
+    "typedoc-plugin-mdn-links": "^3.0.3",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "logform": "^2.5.1",
+    "mongoose": "^7.2.1",
+    "winston": "^3.8.2"
+  }
+}
