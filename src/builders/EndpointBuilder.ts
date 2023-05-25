@@ -1,10 +1,21 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { PathType } from '@typings/core';
 import { Schema, logger, validate } from '@utils/index';
 import { withErrorHandling } from '@utils/middleware';
 import { ClientSession } from 'mongoose';
+import SchemaBuilder from './SchemaBuilder';
 
-type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'OPTIONS' | 'HEAD' | 'TRACE' | 'CONNECT';
+type RequestMethod =
+  | 'GET'
+  | 'POST'
+  | 'PATCH'
+  | 'PUT'
+  | 'DELETE'
+  | 'OPTIONS'
+  | 'HEAD'
+  | 'TRACE'
+  | 'CONNECT';
 
 type EndpointMessageType = 'INFO' | 'WARNING' | 'DANGER' | 'SUCCESS';
 
@@ -13,12 +24,35 @@ interface EndpointNote {
   text: string;
 }
 
-type StatusCode = 200 | 201 | 204 | 301 | 400 | 401 | 403 | 404 | 405 | 409 | 500 | 501;
+type StatusCode =
+  | 200
+  | 201
+  | 204
+  | 301
+  | 400
+  | 401
+  | 403
+  | 404
+  | 405
+  | 409
+  | 500
+  | 501;
 
 interface EndpointResponse {
   status: StatusCode;
   message: string;
   [key: string]: unknown;
+}
+
+export interface ExportedEndpoint {
+  name: string;
+  description: string;
+  path: `/${string}`;
+  notes: EndpointNote[];
+  params: Schema;
+  query: Schema;
+  body: Schema;
+  responses: EndpointResponse[];
 }
 
 /**
@@ -28,7 +62,7 @@ export default class EndpointBuilder {
   public disabled: boolean;
   public name: string;
   public description: string;
-  public url: `/${string}`;
+  public path: PathType;
   public method: RequestMethod;
   public notes: EndpointNote[];
   public paramSchema?: Schema;
@@ -44,7 +78,7 @@ export default class EndpointBuilder {
     this.disabled = false;
     this.name = 'Name not provided';
     this.description = 'Description not provided';
-    this.url = '/';
+    this.path = '/';
     this.method = 'GET';
     this.notes = [];
     this.responses = [];
@@ -88,12 +122,12 @@ export default class EndpointBuilder {
   }
 
   /**
-   * Sets the url of the endpoint.
-   * @param url The url of the endpoint.
+   * Sets the path of the endpoint.
+   * @param path The path of the endpoint.
    * @returns The endpoint builder.
    */
-  public setUrl(url: `/${string}`): this {
-    this.url = url;
+  public setPath(path: PathType): this {
+    this.path = path;
     return this;
   }
 
@@ -119,34 +153,37 @@ export default class EndpointBuilder {
 
   /**
    * Sets the schema to validate the provided request parameters against.
-   * @param prop The schema to be validated against.
-   * @param prop.schema The schema to be validated against.
+   * @param callback The callback to build the schema.
    * @returns The endpoint builder.
    */
-  public setParamSchema(prop: { schema: Schema }): this {
-    this.paramSchema = prop.schema;
+  public setParamSchema(callback: (schema: SchemaBuilder) => void): this {
+    const schema = new SchemaBuilder();
+    callback(schema);
+    this.paramSchema = schema.schema;
     return this;
   }
 
   /**
    * Sets the schema to validate the provided request queries against.
-   * @param prop The schema to be validated against.
-   * @param prop.schema The schema to be validated against.
+   * @param callback The callback to build the schema.
    * @returns The endpoint builder.
    */
-  public setQuerySchema(prop: { schema: Schema }): this {
-    this.querySchema = prop.schema;
+  public setQuerySchema(callback: (schema: SchemaBuilder) => void): this {
+    const schema = new SchemaBuilder();
+    callback(schema);
+    this.querySchema = schema.schema;
     return this;
   }
 
   /**
    * Sets the schema to validate the provided request body against.
-   * @param prop The schema to be validated against.
-   * @param prop.schema The schema to be validated against.
+   * @param callback The callback to build the schema.
    * @returns The endpoint builder.
    */
-  public setBodySchema(prop: { schema: Schema }): this {
-    this.bodySchema = prop.schema;
+  public setBodySchema(callback: (schema: SchemaBuilder) => void): this {
+    const schema = new SchemaBuilder();
+    callback(schema);
+    this.bodySchema = schema.schema;
     return this;
   }
 
@@ -166,7 +203,11 @@ export default class EndpointBuilder {
    * @returns The endpoint builder.
    */
   public setController(
-    controller: (req: Request, res: Response, session: ClientSession) => Promise<unknown> | unknown
+    controller: (
+      req: Request,
+      res: Response,
+      session: ClientSession
+    ) => Promise<unknown> | unknown
   ): this {
     this.controller = withErrorHandling(controller);
     return this;
@@ -178,16 +219,34 @@ export default class EndpointBuilder {
    * @param res The response.
    * @param next The next function.
    */
-  public execute = (req: Request, res: Response, next: NextFunction): void => {
+  public execute(req: Request, res: Response, next: NextFunction): void {
     (async () => {
       try {
         if (!this.paramSchema && !this.querySchema && !this.bodySchema)
-          return res.status(500).json({ status: 500, message: 'Schema not set for endpoint.' });
+          return res
+            .status(500)
+            .json({ status: 500, message: 'Schema not set for endpoint.' });
 
         // Validate the request
-        if (this.paramSchema && (await validate(req.params, this.paramSchema, res))) return;
-        if (this.querySchema && (await validate(req.query, this.querySchema, res))) return;
-        if (this.bodySchema && (await validate(req.body as Record<string, unknown>, this.bodySchema, res))) return;
+        if (
+          this.paramSchema &&
+          (await validate(req.params, this.paramSchema, res))
+        )
+          return;
+        if (
+          this.querySchema &&
+          (await validate(req.query, this.querySchema, res))
+        )
+          return;
+        if (
+          this.bodySchema &&
+          (await validate(
+            req.body as Record<string, unknown>,
+            this.bodySchema,
+            res
+          ))
+        )
+          return;
 
         // Return the execution of the controller
         return this.controller(req, res, next);
@@ -195,5 +254,22 @@ export default class EndpointBuilder {
         logger.error(error);
       }
     })();
-  };
+  }
+
+  /**
+   * Exports the endpoint.
+   * @returns The exported endpoint.
+   */
+  public export(): ExportedEndpoint {
+    return {
+      name: this.name,
+      description: this.description,
+      path: this.path,
+      notes: this.notes,
+      params: this.paramSchema ?? {},
+      query: this.querySchema ?? {},
+      body: this.bodySchema ?? {},
+      responses: this.responses,
+    };
+  }
 }
