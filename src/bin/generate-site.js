@@ -2,26 +2,15 @@
 
 const fileTimeStart = Date.now();
 
-const { execSync, exec } = require('child_process');
+const { execSync } = require('child_process');
 const colors = require('colors');
 const fs = require('fs-extra');
 const path = require('path');
 const { promisify } = require('util');
-
 const tsNode = require('ts-node');
 const tsconfigPaths = require('tsconfig-paths');
 const { createRequire } = require('module');
 
-/* import { exec } from 'child_process';
-import colors from 'colors';
-import fs from 'fs-extra';
-import path from 'path';
-import { promisify } from 'util';
-
-import { createRequire } from 'module';
-import tsNode from 'ts-node';
-import tsconfigPaths from 'tsconfig-paths';
- */
 const cli = {
   inf: colors.blue('CLI'),
   suc: colors.green('CLI'),
@@ -35,9 +24,10 @@ const site = {
 };
 
 const fileName = process.argv[2];
-const siteOutput = process.argv[3];
+const outDir = process.argv[3];
+const debug = process.argv.includes('--debug');
 
-const targetPath = path.join(process.cwd(), siteOutput || 'docs');
+const targetPath = path.join(process.cwd(), outDir || 'docs');
 
 /**
  * Load the router file.
@@ -110,7 +100,7 @@ const loadRouter = async () => {
       })
       .compile(fs.readFileSync(filePath, { encoding: 'utf-8' }), filePath);
 
-    console.log(`${cli.inf} Registering tsconfig`);
+    console.log(`${cli.inf} Registering tsconfig paths`);
 
     tsconfigPaths.register({
       baseUrl: path.resolve(tsconfigDir, baseUrl),
@@ -120,19 +110,10 @@ const loadRouter = async () => {
       },
     });
 
-    // Create a new require function using the module.createRequire method
-    const requireModule = createRequire(path.resolve(__dirname, __filename));
-    // const requireModule = createRequire(import.meta.url);
-
     console.log(`${cli.inf} Loading router file`);
 
-    // Load the JavaScript file as a module using the require function
-    // const fileUrl = `file:///${new URL(filePath, import.meta.url).href}`;
-    // console.log(fileUrl);
-
+    const requireModule = createRequire(path.resolve(__dirname, __filename));
     const module = requireModule(filePath);
-
-    // Get the default export of the module
     const router = module.default;
 
     const time = Date.now() - timeStart + 'ms';
@@ -183,7 +164,7 @@ const installSiteDependencies = async () => {
       shell: true,
     });
 
-    // console.log(`${site.inf} ${stdout}`);
+    if (stdout && debug) console.log(stdout);
     if (stderr) {
       console.error(
         `${site.err} Error occurred while installing site dependencies`
@@ -213,7 +194,7 @@ const buildSite = async () => {
       shell: true,
     });
 
-    // console.log(`${site.inf} ${stdout}`);
+    if (stdout && debug) console.log(stdout);
     if (stderr) {
       console.error(`${site.err} Error occurred while building site`);
       console.error(stderr);
@@ -227,13 +208,13 @@ const buildSite = async () => {
 };
 
 /**
- * Copy the site to the docs directory.
+ * Copy the site to the ouput directory.
  */
 const copySite = async () => {
   const timeStart = Date.now();
-  console.info(`${cli.inf} Copying site to docs`);
+  console.info(`${cli.inf} Copying site to ${outDir}`);
 
-  // Make docs directory if it doesn't exist
+  // Make ouput directory if it doesn't exist
   if (!fs.existsSync(targetPath)) await fs.promises.mkdir(targetPath);
 
   try {
@@ -243,7 +224,7 @@ const copySite = async () => {
       path.join(__dirname, '../../site/out/routes.json')
     );
 
-    // Copy the site to the docs directory
+    // Copy the site to the ouput directory
     await promisify(fs.copy)(
       path.join(__dirname, '../../site/out'),
       targetPath
@@ -252,7 +233,7 @@ const copySite = async () => {
     const time = Date.now() - timeStart + 'ms';
     console.info(`${cli.suc} ⚡ Copied site in ${time}`);
   } catch (error) {
-    console.error(`${cli.err} Failed to copy site to docs`);
+    console.error(`${cli.err} Failed to copy site to ${outDir}`);
     throw new Error(error);
   }
 };
