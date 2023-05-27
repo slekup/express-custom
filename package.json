@@ -5,10 +5,17 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "type": "commonjs",
+  "bin": {
+    "gensite": "./src/bin/generate-site.js"
+  },
   "scripts": {
     "lint": "eslint src/**/*.ts --ext .ts && tsc",
     "lint:fix": "eslint --fix src/**/*.ts --ext .ts && tsc",
-    "copyfiles": "copyfiles -u 1 --exclude site/node_modules/** site/**/* dist/site",
+    "copyfiles:site": "copyfiles -u 1 --exclude site/node_modules/** --exclude site/out/** --exclude site/.next/** site/**/* dist/site",
+    "copyfiles:gensite": "cp ./src/bin/generate-site.js ./dist/generate-site.js",
+    "copyfiles:tsconfig": "cp ./src/bin/tsconfig.json ./dist/tsconfig.json",
+    "copyfiles": "npm run copyfiles:site && npm run copyfiles:gensite && npm run copyfiles:tsconfig",
     "build": "rimraf dist && tsup src/index.ts --format cjs,esm --dts --minify --clean --sourcemap && npm run copyfiles",
     "docs": "rimraf docs && typedoc",
     "format": "prettier --write \"**/*.js\"",
@@ -16,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/slekup/express-custom+git.git"
+    "url": "git+https://github.com/slekup/express-custom+git"
   },
   "keywords": [
     "express",
@@ -32,6 +39,18 @@
     "url": "https://github.com/slekup/express-custom+git/issues"
   },
   "homepage": "https://github.com/slekup/express-custom+git#readme",
+  "dependencies": {
+    "@types/fs-extra": "^11.0.1",
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.3",
+    "esbuild": "^0.17.19",
+    "express": "^4.18.2",
+    "logform": "^2.5.1",
+    "mongoose": "^7.2.1",
+    "ts-import": "^5.0.0-beta.0",
+    "ts-node": "^10.9.1",
+    "winston": "^3.8.2"
+  },
   "devDependencies": {
     "@babel/eslint-parser": "^7.21.8",
     "@changesets/cli": "^2.26.1",
@@ -50,6 +69,8 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-tsdoc": "^0.2.17",
     "eslint-prettier": "^0.0.0-empty",
+    "esm": "^3.2.25",
+    "fs-extra": "^11.1.1",
     "husky": "^8.0.3",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
@@ -59,14 +80,6 @@
     "typedoc-plugin-extras": "^2.3.3",
     "typedoc-plugin-mdn-links": "^3.0.3",
     "typescript": "^5.0.4"
-  },
-  "dependencies": {
-    "colors": "^1.4.0",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "logform": "^2.5.1",
-    "mongoose": "^7.2.1",
-    "winston": "^3.8.2"
   },
   "files": [
     "dist"

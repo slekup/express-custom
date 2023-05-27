@@ -8,6 +8,15 @@ Enhance your express app with builders, schema validation, next.js documentation
 - Export your routes and endpoints to JSON.
 - Forget about error handling, it's all done for you.
 
+## Table of Contents
+
+- [Getting Started](#getting-started)
+  - [Install](#install)
+  - [Usage](#usage)
+    - [Setup the router](#setup-the-router)
+    - [Create the route](#create-the-route)
+    - [Create the endpoint](#create-the-endpoint)
+
 # Getting Started
 
 ## Install
