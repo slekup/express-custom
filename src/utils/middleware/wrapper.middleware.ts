@@ -3,7 +3,11 @@ import { ClientSession, startSession } from 'mongoose';
 
 import { logger } from '@utils/index';
 
-type ControllerType = (req: Request, res: Response, session: ClientSession) => Promise<unknown> | unknown;
+type ControllerType = (
+  req: Request,
+  res: Response,
+  session: ClientSession
+) => Promise<unknown> | unknown;
 
 /**
  * Handles a function.
