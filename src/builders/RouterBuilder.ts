@@ -78,6 +78,9 @@ export default class RouterBuilder {
    */
   public addRoute(path: string, route: RouteBuilder): this {
     if (!path) return this;
+
+    this.routes.push(route);
+
     // Replace multiple slashes with a single slash.
     const doubleSlashRegex = /\/+/g;
 

@@ -26,7 +26,6 @@
     },
   },
   "include": [
-    "config/**/*",
     "src/**/*",
     "environment.d.ts",
     "package.json",
