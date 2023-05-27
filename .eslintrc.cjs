@@ -80,7 +80,7 @@ module.exports = {
 
     // Normal ESLint rules
     'object-curly-spacing': 2, // Enforces consistent spacing inside braces
-    'linebreak-style': ['error', 'windows'], // Enforces consistent line endings (disabled for windows)
+    'linebreak-style': 0, // Enforces consistent line endings (disabled for windows)
     'lines-between-class-members': 0, // Requires an empty line between class members
     'no-await-in-loop': 0, // Disallows await inside of loops
     'no-restricted-syntax': 0, // Disallows specified syntax
