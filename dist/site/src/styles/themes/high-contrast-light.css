@@ -1,0 +1,63 @@
+[data-theme='high-contrast-light'] {
+  /* Primary */
+  --primary: 26, 13, 171;
+  --primary-hover: 41, 26, 238;
+  --primary-active: 112, 102, 243;
+  --default: 220, 220, 220;
+  --default-hover: 200, 200, 200;
+  --default-active: 180, 180, 180;
+
+  /* Text */
+  --text: 0, 0, 0;
+  --text-primary: 0, 0, 0;
+  --text-secondary: 0, 0, 0;
+  --text-faint: 0, 0, 0;
+  --text-button: 255, 255, 255;
+
+  /* Elements */
+  --background: 255, 255, 255;
+  --shade: 255, 255, 255;
+  --shade-2: 255, 255, 255;
+  --tooltip: 0, 0, 0;
+  --tooltip-text: 255, 255, 255;
+
+  /* Header */
+  --header: 255, 255, 255;
+  --header-border: 0, 0, 0;
+  --header-text: 0, 0, 0;
+  --header-text-gradient-from: 0, 0, 0;
+  --header-text-gradient-to: 0, 0, 0;
+  --header-search: 255, 255, 255;
+  --header-search-focus: 255, 255, 255;
+  --header-search-text: 0, 0, 0;
+  --header-search-focus-border: var(--primary);
+  --header-search-button: 30, 30, 30;
+  --header-search-button-hover: 40, 40, 40;
+  --header-search-button-active: 60, 60, 60;
+  --header-search-button-text: 255, 255, 255;
+  --header-search-focus-button: var(--primary);
+  --header-search-focus-button-hover: var(--primary-hover);
+  --header-search-focus-button-active: var(--primary-active);
+  --header-search-focus-button-text: 255, 255, 255;
+  --header-burger: 0, 0, 0;
+  --header-burger-hover: 0, 0, 0;
+  --header-burger-active: 0, 0, 0;
+  --header-burger-background: 255, 255, 255;
+  --header-burger-background-hover: 220, 220, 220;
+  --header-burger-background-active: 200, 200, 200;
+  --header-button: 0, 0, 0;
+  --header-button-hover: 0, 0, 0;
+  --header-button-active: 0, 0, 0;
+  --header-button-text: 0, 0, 0;
+
+  /* System */
+  --link: 26, 13, 171;
+
+  /* Menu */
+  --menu: var(--background);
+
+  /* Components */
+  --input: 255, 255, 255;
+  --input-focus: 255, 255, 255;
+  --border: 0, 0, 0;
+}

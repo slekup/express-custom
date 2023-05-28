@@ -47,7 +47,8 @@ export const phone = (str: string): boolean => {
  */
 export const ipv4Address = (str: string): boolean => {
   // ^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$ - https://stackoverflow.com/questions/5284147/validating-ipv4-addresses-with-regexp
-  const ipv4AddressRegex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}$/;
+  const ipv4AddressRegex =
+    /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}$/;
   return ipv4AddressRegex.test(str);
 };
 

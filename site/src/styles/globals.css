@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './themes.css';
+@import './fonts/fonts.css';
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  font-family: 'Mukta', 'Nunito Sans', 'Fira Code', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: rgb(var(--background));
+  overflow-y: scroll;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: rgb(var(--primary));
+  color: rgb(var(--text-button));
+  text-shadow: none;
+}
+
+*:focus {
+  @apply focus:outline-none;
+}
+
+::-webkit-scrollbar {
+  background: rgb(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--default-active));
+  -webkit-border-radius: 8px;
+}
+
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -o-user-select: none;
+}
+
+.yes-select {
+  -webkit-touch-callout: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  -o-user-select: text;
+}
+
+.hover-thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.hover-thin-scroll:hover {
+  scrollbar-color: auto;
+}
+
+.hover-thin-scroll::-webkit-scrollbar {
+  @apply hidden w-[3px];
+}
+
+.hover-thin-scroll:hover::-webkit-scrollbar {
+  display: block;
+}
+
+.hidden-scrollbar {
+  scrollbar-width: none;
+  scrollbar-color: rgba(0, 0, 0, 0);
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+input[type='number'] {
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.link {
+  color: rgb(var(--link));
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Table */
+table {
+  @apply my-5 border-t border-l border-border border border-collapse table-auto text-text-secondary break-words w-full !important;
+}
+
+tbody tr {
+  @apply odd:bg-default;
+}
+
+th,
+td {
+  @apply border-r border-b border-border border-collapse;
+}
+
+th {
+  @apply px-3 py-2 text-sm font-medium text-text-secondary;
+}
+
+td {
+  @apply px-3 py-2 text-sm font-medium text-text;
+}
+
+/* Code */
+.code {
+  @apply text-[14px] py-0.5 px-1.5 mx-0 rounded-sm bg-default-hover text-text font-semibold cursor-auto transition duration-200;
+}
