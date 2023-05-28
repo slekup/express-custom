@@ -8,6 +8,15 @@ Enhance your express app with builders, schema validation, next.js documentation
 - Export your routes and endpoints to JSON.
 - Forget about error handling, it's all done for you.
 
+## Table of Contents
+
+- [Getting Started](#getting-started)
+  - [Install](#install)
+  - [Usage](#usage)
+    - [Setup the router](#setup-the-router)
+    - [Create the route](#create-the-route)
+    - [Create the endpoint](#create-the-endpoint)
+
 # Getting Started
 
 ## Install
@@ -46,7 +55,7 @@ import userRoute from './user.ts';
 const router = new RouterBuilder()
   .setDefaultCategory('Website Endpoints')
   .setPath('/')
-  .addRoutes('User Endpoints', [userRoute]);
+  .addRoute('User Endpoints', userRoute);
 
 export default router;
 ```
@@ -84,7 +93,7 @@ export const getUser = new EndpointBuilder()
   .setPath('/:id')
   .setMethod('GET')
   .setParamSchema((schema) =>
-    schema.addValue((value) =>
+    schema.addParam((value) =>
       value.setName('id').setDescription('The id of the user')
     )
   )
@@ -96,6 +105,12 @@ export const getUser = new EndpointBuilder()
 ## Generate a Static Next.js Site
 
 This will build and export a static next.js site to a new docs folder in your project directory.
+
+```bash
+npx gensite ./src/routes/index.ts docs
+```
+
+or use the `generateSite` function:
 
 ```ts
 await router.generateSite({
@@ -112,6 +127,16 @@ await router.generateSite({
 ## Export the Routes and Endpoints to a JSON File
 
 Export the routes and endpoints to a JSON file at the specified path.
+
+```bash
+npx exportRoutes ./src/routes/index.ts routes.json
+```
+
+```bash
+npx exportRoutes ./src/routes/index.ts routes.json --list
+```
+
+or use the `export` and `exportList` functions:
 
 ```ts
 import fs from 'fs';
