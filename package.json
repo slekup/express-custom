@@ -7,15 +7,16 @@
   "types": "dist/index.d.ts",
   "type": "commonjs",
   "bin": {
-    "gensite": "./src/bin/generate-site.js"
+    "gensite": "./dist/bin/gensite.js",
+    "export-routes": "./dist/bin/export-routes.js"
   },
   "scripts": {
     "lint": "eslint src/**/*.ts --ext .ts && tsc",
     "lint:fix": "eslint --fix src/**/*.ts --ext .ts && tsc",
     "copyfiles:site": "copyfiles -u 1 --exclude site/node_modules/** --exclude site/out/** --exclude site/.next/** site/**/* dist/site",
-    "copyfiles:gensite": "cp ./src/bin/generate-site.js ./dist/generate-site.js",
+    "copyfiles:bin": "copyfiles -u 1 src/bin/**/* dist/",
     "copyfiles:tsconfig": "cp ./src/bin/tsconfig.json ./dist/tsconfig.json",
-    "copyfiles": "npm run copyfiles:site && npm run copyfiles:gensite && npm run copyfiles:tsconfig",
+    "copyfiles": "npm run copyfiles:site && npm run copyfiles:bin && npm run copyfiles:tsconfig",
     "build": "rimraf dist && tsup src/index.ts --format cjs,esm --dts --minify --clean --sourcemap && npm run copyfiles",
     "docs": "rimraf docs && typedoc",
     "format": "prettier --write \"src/**/*.ts\"",

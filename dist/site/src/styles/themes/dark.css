@@ -1,0 +1,63 @@
+[data-theme='dark'] {
+  /* Primary */
+  --primary: 79, 163, 255;
+  --primary-hover: 128, 188, 255;
+  --primary-active: 51, 148, 255;
+  --default: 30, 30, 49;
+  --default-hover: 41, 40, 70;
+  --default-active: 56, 54, 95;
+
+  /* Text */
+  --text: 255, 255, 255;
+  --text-primary: 228, 228, 239;
+  --text-secondary: 159, 159, 198;
+  --text-faint: 126, 126, 180;
+  --text-button: 0, 0, 0;
+
+  /* System */
+  --link: 91, 169, 255;
+
+  /* Elements */
+  --background: 10, 10, 16;
+  --shade: 17, 17, 28;
+  --shade-2: 14, 14, 22;
+  --tooltip: 56, 54, 95;
+  --tooltip-text: 255, 255, 255;
+
+  /* Header */
+  --header: 28, 28, 47;
+  --header-border: var(--border);
+  --header-text: var(--text-faint);
+  --header-text-gradient-from: var(--text-primary);
+  --header-text-gradient-to: var(--text-primary);
+  --header-search: var(--input);
+  --header-search-focus: var(--input-focus);
+  --header-search-text: var(--text);
+  --header-search-border: var(--default-active);
+  --header-search-focus-border: var(--primary);
+  --header-search-button: var(--default-active);
+  --header-search-button-hover: var(--default-active);
+  --header-search-button-text: var(--text-secondary);
+  --header-search-focus-button: var(--primary);
+  --header-search-focus-button-hover: var(--primary-hover);
+  --header-search-focus-button-active: var(--primary-active);
+  --header-search-focus-button-text: var(--text-button);
+  --header-burger: var(--text-header);
+  --header-burger-hover: var(--text-primary);
+  --header-burger-active: var(--text-text);
+  --header-burger-background: var(--header);
+  --header-burger-background-hover: var(--default-hover);
+  --header-burger-background-active: var(--default-active);
+  --header-button: var(--primary);
+  --header-button-hover: var(--primary);
+  --header-button-active: var(--primary);
+  --header-button-text: var(--text);
+
+  /* Menu */
+  --menu: var(--background);
+
+  /* Components */
+  --input: 10, 10, 16;
+  --input-focus: 0, 0, 0;
+  --border: 29, 28, 48;
+}

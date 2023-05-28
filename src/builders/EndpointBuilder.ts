@@ -47,7 +47,8 @@ interface EndpointResponse {
 export interface ExportedEndpoint {
   name: string;
   description: string;
-  path: `/${string}`;
+  path: string;
+  method: RequestMethod;
   notes: EndpointNote[];
   params: Schema;
   query: Schema;
@@ -81,6 +82,7 @@ export default class EndpointBuilder {
     this.path = '/';
     this.method = 'GET';
     this.notes = [];
+
     this.responses = [];
 
     /**
@@ -264,7 +266,8 @@ export default class EndpointBuilder {
     return {
       name: this.name,
       description: this.description,
-      path: this.path,
+      path: this.path === '/' ? '' : this.path,
+      method: this.method,
       notes: this.notes,
       params: this.paramSchema ?? {},
       query: this.querySchema ?? {},
