@@ -90,7 +90,13 @@ export default class RouteBuilder {
   public addEndpoint(endpoint: EndpointBuilder): this {
     this.endpoints.push(endpoint);
 
-    const url: string = `${this.path}${endpoint.path}`.replace('//', '/');
+    // Replace multiple slashes with a single slash.
+    const doubleSlashRegex = /\/+/g;
+
+    const url: string = `${this.path}${endpoint.path}`.replace(
+      doubleSlashRegex,
+      '/'
+    );
 
     switch (endpoint.method) {
       case 'GET':
