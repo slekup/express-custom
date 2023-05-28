@@ -16,7 +16,7 @@ interface ExportedRouter {
 export default class RouterBuilder {
   public raw: Router = Router();
   private path: `/${string}`;
-  private name: string;
+  private defaultCategory: string;
   private routes: RouteBuilder[] = [];
   private middlewares: Middleware[] = [];
   private afterwares: Middleware[] = [];
@@ -27,16 +27,16 @@ export default class RouterBuilder {
   public constructor() {
     // this.raw = Router();
     this.path = '/';
-    this.name = 'Unnamed router';
+    this.defaultCategory = 'No default category';
   }
 
   /**
-   * Sets the name of the route.
-   * @param name The name of the route.
+   * Sets the default category of the route.
+   * @param defaultCategory The default category of the route.
    * @returns The router builder.
    */
-  public setName(name: string): this {
-    this.name = name;
+  public setDefaultCategory(defaultCategory: string): this {
+    this.defaultCategory = defaultCategory;
     return this;
   }
 
@@ -72,20 +72,17 @@ export default class RouterBuilder {
 
   /**
    * Uses a router.
-   * @param path The path to use.
    * @param route The router to use.
    * @returns The router builder.
    */
-  public addRoute(path: string, route: RouteBuilder): this {
-    if (!path) return this;
-    // Replace multiple slashes with a single slash.
-    const doubleSlashRegex = /\/+/g;
+  public addRoute(route: RouteBuilder): this {
+    this.routes.push(route);
 
     const routeAccess = route.access();
 
     // Use the router.
     this.raw.use(
-      path.replace(doubleSlashRegex, '/'),
+      '/',
       ...routeAccess.middlewares,
       route.raw,
       ...routeAccess.afterwares
@@ -106,7 +103,7 @@ export default class RouterBuilder {
    */
   public export(): ExportedRouter {
     return {
-      name: this.name,
+      name: this.defaultCategory,
       path: this.path,
       routes: this.routes.map((route) => route.export()),
     };

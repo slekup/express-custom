@@ -19,6 +19,7 @@ type SchemaBaseTypes =
   | 'object'
   | 'array'
   | 'image';
+
 export type SchemaTypes = SchemaBaseTypes | 'string';
 
 export interface SchemaItems {

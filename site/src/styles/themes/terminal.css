@@ -1,0 +1,64 @@
+[data-theme='terminal'] {
+  /* Primary */
+  --primary: 78, 224, 119;
+  --primary-hover: 107, 228, 140;
+  --primary-active: 141, 235, 167;
+  --default: 36, 38, 57;
+  --default-hover: 46, 49, 73;
+  --default-active: 53, 56, 83;
+
+  /* Text */
+  --text: 255, 255, 255;
+  --text-primary: 228, 228, 239;
+  --text-secondary: 175, 175, 207;
+  --text-faint: 121, 121, 176;
+  --text-button: 17, 19, 22;
+
+  /* System */
+  --link: 78, 224, 119;
+
+  /* Elements */
+  --background: 8, 9, 11;
+  --shade: 18, 19, 29;
+  --shade-2: 18, 19, 29;
+  --tooltip: 56, 54, 95;
+  --tooltip-text: 255, 255, 255;
+
+  /* Header */
+  --header: 24, 25, 38;
+  --header-border: 36, 38, 57;
+  --header-text: var(--text-faint);
+  --header-text-gradient-from: var(--text-primary);
+  --header-text-gradient-to: var(--text-primary);
+  --header-search: var(--input);
+  --header-search-focus: var(--input-focus);
+  --header-search-text: var(--text);
+  --header-search-border: var(--default-active);
+  --header-search-focus-border: var(--primary);
+  --header-search-button: var(--default);
+  --header-search-button-hover: var(--default-hover);
+  --header-search-button-active: var(--default-active);
+  --header-search-button-text: var(--text-secondary);
+  --header-search-focus-button: var(--primary);
+  --header-search-focus-button-hover: var(--primary-hover);
+  --header-search-focus-button-active: var(--primary-active);
+  --header-search-focus-button-text: var(--text-button);
+  --header-burger: var(--text-header);
+  --header-burger-hover: var(--text-primary);
+  --header-burger-active: var(--text-text);
+  --header-burger-background: var(--header);
+  --header-burger-background-hover: var(--default-hover);
+  --header-burger-background-active: var(--default-active);
+  --header-button: var(--primary);
+  --header-button-hover: var(--primary);
+  --header-button-active: var(--primary);
+  --header-button-text: var(--text);
+
+  /* Menu */
+  --menu: var(--background);
+
+  /* Components */
+  --input: 11, 12, 13;
+  --input-focus: 0, 0, 0;
+  --border: 26, 29, 34;
+}
