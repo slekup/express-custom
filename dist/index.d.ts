@@ -202,7 +202,8 @@ interface EndpointResponse {
 interface ExportedEndpoint {
     name: string;
     description: string;
-    path: `/${string}`;
+    path: string;
+    method: RequestMethod;
     notes: EndpointNote[];
     params: Schema;
     query: Schema;
@@ -398,7 +399,7 @@ interface ExportedRouter {
 declare class RouterBuilder {
     raw: Router;
     private path;
-    private name;
+    private defaultCategory;
     private routes;
     private middlewares;
     private afterwares;
@@ -407,11 +408,11 @@ declare class RouterBuilder {
      */
     constructor();
     /**
-     * Sets the name of the route.
-     * @param name The name of the route.
+     * Sets the default category of the route.
+     * @param defaultCategory The default category of the route.
      * @returns The router builder.
      */
-    setName(name: string): this;
+    setDefaultCategory(defaultCategory: string): this;
     /**
      * Sets the path of the route.
      * @param path The path to set the router to.
@@ -432,11 +433,10 @@ declare class RouterBuilder {
     addAfterware(afterware: Middleware): this;
     /**
      * Uses a router.
-     * @param path The path to use.
      * @param route The router to use.
      * @returns The router builder.
      */
-    addRoute(path: string, route: RouteBuilder): this;
+    addRoute(route: RouteBuilder): this;
     /**
      * Gets the express router.
      * @returns The express router.
