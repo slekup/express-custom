@@ -72,23 +72,17 @@ export default class RouterBuilder {
 
   /**
    * Uses a router.
-   * @param path The path to use.
    * @param route The router to use.
    * @returns The router builder.
    */
-  public addRoute(path: string, route: RouteBuilder): this {
-    if (!path) return this;
-
+  public addRoute(route: RouteBuilder): this {
     this.routes.push(route);
-
-    // Replace multiple slashes with a single slash.
-    const doubleSlashRegex = /\/+/g;
 
     const routeAccess = route.access();
 
     // Use the router.
     this.raw.use(
-      path.replace(doubleSlashRegex, '/'),
+      '/',
       ...routeAccess.middlewares,
       route.raw,
       ...routeAccess.afterwares
