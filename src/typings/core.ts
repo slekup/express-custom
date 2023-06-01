@@ -6,4 +6,10 @@ export type Middleware = (
   next: NextFunction
 ) => void;
 
-export type PathType = `/${string}`;
+export type PathString = `/${string}`;
+
+export interface RateLimit {
+  statusCode: number;
+  window: number;
+  max: number;
+}

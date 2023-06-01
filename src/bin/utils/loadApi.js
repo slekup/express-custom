@@ -7,31 +7,14 @@ const { createRequire } = require('module');
 const { cli } = require('./log');
 
 /**
- * Load the router file.
+ * Load the API file.
  */
 module.exports = async (fileName) => {
   const timeStart = Date.now();
-
-  // If a file name is not specified, exit
-  if (!fileName) {
-    console.error(`${cli.err} No input file specified`);
-    process.exit(1);
-  }
-
-  // Check if the file is a .js or .ts file
-  if (!['.js', '.ts'].includes(fileName.slice(-3))) {
-    console.error(`${cli.err} Input file must be a .js or .ts file`);
-    process.exit(1);
-  }
-
-  // Check if the file exists
-  if (!fs.existsSync(path.resolve(process.cwd(), fileName))) {
-    console.error(`${cli.err} Input file does not exist`);
-    process.exit(1);
-  }
+  let apiData;
 
   try {
-    // Load the file that exports the router
+    // Load the file that exports the API
     const filePath = path.resolve(process.cwd(), fileName).toString();
 
     // Get the directory containing the tsconfig.json file
@@ -87,19 +70,43 @@ module.exports = async (fileName) => {
       },
     });
 
-    console.log(`${cli.inf} Loading router file`);
+    console.log(`${cli.inf} Loading API file`);
 
     const requireModule = createRequire(path.resolve(__dirname, __filename));
     const module = requireModule(filePath);
-    const router = module.default;
 
     const time = Date.now() - timeStart + 'ms';
-    console.info(`${cli.suc} ⚡ Loaded router file in ${time}`);
+    console.info(`${cli.suc} ⚡ Loaded API file in ${time}`);
 
-    // Return the exported routes
-    return router.export();
+    // Disable console output from the imported file
+    const originalConsoleMethods = {};
+    const noop = () => {}; // Empty function to suppress output
+
+    // Define the console methods to intercept (you can add more if needed)
+    const consoleMethods = ['log', 'info', 'warn', 'error'];
+
+    // Replace the console methods with empty functions
+    for (const method of consoleMethods) {
+      originalConsoleMethods[method] = console[method];
+      console[method] = noop;
+    }
+
+    // Access the exported API
+    const api = module.default;
+
+    // Return the exported API
+    apiData = api.export();
+
+    // Restore the original console methods
+    for (const method of consoleMethods) {
+      console[method] = originalConsoleMethods[method];
+    }
   } catch (error) {
-    console.error(`${cli.err} Failed to load router file`);
+    console.error(
+      `${cli.err} Failed to load the API file, you have errors in your code!`
+    );
     throw new Error(error);
   }
+
+  return apiData;
 };

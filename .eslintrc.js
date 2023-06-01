@@ -22,18 +22,10 @@ module.exports = {
   parserOptions: {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
-    extraFileExtensions: ['.js'],
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  ignorePatterns: [
-    '*.js',
-    '*.cjs',
-    '*.json',
-    'node_modules/',
-    'dist/',
-    'site/',
-  ],
+  ignorePatterns: ['*.js', '*.cjs', '*.json'],
   rules: {
     // Import plugin rules
     'import/first': 0, // Reports any imports that come after non-import statements

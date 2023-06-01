@@ -1,9 +1,54 @@
 /**
+ * Validate a cron expression.
+ * @param expression The cron expression to validate.
+ * @returns Whether the cron expression is valid.
+ */
+export const validateCronExpression = (expression: string): boolean => {
+  const cronExpressionRegex =
+    /^(\*|[0-9]{1,2}|\*\/[0-9]{1,2}) (\*|[0-9]{1,2}|\*\/[0-9]{1,2}) (\*|[0-9]{1,2}|\*\/[0-9]{1,2}) (\*|[0-9]{1,2}|\*\/[0-9]{1,2}) (\*|[0-9]{1,2}|\*\/[0-9]{1,2})$/;
+  return cronExpressionRegex.test(expression);
+};
+
+/**
+ * Convert a time to cron time.
+ * @param time The time to convert to cron time.
+ * @returns The converted time.
+ */
+export const timeToCronExpression = (time: string): string | null => {
+  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/; // Regular expression to validate HH:MM format
+
+  // Check if the time matches the HH:MM format
+  if (timeRegex.test(time)) {
+    const [hours, minutes] = time.split(':'); // Split the time into hours and minutes
+
+    if (!hours || !minutes) return null; // Return null if the time is invalid
+
+    // Format hours and minutes for cron time
+    const cronHours = hours === '00' ? '0' : hours.replace(/^0+/, ''); // Remove leading zeros, except for '00'
+    const cronMinutes = minutes.replace(/^0+/, ''); // Remove leading zeros
+
+    return `${cronMinutes} ${cronHours} * * *`; // Return the cron time format
+  }
+
+  return null; // Return null if the time is invalid
+};
+
+/**
+ * Validate a time.
+ * @param time The time to validate.
+ * @returns Whether the time is valid.
+ */
+export const validateTime = (time: string): boolean => {
+  const timeRegex = /^(?:[01]\d|2[0-3]):(?:00|30)$/; // Regular expression to validate HH:MM format
+  return timeRegex.test(time);
+};
+
+/**
  * Tests if a string is empty.
  * @param str The string to test.
  * @returns True if the string is empty, false otherwise.
  */
-export const email = (str: string): boolean => {
+export const validateEmail = (str: string): boolean => {
   // /^\S+@\S+\.\S+$/
   // /\S+@\S+\.\S+/
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -15,7 +60,7 @@ export const email = (str: string): boolean => {
  * @param str The username to test.
  * @returns True if the username is valid, false otherwise.
  */
-export const username = (str: string): boolean => {
+export const validateUsername = (str: string): boolean => {
   const usernameRegex = /^[a-zA-Z0-9_]{3,16}$/;
   return usernameRegex.test(str);
 };
@@ -25,7 +70,7 @@ export const username = (str: string): boolean => {
  * @param str The password to test.
  * @returns True if the password is valid, false otherwise.
  */
-export const password = (str: string): boolean => {
+export const valiedatePassword = (str: string): boolean => {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
   return passwordRegex.test(str);
 };
@@ -35,7 +80,7 @@ export const password = (str: string): boolean => {
  * @param str The phone number to test.
  * @returns True if the phone number is valid, false otherwise.
  */
-export const phone = (str: string): boolean => {
+export const validatePhoneNumber = (str: string): boolean => {
   const phoneNumberRegex = /^\d{10}$/;
   return phoneNumberRegex.test(str);
 };
@@ -45,7 +90,7 @@ export const phone = (str: string): boolean => {
  * @param str The IPv4 address to test.
  * @returns True if the IPv4 address is valid, false otherwise.
  */
-export const ipv4Address = (str: string): boolean => {
+export const validateIpv4Address = (str: string): boolean => {
   // ^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$ - https://stackoverflow.com/questions/5284147/validating-ipv4-addresses-with-regexp
   const ipv4AddressRegex =
     /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}$/;
@@ -57,7 +102,7 @@ export const ipv4Address = (str: string): boolean => {
  * @param color The color string to test.
  * @returns True if the color is valid, false otherwise.
  */
-export const color = (color: string): boolean => {
+export const validateColor = (color: string): boolean => {
   // Remove any whitespace from the input
   const cleanedColor = color.replace(/\s/g, '');
 
@@ -75,7 +120,7 @@ export const color = (color: string): boolean => {
  * @param url The url to test.
  * @returns True if the url is valid, false otherwise.
  */
-export const url = (url: string): boolean => {
+export const validateUrl = (url: string): boolean => {
   // Check if the url is valid
   try {
     const urlObject = new URL(url);
@@ -90,7 +135,7 @@ export const url = (url: string): boolean => {
  * @param image The image to test.
  * @returns True if the image is valid, false otherwise.
  */
-export const image = (image: string): boolean => {
+export const validateImage = (image: string): boolean => {
   // Check if the image is valid
   try {
     const imageObject = new URL(image);

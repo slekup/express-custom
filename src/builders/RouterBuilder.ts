@@ -1,73 +1,34 @@
 import { Router } from 'express';
 
-import { Middleware, PathType } from '@typings/core';
-import logger from '@utils/logger';
+import { Middleware, PathString, RateLimit } from '@typings/core';
+import BaseAppBuilder from './Base/BaseAppBuilder';
 import RouteBuilder, { ExportedRoute } from './RouteBuilder';
 
-interface ExportedRouter {
+export interface ExportedRouter {
   name: string;
-  path: PathType;
+  path: PathString;
   routes: ExportedRoute[];
 }
 
 /**
  * The router builder class.
  */
-export default class RouterBuilder {
-  public raw: Router = Router();
-  private path: `/${string}`;
-  private defaultCategory: string;
-  private routes: RouteBuilder[] = [];
-  private middlewares: Middleware[] = [];
-  private afterwares: Middleware[] = [];
+export default class RouterBuilder extends BaseAppBuilder {
+  private path: PathString;
+  private name: string;
+  private routes: RouteBuilder[];
 
   /**
    * Creates a new router builder.
+   * @param params The router parameters.
+   * @param params.path The path of the router.
+   * @param params.name The name of the router.
    */
-  public constructor() {
-    // this.raw = Router();
-    this.path = '/';
-    this.defaultCategory = 'No default category';
-  }
-
-  /**
-   * Sets the default category of the route.
-   * @param defaultCategory The default category of the route.
-   * @returns The router builder.
-   */
-  public setDefaultCategory(defaultCategory: string): this {
-    this.defaultCategory = defaultCategory;
-    return this;
-  }
-
-  /**
-   * Sets the path of the route.
-   * @param path The path to set the router to.
-   * @returns The router builder.
-   */
-  public setPath(path: PathType): this {
+  public constructor({ path, name }: { path: PathString; name: string }) {
+    super();
     this.path = path;
-    return this;
-  }
-
-  /**
-   * Adds a middleware to the route. Add it before adding the route.
-   * @param middleware The middleware to add to the route.
-   * @returns The router builder.
-   */
-  public addMiddleware(middleware: Middleware): this {
-    this.middlewares.push(middleware);
-    return this;
-  }
-
-  /**
-   * Adds an afterware to the route. Add it before adding the route.
-   * @param afterware The afterware to add to the route.
-   * @returns The router builder.
-   */
-  public addAfterware(afterware: Middleware): this {
-    this.afterwares.push(afterware);
-    return this;
+    this.name = name;
+    this.routes = [];
   }
 
   /**
@@ -77,68 +38,41 @@ export default class RouterBuilder {
    */
   public addRoute(route: RouteBuilder): this {
     this.routes.push(route);
-
-    const routeAccess = route.access();
-
-    // Use the router.
-    this.raw.use(
-      '/',
-      ...routeAccess.middlewares,
-      route.raw,
-      ...routeAccess.afterwares
-    );
-
+    this.raw.use(this.path, route.raw);
     return this;
   }
-
-  /**
-   * Gets the express router.
-   * @returns The express router.
-   */
-  public getRouter = (): Router => this.raw;
 
   /**
    * Exports the routes and endpoints data.
    * @returns The exported data.
    */
-  public export(): ExportedRouter {
+  public export(): Readonly<ExportedRouter> {
     return {
-      name: this.defaultCategory,
+      name: this.name,
       path: this.path,
       routes: this.routes.map((route) => route.export()),
     };
   }
 
   /**
-   * Generates the site with next.js.
-   * @returns The router builder.
+   * Returns the router values.
+   * @returns The router values.
    */
-  public async generateSite(): Promise<this> {
-    /* 
-    - somewhere the nextjs website is defined, maybe /site
-    - the export method exports the route data to a JSON file and copies it to the site folder
-    - the export method cds into the folder and runs the nessesary commands to build the project
-    - the site reads the json files and uses it to build the pages
-    */
-
-    logger.info('Generating site...');
-
-    /**
-     * Artificial await.
-     * @returns The artificial await.
-     */
-    const artificialAwait = (): Promise<unknown> =>
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(null);
-        }, 1000);
-      });
-
-    await artificialAwait();
-
-    // logger.info('Site generated.');
-    logger.error('Site generation has not been implemented yet.');
-
-    return this;
+  public values(): Readonly<{
+    raw: Router;
+    ratelimit?: Partial<RateLimit>;
+    path: `/${string}`;
+    defaultCategory: string;
+    routes: RouteBuilder[];
+    middlewares: Middleware[];
+  }> {
+    return {
+      raw: this.raw,
+      ratelimit: this.ratelimit,
+      path: this.path,
+      defaultCategory: this.name,
+      routes: this.routes,
+      middlewares: this.middlewares,
+    };
   }
 }
