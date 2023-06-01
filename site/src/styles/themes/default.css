@@ -1,8 +1,8 @@
 :root {
   /* Primary */
-  --primary: 0, 112, 243;
-  --primary-hover: 53, 145, 255;
-  --primary-active: 0, 96, 213;
+  --primary: 52, 101, 254;
+  --primary-hover: 82, 125, 254;
+  --primary-active: 133, 164, 254;
   --default: 231, 234, 237;
   --default-hover: 217, 221, 225;
   --default-active: 193, 199, 206;
@@ -15,7 +15,7 @@
   --text-button: 255, 255, 255;
 
   /* Elements */
-  --background: 245, 245, 245;
+  --background: 255, 255, 255;
   --shade: 255, 255, 255;
   --shade-2: 255, 255, 255;
   --tooltip: 29, 32, 43;
@@ -51,10 +51,11 @@
   --header-button-text: var(--text);
 
   /* Menu */
-  --menu: 255, 255, 255;
+  /* 245, 245, 245 */
+  --menu: var(--background);
 
   /* System */
-  --link: 0, 112, 239;
+  --link: var(--primary);
   --warning: 253, 182, 34;
   --warning-hover: 254, 207, 112;
   --warning-active: 251, 170, 2;

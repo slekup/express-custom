@@ -37,7 +37,7 @@ const exportRoutes = async (routes) => {
   try {
     // Write the routes to a JSON file in the site directory
     await fs.promises.writeFile(
-      path.join(__dirname, '../../site/routes.json'),
+      path.join(__dirname, '../../site/api.json'),
       JSON.stringify(routes, null, 2)
     );
 
@@ -155,10 +155,10 @@ const copySite = async () => {
     // Copy the site to the ouput directory
     await promisify(fs.copy)(path.join(__dirname, '../site/out'), targetPath);
 
-    // Copy the routes.json file to the out directory
+    // Copy the api.json file to the out directory
     await fs.promises.copyFile(
-      path.join(__dirname, '../site/routes.json'),
-      path.join(__dirname, '../site/out/routes.json')
+      path.join(__dirname, '../site/api.json'),
+      path.join(__dirname, '../site/out/api.json')
     );
 
     const time = Date.now() - timeStart + 'ms';
