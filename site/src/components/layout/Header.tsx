@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
 import {
   FaDiscord,
@@ -18,12 +19,14 @@ import { IconType } from 'react-icons/lib';
 import { MdEmail } from 'react-icons/md';
 import { RiInstagramFill } from 'react-icons/ri';
 import { Button } from '..';
+import Menu from './Menu/Menu';
 
 interface Props {
   apiData: IApiData;
 }
 
 export default function Header({ apiData }: Props) {
+  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const pathname = usePathname();
 
   const urlSplit = pathname.split('/');
@@ -45,14 +48,30 @@ export default function Header({ apiData }: Props) {
     },
   ];
 
+  const openMenu = () => {
+    document.documentElement.style.overflowY = 'none';
+    document.body.style.overflowY = 'none';
+    setMobileOpen(true);
+  };
+
+  const closeMenu = () => {
+    document.documentElement.style.overflowY = 'auto';
+    document.body.style.overflowY = 'auto';
+    setMobileOpen(false);
+  };
+
   return (
     <>
-      <div className="h-14 relative"></div>
+      <Menu apiData={apiData} mobileOpen={mobileOpen} closeMenu={closeMenu} />
 
-      <div className="h-14 bg-header no-select z-50 fixed top-0 left-0 right-0 border-header-border border-b text-header-text">
+      <div className="bg-header no-select border-header-border text-header-text fixed left-0 right-0 top-0 z-50 h-14 border-b">
         <div className="flex justify-start">
-          <div className="min-w-72 max-w-72">
-            <Link href="/" className="flex mx-4">
+          <button className="" onClick={() => openMenu()}>
+            Menu
+          </button>
+
+          <div className="lg:min-w-72 lg:max-w-72">
+            <Link href="/" className="mx-4 flex">
               <div className="my-2 mr-3 h-9 w-9">
                 {apiData.logo ? (
                   <Image
@@ -71,7 +90,7 @@ export default function Header({ apiData }: Props) {
                 )}
               </div>
 
-              <h1 className="font-bold text-2xl py-3.5 rounded-lg text-text-primary">
+              <h1 className="text-text-primary rounded-lg py-3.5 text-2xl font-bold">
                 {apiData.name}
               </h1>
             </Link>
@@ -82,7 +101,7 @@ export default function Header({ apiData }: Props) {
               <Link
                 key={index}
                 href={link.url}
-                className={`my-4 mr-5 font-medium ${
+                className={`my-4 font-medium ${
                   basePath === link.url ? 'text-primary' : 'text-text-faint'
                 }`}
               >
@@ -91,7 +110,7 @@ export default function Header({ apiData }: Props) {
             ))}
           </div>
 
-          <div className="ml-auto flex">
+          <div className="ml-auto mr-1.5 flex">
             {apiData.socials
               ? (
                   [
@@ -146,7 +165,7 @@ export default function Header({ apiData }: Props) {
                       href={social}
                       target="_blank"
                       key={index}
-                      className={`text-white p-1.5 rounded-3xl my-3 h-8 w-8 mr-2 ${styles}`}
+                      className={`my-3 mr-1.5 h-8 w-8 rounded-3xl p-1.5 text-white ${styles}`}
                     >
                       <Icon className="h-5 w-5" />
                     </a>
@@ -154,11 +173,11 @@ export default function Header({ apiData }: Props) {
                 })
               : null}
 
-            <div className="py-3 pr-3">
+            {/* <div className="py-3">
               <Button size="sm" style="default">
                 GitHub
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
