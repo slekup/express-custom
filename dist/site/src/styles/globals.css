@@ -5,6 +5,10 @@
 @import './themes.css';
 @import './fonts/fonts.css';
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   font-family: 'Mukta', 'Nunito Sans', 'Fira Code', Arial, sans-serif;

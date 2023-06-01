@@ -12,16 +12,16 @@
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
       "@builders/*": [
-        "builders/*"
+        "src/builders/*"
       ],
       "@typings/*": [
-        "typings/*"
+        "src/typings/*"
       ],
       "@utils/*": [
-        "utils/*"
+        "src/utils/*"
       ]
     },
   },

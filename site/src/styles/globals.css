@@ -130,10 +130,10 @@ th {
 }
 
 td {
-  @apply px-3 py-2 text-sm font-medium text-text;
+  @apply px-3 py-2 text-sm font-medium text-text-primary;
 }
 
 /* Code */
 .code {
-  @apply text-[14px] py-0.5 px-1.5 mx-0 rounded-sm bg-default-hover text-text font-semibold cursor-auto transition duration-200;
+  @apply text-[14px] py-0.5 px-1.5 mx-0 rounded-sm bg-default-hover text-text-primary font-semibold cursor-auto transition duration-200;
 }

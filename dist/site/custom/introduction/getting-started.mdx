@@ -1,0 +1,114 @@
+---
+title: 'Getting Started'
+excerpt: 'Get started using Slekup API. This guide will walk you through the process of creating an API key and using it to make requests.'
+position: 1
+---
+
+<Alert
+  type="warning"
+  text="Both the API and documentation are a work in progress. This is a beta version!"
+/>
+
+# Introduction
+
+Slekup API is a RESTful API that allows you to do a wide range of things on the web. Here is a few:
+
+- Take screenshots of and analyse websites.
+- Get information about an IP address, social media account, domain, and more.
+- Manipulate images with custom filters/effects and use presets.
+- Analyse large sets of data.
+- AI text and image generation.
+- Interact with this website programmatically.
+- And more!
+
+All you need to do to get started is create an application and use the API key to make requests. By default, you will have 50,000 free API requests per month, per application (subject to change). If you need more, you can subscribe to a <Link href="/membership">membership plan</Link> to get access to more features and higher rate limits.
+
+As of writing this, the code for the API is not open source. However, if I do plan on open sourcing it in the future, I will make an annoucement in the <Discord/>.
+
+## Bugs and Feature Requests
+
+If you find a bug or have a feature request, feel free to join the <Discord/>.
+
+## Terminal
+
+On the right side of the header (top right of your screen), you will see a button with a terminal icon. This will open the custom terminal for this website. This terminal provides several commands that can be useful for you as a developer.
+
+There are commands for testing the API and requesting information. To get started with the terminal, type `help` to see all available commands. There is also additional documentation on how to make the most of the terminal in the <Link href="/help/website/terminal">help section</Link>.
+
+<TerminalButton />
+
+# Prerequisites
+
+Before getting started with Slekup API, there are a few prerequisites. These include the following:
+
+- Having developer mode enabled
+- Create an API key
+
+## Developer Settings
+
+<Alert
+  type="info"
+  text="First ensure that you have created a slekup.com account and are authenticated."
+/>
+
+Once you have done that, you can follow these steps to enable developer mode:
+
+1. Open your <Link href="">Developer Settings</Link>
+2. Enable Developer Mode
+
+## Creating an API key
+
+1. Go to your <Link href="">Developer Dashboard</Link>
+2. Click on the "New Application" button
+3. Give your application a name
+
+Once your application is created, you can copy your application's API key and start using Slekup API.
+
+It is recommended that you keep this API key private and somewhere safe. If you believe your API key has been compromised, you can regenerate it by clicking the "Regenerate" button. This will invalidate your old API key and generate a new one.
+
+# All ready!
+
+You can test your API key by using the terminal. Type `api get /test` to test your API key. If you see a success message, you're all set!
+
+Now you're all set to make applications using the Slekup API! You can refer to the documentation here to learn more about the API and how to use it.
+
+Your next steps would be to familiarize yourself with the <Link href="/dev/docs/rate-limits">Rate Limits</Link> and <Link href="/dev/docs/permissions">Permissions</Link>.
+
+If you have any questions, feel free to join the <Discord/> and ask away!
+
+## Frequently Asked Questions
+
+<FAQ
+  data={[
+    {
+      question: 'Will Slekup API be free forever',
+      answer: (
+        <>
+          Yes, that is the plan. However, there are limitations to the free
+          tier. But, by subscribing to a{' '}
+          <Link href="/membership">membership plan</Link>, you can get access to
+          more features and higher rate limits.
+        </>
+      ),
+    },
+    {
+      question: 'The API open source?',
+      answer: (
+        <>
+          Not at the moment. However, if I do plan on open sourcing it in the
+          future. If I do, I will make an announcement in the <Discord />.
+        </>
+      ),
+    },
+    {
+      question: 'What about uptime?',
+      answer: (
+        <>
+          So far, the API has been reliably online 100% of the time. The only
+          time it will go offline is during maintenance. Any announcements
+          regarding uptime will be made in the <Discord />.
+        </>
+      ),
+    },
+  ]}
+/>

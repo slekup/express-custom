@@ -1,0 +1,54 @@
+---
+title: 'Rate Limits'
+excerpt: 'Rate limits for the API'
+position: 2
+---
+
+Rate limits are applied to the API to prevent spam, abuse and overloading the servers. Limits are applied per route and globally, per user, per IP address, and per API key.
+
+<Alert
+  type="info"
+  text="Because rate limits depend on a variety of factors and are subject to change, rate limits should not be hard coded into your application. Instead, your application should parse response headers to prevent hitting the limit, and to response accordingly in case you do."
+/>
+
+# Header Format
+
+<Alert
+  type="info"
+  text="More rate limit information is planned to be added in the future."
+/>
+
+For each request, the following headers are returned:
+
+```yaml
+RateLimit-Limit: 20
+RateLimit-Remaining: 19
+RateLimit-Reset: 9
+```
+
+- `RateLimit-Limit` - The total number of requests allowed per window.
+- `RateLimit-Remaining` - The number of requests remaining in the current window.
+- `RateLimit-Reset` - The number of seconds until the current window resets.
+
+# Exceeding a Rate Limit
+
+<Alert type="error" text="This section is not complete." />
+
+In the event that you exceed a rate limit, a `429 Too Many Requests` response will be returned. Your application should parse the `RateLimit-Reset` header and wait the specified number of seconds before retrying the request.
+
+## Example Exceeded Rate Limit Response
+
+```json
+{
+  "error": {
+    "code": 429,
+    "message": "Too many requests, please try again later."
+  }
+}
+```
+
+# Global Rate Limit
+
+<Alert type="error" text="This section is not complete." />
+
+All applications are limited to 10 requests per second, per IP address. This limit is applied to all routes. If no API key is provided, the limit is applied to the IP address of the user.

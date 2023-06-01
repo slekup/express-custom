@@ -1,28 +1,29 @@
-import React from 'react';
-
-import { RoutesData } from 'src/typings/core';
+import { IApiData } from 'src/typings/core';
 import MenuSection from './MenuSection';
 
 interface Props {
-  data: RoutesData;
+  data: IApiData;
 }
 
-const Menu = ({ data }: Props) => {
+export default function Menu({ data }: Props) {
+  const size = 'min-w-72 max-w-72';
   return (
     <>
-      <div className="relative min-w-60 max-w-60"></div>
+      <div className={`relative ${size}`}></div>
 
-      <div className="fixed top-14 left-0 bottom-0 border-r border-border min-w-60 max-w-60 bg-shade p-3 py-5">
+      <div
+        className={`fixed no-select top-14 menu overflow-y-auto overflow-x-hidden hover-thin-scroll pb-20 left-0 bottom-0 border-r border-border ${size} bg-shade px-4 py-5`}
+      >
         <MenuSection
           data={{
-            name: 'Primary',
-            routes: [],
+            router: {
+              name: 'Primary',
+              routes: [],
+            },
           }}
         />
         <MenuSection data={data} />
       </div>
     </>
   );
-};
-
-export default Menu;
+}
