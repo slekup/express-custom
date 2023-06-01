@@ -22,6 +22,7 @@ export interface SchemaCheck {
 export interface BaseSchema<T = unknown> {
   description: string;
   required: boolean;
+  type: SchemaTypes;
   options?: SchemaOption[];
   enum?: unknown[];
   items?: SchemaItems;
@@ -32,7 +33,7 @@ export interface BaseSchema<T = unknown> {
   schema?: `{${string}}`;
 }
 
-export type Schema = BaseSchema<Schema>;
+export type Schema = Record<string, BaseSchema<Schema>>;
 
 type StatusCode =
   | 200
@@ -70,6 +71,12 @@ type RequestMethod =
   | 'TRACE'
   | 'CONNECT';
 
+interface RateLimit {
+  statusCode?: number;
+  window?: number;
+  max?: number;
+}
+
 interface Endpoint {
   name: string;
   description: string;
@@ -80,6 +87,7 @@ interface Endpoint {
   queries: Schema;
   body: Schema;
   responses: EndpointResponse[];
+  rateLimit?: RateLimit;
 }
 
 export interface Route {
@@ -88,17 +96,41 @@ export interface Route {
   description: string;
   path: string;
   endpoints: Endpoint[];
+  rateLimit?: RateLimit;
 }
 
-export interface RoutesData {
+export interface StructureField {
   name: string;
-  routes: Route[];
+  description: string;
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  required?: boolean;
+  schema?: string;
+  option?: string;
 }
 
-export interface CustomDocs {
-  docs: {
-    title: string;
-    excerpt: string;
-    content: string;
+export interface Structure {
+  name: string;
+  type: 'schema' | 'option';
+  fields: StructureField[];
+}
+
+export interface IApiData {
+  name: string;
+  description: string;
+  baseUrl: string;
+  port: number;
+  logo: string;
+  structures?: Structure[];
+  rateLimit?: RateLimit;
+  custom?: boolean;
+  versions: {
+    version: number;
+    rateLimit?: RateLimit;
+    routes: {
+      name: string;
+      path: string;
+      rateLimit?: RateLimit;
+      routes: Route[];
+    }[];
   }[];
 }

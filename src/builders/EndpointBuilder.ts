@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-
-import { PathType } from '@typings/core';
-import { Schema, logger, validate } from '@utils/index';
-import { withErrorHandling } from '@utils/middleware';
 import { ClientSession } from 'mongoose';
-import SchemaBuilder from './SchemaBuilder';
+
+import { PathString, RateLimit } from '@typings/core';
+import { logger } from '@utils/index';
+import { withErrorHandling } from '@utils/middleware';
+import SchemaBuilder, { ExportedSchema } from './SchemaBuilder';
 
 type RequestMethod =
   | 'GET'
@@ -50,9 +50,9 @@ export interface ExportedEndpoint {
   path: string;
   method: RequestMethod;
   notes: EndpointNote[];
-  params: Schema;
-  query: Schema;
-  body: Schema;
+  params: ExportedSchema;
+  queries: ExportedSchema;
+  body: ExportedSchema;
   responses: EndpointResponse[];
 }
 
@@ -63,26 +63,44 @@ export default class EndpointBuilder {
   public disabled: boolean;
   public name: string;
   public description: string;
-  public path: PathType;
+  public path: PathString;
   public method: RequestMethod;
   public notes: EndpointNote[];
-  public paramSchema?: Schema;
-  public querySchema?: Schema;
-  public bodySchema?: Schema;
+  public paramSchema?: SchemaBuilder;
+  public querySchema?: SchemaBuilder;
+  public bodySchema?: SchemaBuilder;
   public responses: EndpointResponse[];
   public controller: (req: Request, res: Response, next: NextFunction) => void;
+  public ratelimit?: Partial<RateLimit>;
 
   /**
    * Creates a new endpoint.
+   * @param options The options for the endpoint.
+   * @param options.disabled The disabled state of the endpoint.
+   * @param options.name The name of the endpoint.
+   * @param options.description The description of the endpoint.
+   * @param options.path The path of the endpoint.
+   * @param options.method The method of the endpoint.
    */
-  public constructor() {
-    this.disabled = false;
-    this.name = 'Name not provided';
-    this.description = 'Description not provided';
-    this.path = '/';
-    this.method = 'GET';
+  public constructor({
+    disabled,
+    name,
+    description,
+    path,
+    method,
+  }: {
+    disabled?: boolean;
+    name: string;
+    description: string;
+    path: PathString;
+    method: RequestMethod;
+  }) {
+    this.disabled = disabled ?? false;
+    this.name = name;
+    this.description = description;
+    this.path = path;
+    this.method = method;
     this.notes = [];
-
     this.responses = [];
 
     /**
@@ -91,56 +109,6 @@ export default class EndpointBuilder {
     this.controller = () => {
       throw new Error('Controller not set');
     };
-  }
-
-  /**
-   * Sets the disabled state of the endpoint.
-   * @param disabled The disabled state of the endpoint.
-   * @returns The endpoint builder.
-   */
-  public setDisabled(disabled: boolean): this {
-    this.disabled = disabled;
-    return this;
-  }
-
-  /**
-   * Sets the name of the endpoint.
-   * @param name The name of the endpoint.
-   * @returns The endpoint builder.
-   */
-  public setName(name: string): this {
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * Sets the description of the endpoint.
-   * @param description The description of the endpoint.
-   * @returns The endpoint builder.
-   */
-  public setDescription(description: string): this {
-    this.description = description;
-    return this;
-  }
-
-  /**
-   * Sets the path of the endpoint.
-   * @param path The path of the endpoint.
-   * @returns The endpoint builder.
-   */
-  public setPath(path: PathType): this {
-    this.path = path;
-    return this;
-  }
-
-  /**
-   * Sets the method of the endpoint.
-   * @param method The method of the endpoint.
-   * @returns The endpoint builder.
-   */
-  public setMethod(method: RequestMethod): this {
-    this.method = method;
-    return this;
   }
 
   /**
@@ -161,7 +129,7 @@ export default class EndpointBuilder {
   public setParamSchema(callback: (schema: SchemaBuilder) => void): this {
     const schema = new SchemaBuilder();
     callback(schema);
-    this.paramSchema = schema.schema;
+    this.paramSchema = schema;
     return this;
   }
 
@@ -173,7 +141,7 @@ export default class EndpointBuilder {
   public setQuerySchema(callback: (schema: SchemaBuilder) => void): this {
     const schema = new SchemaBuilder();
     callback(schema);
-    this.querySchema = schema.schema;
+    this.querySchema = schema;
     return this;
   }
 
@@ -185,7 +153,7 @@ export default class EndpointBuilder {
   public setBodySchema(callback: (schema: SchemaBuilder) => void): this {
     const schema = new SchemaBuilder();
     callback(schema);
-    this.bodySchema = schema.schema;
+    this.bodySchema = schema;
     return this;
   }
 
@@ -232,19 +200,18 @@ export default class EndpointBuilder {
         // Validate the request
         if (
           this.paramSchema &&
-          (await validate(req.params, this.paramSchema, res))
+          (await this.paramSchema.validate(req.params, res))
         )
           return;
         if (
           this.querySchema &&
-          (await validate(req.query, this.querySchema, res))
+          (await this.querySchema.validate(req.query, res))
         )
           return;
         if (
           this.bodySchema &&
-          (await validate(
+          (await this.bodySchema.validate(
             req.body as Record<string, unknown>,
-            this.bodySchema,
             res
           ))
         )
@@ -262,16 +229,16 @@ export default class EndpointBuilder {
    * Exports the endpoint.
    * @returns The exported endpoint.
    */
-  public export(): ExportedEndpoint {
+  public export(): Readonly<ExportedEndpoint> {
     return {
       name: this.name,
       description: this.description,
       path: this.path === '/' ? '' : this.path,
       method: this.method,
       notes: this.notes,
-      params: this.paramSchema ?? {},
-      query: this.querySchema ?? {},
-      body: this.bodySchema ?? {},
+      params: this.paramSchema ? this.paramSchema.export() : {},
+      queries: this.querySchema ? this.querySchema.export() : {},
+      body: this.bodySchema ? this.bodySchema.export() : {},
       responses: this.responses,
     };
   }

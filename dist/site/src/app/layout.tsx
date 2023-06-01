@@ -1,10 +1,11 @@
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Menu from '@components/layout/Menu/Menu';
+import Providers from '@components/layout/Providers';
+import ApiData from '@utils/classes/ApiData';
 
-import { Providers } from '@components/layout/Providers';
+import '@styles/code-dark.css';
 import '@styles/globals.css';
-import getRoutes from '@utils/getRoutes';
 
 export const metadata = {
   title: 'Create Next App',
@@ -16,13 +17,14 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const data = await getRoutes();
+  const apiData = new ApiData();
+  const data = await apiData.fetch();
 
   return (
     <html lang="en">
       <body>
         <Providers>
-          <Header />
+          <Header data={data} />
           <div className="flex">
             <Menu data={data} />
             <div className="flex-grow">

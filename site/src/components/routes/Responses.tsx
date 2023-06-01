@@ -11,7 +11,7 @@ interface Props {
   index: number;
 }
 
-const Responses = ({ responses, index }: Props) => {
+export default function Responses({ responses, index }: Props) {
   const [showResponses, setShowResponses] = useState<number[]>([]);
 
   return (
@@ -19,15 +19,17 @@ const Responses = ({ responses, index }: Props) => {
       <button
         className="text-xs text-text-primary py-1 px-2 rounded-md bg-default hover:bg-default-hover active:bg-default-active flex active:cursor-wait"
         onClick={() => {
-          if (showResponses.some((i) => i === index))
-            setShowResponses(showResponses.filter((i) => i !== index));
+          if (showResponses.some((responseIndex) => responseIndex === index))
+            setShowResponses(
+              showResponses.filter((responseIndex) => responseIndex !== index)
+            );
           else setShowResponses([...showResponses, index]);
         }}
       >
         <span>Show Responses ({responses.length})</span>
         <HiChevronDown
           className={`ml-1 mt-0.5 h-4 w-4 transition duration-300 ${
-            showResponses.includes(index) && 'rotate-180'
+            showResponses.includes(index) ? 'rotate-180' : ''
           }`}
         />
       </button>
@@ -52,6 +54,4 @@ const Responses = ({ responses, index }: Props) => {
       </div>
     </div>
   );
-};
-
-export default Responses;
+}

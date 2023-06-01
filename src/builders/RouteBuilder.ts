@@ -1,85 +1,46 @@
 import { Router } from 'express';
 
-import { Middleware, PathType } from '@typings/core';
+import { PathString } from '@typings/core';
+import BaseAppBuilder from './Base/BaseAppBuilder';
 import EndpointBuilder, { ExportedEndpoint } from './EndpointBuilder';
 
 export interface ExportedRoute {
   name: string;
   description: string;
-  path: PathType;
+  path: PathString;
   endpoints: ExportedEndpoint[];
 }
 
 /**
  * The route builder class.
  */
-export default class RouteBuilder {
+export default class RouteBuilder extends BaseAppBuilder {
   public raw: Router = Router();
-  private path: PathType;
+  private path: PathString;
   private name: string;
   private description: string;
   private endpoints: EndpointBuilder[] = [];
-  private middlewares: Middleware[] = [];
-  private afterwares: Middleware[] = [];
 
   /**
    * Creates a new route.
-   * @param path The path of the route.
+   * @param options The options for the route.
+   * @param options.path The path of the route.
+   * @param options.name The name of the route.
+   * @param options.description The description of the route.
    */
-  public constructor(path?: PathType) {
-    this.path = path ?? '/';
-    this.name = 'Unnamed route';
-    this.description = 'No description provided.';
-  }
-
-  /**
-   * Sets the path of the route.
-   * @param name The name of the route.
-   * @returns The route builder.
-   */
-  public setName(name: string): this {
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * Sets the description of the route.
-   * @param description The description of the route.
-   * @returns The route builder.
-   */
-  public setDescription(description: string): this {
-    this.description = description;
-    return this;
-  }
-
-  /**
-   * Sets the path of the route.
-   * @param path The path to set the router to.
-   * @returns The router builder.
-   */
-  public setPath(path: `/${string}`): this {
+  public constructor({
+    name,
+    description,
+    path,
+  }: {
+    name: string;
+    description: string;
+    path: PathString;
+  }) {
+    super();
     this.path = path;
-    return this;
-  }
-
-  /**
-   * Adds a middleware to the route. Add it before adding the route.
-   * @param middleware The middleware to add to the route.
-   * @returns The router builder.
-   */
-  public addMiddleware(middleware: Middleware): this {
-    this.middlewares.push(middleware);
-    return this;
-  }
-
-  /**
-   * Adds an afterware to the route. Add it before adding the route.
-   * @param afterware The afterware to add to the route.
-   * @returns The router builder.
-   */
-  public addAfterware(afterware: Middleware): this {
-    this.afterwares.push(afterware);
-    return this;
+    this.name = name;
+    this.description = description;
   }
 
   /**
@@ -93,29 +54,29 @@ export default class RouteBuilder {
     // Replace multiple slashes with a single slash.
     const doubleSlashRegex = /\/+/g;
 
-    const url: string = `${this.path}${endpoint.path}`.replace(
+    const url: string = `${this.path}${endpoint.path}`.replaceAll(
       doubleSlashRegex,
       '/'
     );
 
     switch (endpoint.method) {
       case 'GET':
-        this.raw.get(url, ...this.middlewares, endpoint.controller);
+        this.raw.get(url, endpoint.controller);
         break;
       case 'POST':
-        this.raw.post(url, ...this.middlewares, endpoint.controller);
+        this.raw.post(url, endpoint.controller);
         break;
       case 'PUT':
-        this.raw.put(url, ...this.middlewares, endpoint.controller);
+        this.raw.put(url, endpoint.controller);
         break;
       case 'PATCH':
-        this.raw.patch(url, ...this.middlewares, endpoint.controller);
+        this.raw.patch(url, endpoint.controller);
         break;
       case 'DELETE':
-        this.raw.delete(url, ...this.middlewares, endpoint.controller);
+        this.raw.delete(url, endpoint.controller);
         break;
       case 'OPTIONS':
-        this.raw.options(url, ...this.middlewares, endpoint.controller);
+        this.raw.options(url, endpoint.controller);
         break;
       default:
         throw new Error(`Invalid method ${String(endpoint.method)}`);
@@ -138,21 +99,10 @@ export default class RouteBuilder {
   }
 
   /**
-   * Gets the middlewares and afterwares of the route.
-   * @returns The middlewares and afterwares of the route.
-   */
-  public access(): { middlewares: Middleware[]; afterwares: Middleware[] } {
-    return {
-      middlewares: this.middlewares,
-      afterwares: this.afterwares,
-    };
-  }
-
-  /**
    * Exports the route.
    * @returns The exported route.
    */
-  public export(): ExportedRoute {
+  public export(): Readonly<ExportedRoute> {
     return {
       name: this.name,
       description: this.description,
