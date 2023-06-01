@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -80,17 +78,17 @@ export default function MenuSection({ data: apiData }: Props) {
     for (const [keys, Icon] of matches) {
       for (const key of keys) {
         if (title.toLowerCase().includes(key)) {
-          return <Icon className="inline-block h-5 -mt-1 w-5 mr-2" />;
+          return <Icon className="-mt-1 mr-2 inline-block h-5 w-5" />;
         }
       }
     }
 
-    return <AiOutlineApi className="inline-block h-5 -mt-1 w-5 mr-2" />;
+    return <AiOutlineApi className="-mt-1 mr-2 inline-block h-5 w-5" />;
   };
 
   return (
     <>
-      <p className="text-base mx-2.5 uppercase text-text-secondary mb-1 mt-5 font-bold">
+      <p className="text-text-secondary mx-2.5 mb-1 mt-5 text-base font-bold uppercase">
         {apiData.name}
       </p>
       {apiData.links.map((link, index) =>

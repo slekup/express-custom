@@ -246,27 +246,38 @@ export default async function Route({ params }: { params: { route: string } }) {
 
   return (
     <>
-      <div className="min-h-[800px] flex-grow p-5 lg:p-10">
-        <p className="text-xs font-semibold uppercase text-text-faint">
+      <div className="min-h-[800px] max-w-5xl p-5 lg:p-10">
+        <p className="text-text-faint z-5 relative text-xs font-semibold uppercase">
           {route.category}
         </p>
-        <h1 className="mt-3 text-5xl font-bold text-text">{route.name}</h1>
-        <p className="mt-4 text-text-secondary">{route.description}</p>
-        <div className="my-5 h-px w-full bg-border"></div>
+        <h1 className="text-text mt-3 text-5xl font-bold">{route.name}</h1>
+        <p className="text-text-secondary mt-4">{route.description}</p>
 
-        <div className="relative">
+        <div className="border-border z-5 relative mt-5 flex h-12 border-b-2">
+          <p className="text-primary border-primary mr-4 h-12 border-b-2 py-3 font-medium">
+            Details
+          </p>
+          <Link
+            href="/structures"
+            className="text-text-secondary border-border hover:border-text hover:text-text-primary active:border-text-primary active:text-text mr-2 h-12 border-b-2 py-3 font-medium"
+          >
+            Structures
+          </Link>
+        </div>
+
+        <div className="relative mt-8">
           {route.endpoints.map((endpoint, index) => (
             <div
               key={index}
-              className="relative pt-20 -mt-20"
+              className="relative"
               id={routeToSlug(endpoint.name)}
             >
               {/* Name */}
-              <h1 className="text-3xl font-bold text-text-primary endpoint-header">
+              <h1 className="text-text-primary endpoint-header text-3xl font-bold">
                 {endpoint.name}
               </h1>
               {/* URL */}
-              <div className="mt-2.5 p-1.5 bg-default border border-border inline-flex rounded-3xl">
+              <div className="bg-default border-border mt-2.5 inline-flex rounded-3xl border p-1.5">
                 <p
                   className={`rounded-3xl px-3 py-1 text-sm font-medium text-white ${
                     endpointMethodStyle[endpoint.method]
@@ -274,7 +285,7 @@ export default async function Route({ params }: { params: { route: string } }) {
                 >
                   {endpoint.method}
                 </p>
-                <code className="text-lg mx-3 font-semibold text-text-primary font-['fira_code']">
+                <code className="text-text-primary mx-3 font-['fira_code'] text-lg font-semibold">
                   /{routeToSlug(route.name)}
                   {endpoint.path}
                 </code>
@@ -284,7 +295,7 @@ export default async function Route({ params }: { params: { route: string } }) {
                 <Alert key={noteIndex} type={note.type} text={note.text} />
               ))}
               {/* Description */}
-              <p className="mt-3 font-medium text-text-secondary">
+              <p className="text-text-secondary mt-3 font-medium">
                 {replaceReferenceText(endpoint.description)}
               </p>
               {/* Params */}
@@ -292,10 +303,10 @@ export default async function Route({ params }: { params: { route: string } }) {
                 <table className="text-left">
                   <thead className="uppercase">
                     <tr>
-                      <th className="px-3 py-2 text-sm font-medium text-text-secondary">
+                      <th className="text-text-secondary px-3 py-2 text-sm font-medium">
                         URL Params
                       </th>
-                      <th className="px-3 py-2 text-sm font-medium text-text-secondary">
+                      <th className="text-text-secondary px-3 py-2 text-sm font-medium">
                         Description
                       </th>
                     </tr>
@@ -304,13 +315,13 @@ export default async function Route({ params }: { params: { route: string } }) {
                     {Object.entries(endpoint.params).map(
                       ([paramKey, param], paramIndex) => (
                         <tr key={paramIndex}>
-                          <td className="px-3 py-2 text-sm font-medium text-text">
+                          <td className="text-text px-3 py-2 text-sm font-medium">
                             {paramKey}
-                            <span className="-my-1 ml-0.5 inline-block text-lg font-bold text-danger">
+                            <span className="text-danger -my-1 ml-0.5 inline-block text-lg font-bold">
                               *
                             </span>
                           </td>
-                          <td className="px-3 py-2 text-sm font-medium text-text-secondary">
+                          <td className="text-text-secondary px-3 py-2 text-sm font-medium">
                             {replaceReferenceText(param.description)}
                           </td>
                         </tr>
@@ -324,10 +335,10 @@ export default async function Route({ params }: { params: { route: string } }) {
                 <table className="text-left">
                   <thead className="uppercase">
                     <tr>
-                      <th className="px-3 py-2 text-sm font-medium text-text-secondary">
+                      <th className="text-text-secondary px-3 py-2 text-sm font-medium">
                         URL Queries
                       </th>
-                      <th className="px-3 py-2 text-sm font-medium text-text-secondary">
+                      <th className="text-text-secondary px-3 py-2 text-sm font-medium">
                         Description
                       </th>
                     </tr>
@@ -336,15 +347,15 @@ export default async function Route({ params }: { params: { route: string } }) {
                     {Object.entries(endpoint.queries).map(
                       ([queryKey, query], queryIndex) => (
                         <tr key={queryIndex}>
-                          <td className="px-3 py-2 text-sm font-medium text-text">
+                          <td className="text-text px-3 py-2 text-sm font-medium">
                             {queryKey}
                             {query.required && (
-                              <span className="-my-1 ml-0.5 inline-block text-lg font-bold text-danger">
+                              <span className="text-danger -my-1 ml-0.5 inline-block text-lg font-bold">
                                 *
                               </span>
                             )}
                           </td>
-                          <td className="px-3 py-2 text-sm font-medium text-text-secondary">
+                          <td className="text-text-secondary px-3 py-2 text-sm font-medium">
                             {replaceReferenceText(query.description)}
                           </td>
                         </tr>
@@ -358,13 +369,13 @@ export default async function Route({ params }: { params: { route: string } }) {
                 <table className="text-left">
                   <thead className="uppercase">
                     <tr>
-                      <th className="px-3 py-2 text-sm font-medium text-text-secondary">
+                      <th className="text-text-secondary px-3 py-2 text-sm font-medium">
                         JSON Body
                       </th>
-                      <th className="px-3 py-2 text-sm font-medium text-text-secondary">
+                      <th className="text-text-secondary px-3 py-2 text-sm font-medium">
                         Type
                       </th>
-                      <th className="px-3 py-2 text-sm font-medium text-text-secondary">
+                      <th className="text-text-secondary px-3 py-2 text-sm font-medium">
                         Description
                       </th>
                     </tr>
@@ -373,18 +384,18 @@ export default async function Route({ params }: { params: { route: string } }) {
                     {Object.entries(endpoint.body).map(
                       ([key, value], valueIndex) => (
                         <tr key={valueIndex}>
-                          <td className="px-3 py-2 text-sm font-medium text-text">
+                          <td className="text-text px-3 py-2 text-sm font-medium">
                             {key}
                             {value.required && (
-                              <span className="-my-1 ml-0.5 inline-block text-lg font-bold text-danger">
+                              <span className="text-danger -my-1 ml-0.5 inline-block text-lg font-bold">
                                 *
                               </span>
                             )}
                           </td>
-                          <td className="px-3 py-2 text-sm font-medium text-text">
+                          <td className="text-text px-3 py-2 text-sm font-medium">
                             {replaceReferenceText(value.type)}
                           </td>
-                          <td className="px-3 py-2 text-sm font-medium text-text-secondary">
+                          <td className="text-text-secondary px-3 py-2 text-sm font-medium">
                             {replaceReferenceText(value.description)}
                           </td>
                         </tr>
@@ -399,7 +410,7 @@ export default async function Route({ params }: { params: { route: string } }) {
                 <Responses index={index} responses={endpoint.responses} />
               )}
 
-              <div className="my-10 h-px w-full bg-border"></div>
+              <div className="bg-border my-10 h-px w-full"></div>
             </div>
           ))}
         </div>
