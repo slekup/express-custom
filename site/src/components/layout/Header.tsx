@@ -88,15 +88,15 @@ export default function Header({ apiData }: Props) {
                   <Image
                     src={apiData.logo}
                     alt="API Logo"
-                    height={80}
-                    width={80}
+                    height={50}
+                    width={50}
                   />
                 ) : (
                   <Image
                     src="/logo.png"
                     alt="API Logo"
-                    height={80}
-                    width={80}
+                    height={50}
+                    width={50}
                   />
                 )}
               </div>
