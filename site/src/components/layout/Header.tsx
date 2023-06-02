@@ -15,10 +15,10 @@ import {
 } from 'react-icons/fa';
 
 import { IApiData } from '@typings/core';
+import { BiMenu } from 'react-icons/bi';
 import { IconType } from 'react-icons/lib';
 import { MdEmail } from 'react-icons/md';
 import { RiInstagramFill } from 'react-icons/ri';
-import { Button } from '..';
 import Menu from './Menu/Menu';
 
 interface Props {
@@ -37,20 +37,23 @@ export default function Header({ apiData }: Props) {
     {
       title: 'Home',
       url: '/',
+      active: basePath === '/',
     },
     {
       title: 'Documentation',
       url: '/docs',
+      active: basePath === '/docs',
     },
     {
       title: 'Structures',
       url: '/structures',
+      active: basePath === '/structures',
     },
   ];
 
   const openMenu = () => {
-    document.documentElement.style.overflowY = 'none';
-    document.body.style.overflowY = 'none';
+    document.documentElement.style.overflowY = 'hidden';
+    document.body.style.overflowY = 'hidden';
     setMobileOpen(true);
   };
 
@@ -62,30 +65,38 @@ export default function Header({ apiData }: Props) {
 
   return (
     <>
-      <Menu apiData={apiData} mobileOpen={mobileOpen} closeMenu={closeMenu} />
+      <Menu
+        apiData={apiData}
+        mobileOpen={mobileOpen}
+        closeMenu={closeMenu}
+        links={links}
+      />
 
-      <div className="bg-header no-select border-header-border text-header-text fixed left-0 right-0 top-0 z-50 h-14 border-b">
+      <div className="bg-header no-select border-header-border text-header-text fixed left-0 right-0 top-0 z-50 h-14 w-screen border-b">
         <div className="flex justify-start">
-          <button className="" onClick={() => openMenu()}>
-            Menu
+          <button
+            className="text-text-primary hover:bg-default active:bg-default-hover my-2 ml-2 h-10 w-10 rounded-3xl p-1 lg:hidden"
+            onClick={() => openMenu()}
+          >
+            <BiMenu className="h-8 w-8" />
           </button>
 
           <div className="lg:min-w-72 lg:max-w-72">
             <Link href="/" className="mx-4 flex">
-              <div className="my-2 mr-3 h-9 w-9">
+              <div className="my-3 mr-2 h-8 w-8">
                 {apiData.logo ? (
                   <Image
                     src={apiData.logo}
                     alt="API Logo"
-                    height={100}
-                    width={100}
+                    height={80}
+                    width={80}
                   />
                 ) : (
                   <Image
                     src="/logo.png"
                     alt="API Logo"
-                    height={100}
-                    width={100}
+                    height={80}
+                    width={80}
                   />
                 )}
               </div>
@@ -96,13 +107,13 @@ export default function Header({ apiData }: Props) {
             </Link>
           </div>
 
-          <div className="flex">
+          <div className="hidden lg:flex">
             {links.map((link, index) => (
               <Link
                 key={index}
                 href={link.url}
-                className={`my-4 font-medium ${
-                  basePath === link.url ? 'text-primary' : 'text-text-faint'
+                className={`my-4 mr-5 font-medium ${
+                  link.active ? 'text-primary' : 'text-text-faint'
                 }`}
               >
                 {link.title}

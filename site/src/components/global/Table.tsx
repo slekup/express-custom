@@ -101,7 +101,7 @@ const Table = function Table({ data, children, className, ...props }: Props) {
         {data.slice(1).map((row, rowIndex) => (
           <Row key={rowIndex}>
             {row.map((cell, cellIndex) => (
-              <Cell key={cellIndex}>{cell}</Cell>
+              <Cell key={`${rowIndex}-${cellIndex}`}>{cell}</Cell>
             ))}
           </Row>
         ))}
