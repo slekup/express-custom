@@ -170,10 +170,10 @@ Create a express-custom.json file in your project directory or add an "express-c
 ```json
 {
   "file": "src/index.ts",
+  "output": "docs",
   "name": "My API",
   "description": "My API description",
   "logo": "https://example.com/logo.png",
-  "output": "docs",
   "customDir": "welcome",
   "theme": "default",
   "socials": {
@@ -190,6 +190,14 @@ The file the API instance is exported from.
 
 This must be a relative path to the file from the project directory. The default export of this file must be an instance of the `ApiBuilder` class.
 
+### `output`
+
+> `string`
+
+The output directory for the next.js documentation site.
+
+Defaults to `docs`.
+
 ### `name`
 
 > `string`
@@ -197,6 +205,8 @@ This must be a relative path to the file from the project directory. The default
 The name of the API.
 
 This will be used as the title of the next.js documentation site. Defaults to `API Documentation`.
+
+If provided, this must be inbetween 1 and 25 characters.
 
 ### `description`
 
@@ -211,14 +221,6 @@ The description of your API.
 The logo of your API. This will be used as the logo of the next.js documentation site. This must be a url to an image.
 
 Defaults to the Express Custom logo.
-
-### `output`
-
-> `string`
-
-The output directory for the next.js documentation site.
-
-Defaults to `docs`.
 
 ### `customDir`
 

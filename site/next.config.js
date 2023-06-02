@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'export',
   swcMinify: true,
-  // assetPrefix: './',
+  // assetPrefix: '/',
   trailingSlash: true,
   images: {
     unoptimized: true,

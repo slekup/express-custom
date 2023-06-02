@@ -52,36 +52,73 @@ module.exports = async () => {
     }
   }
 
-  // Validate the config
-  validateConfig(config);
+  const validatedConfig = new ValidateConfig(config);
+  validatedConfig.run();
 
-  return config;
+  return validatedConfig;
 };
 
-/**
- * Validate the config.
- */
-function validateConfig(config) {
-  const required = ['file', 'output'];
+const configSchema = {
+  file: {
+    type: 'string',
+    required: true,
+  },
+  output: {
+    type: 'string',
+    required: false,
+  },
+  name: {
+    type: 'string',
+    required: false,
+  },
+  description: {
+    type: 'string',
+    required: false,
+  },
+  name: {
+    type: 'string',
+    required: false,
+  },
+};
 
-  required.forEach((key) => {
-    if (!config[key]) {
-      console.error(
-        `${cli.err} Missing required config key "${key}" in express-custom config`
-      );
-      process.exit(1);
-    }
-  });
-
-  // Check if the file is a .js or .ts file
-  if (!['.js', '.ts'].includes(config.file.slice(-3))) {
-    console.error(`${cli.err} Specified "file" must be a .js or .ts file`);
-    process.exit(1);
+class ValidateConfig {
+  constructor(config) {
+    this.config = config;
   }
 
-  // Check if the file exists
-  if (!fs.existsSync(path.resolve(process.cwd(), config.file))) {
-    console.error(`${cli.err} Input file does not exist`);
-    process.exit(1);
+  file() {
+    // Check if the file is a .js or .ts file
+    if (!['.js', '.ts'].includes(this.config.file.slice(-3))) {
+      console.error(`${cli.err} Specified "file" must be a .js or .ts file`);
+      process.exit(1);
+    }
+
+    // Check if the file exists
+    if (!fs.existsSync(path.resolve(process.cwd(), this.config.file))) {
+      console.error(`${cli.err} The specified API file does not exist`);
+      process.exit(1);
+    }
+  }
+
+  name() {}
+
+  /**
+   * Run the config validation.
+   */
+  run() {
+    const requiredOptions = ['file'];
+
+    for (const option of requiredOptions) {
+      if (!this.config[option]) {
+        console.error(
+          `${cli.err} Missing required config option "${option}" in express-custom config`
+        );
+        process.exit(1);
+      }
+    }
+
+    this.file(config);
+
+    return this.config;
   }
 }
