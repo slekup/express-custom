@@ -139,13 +139,15 @@ authRoute.addEndpoint(loginEndpoint);
 
 ## Generate a Next.js Documentation Site
 
-This will build and export a static next.js site to a new docs folder in your project directory.
+This will build a static next.js site to the specified output folder in your project directory.
 
 ```bash
-npx gensite
+> npx gensite
 ```
 
 ## Export the API to a JSON File
+
+This will export the API to a `api.json` file in the specified output folder in your project directory.
 
 ```bash
 > npx export-api
@@ -230,7 +232,19 @@ An optional directory containing mdx documentation. See [MDX Documentation](#mdx
 
 The theme for the next.js documentation site.
 
+Available themes: `default`, `dark`.
+
 Defaults to `default` (light theme).
+
+### `codeTheme`
+
+> `string`
+
+The codeblock theme for the next.js documentation site.
+
+The site uses highlight.js for code highlighting. See [highlight.js demo](https://highlightjs.org/static/demo/) for available themes.
+
+Defaults to `base16/framer`.
 
 ### `socials`
 
@@ -238,16 +252,7 @@ Defaults to `default` (light theme).
 
 Social links for the next.js documentation site.
 
-Available socials:
-
-- `discord`
-- `github`
-- `instagram`
-- `facebook`
-- `linkedin`
-- `youtube`
-- `twitter`
-- `email`
+Available socials: `discord`, `github`, `instagram`, `facebook`, `linkedin`, `youtube`, `twitter`, `email`.
 
 ## Issues and Contributing
 

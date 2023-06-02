@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { Mukta } from 'next/font/google';
 
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
@@ -6,11 +7,12 @@ import Providers from '@components/layout/Providers';
 import ApiData from '@utils/classes/ApiData';
 
 import RightMenu from '@components/layout/RightMenu/RightMenu';
-// import '@styles/code-dark.css';
 import '@styles/globals.css';
-// import 'highlight.js/styles/base16/dark-violet.css';
-// import 'highlight.js/styles/base16/framer.css';
-// import 'highlight.js/styles/base16/icy-dark.css';
+
+const mukta = Mukta({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin', 'latin-ext'],
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const apiDataClass = new ApiData();
@@ -34,11 +36,15 @@ export default async function RootLayout({
   const apiData = await apiDataClass.fetch();
 
   // import('highlight.js/styles/base16/icy-dark.css');
-  import('highlight.js/styles/base16/macintosh.css');
+  // import('highlight.js/styles/base16/macintosh.css');
+  // import('highlight.js/styles/base16/icy-dark.css');
+  // import('highlight.js/styles/base16/dark-violet.css');
+  import('highlight.js/styles/base16/framer.css');
 
   return (
     <html lang="en">
-      <body>
+      <head></head>
+      <body className={mukta.className}>
         <Providers>
           <div className="relative h-14"></div>
           <div className="flex">

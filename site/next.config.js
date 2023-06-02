@@ -1,13 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   output: 'export',
+  swcMinify: true,
   // assetPrefix: './',
-  devIndicators: {
-    buildActivity: true,
-    buildActivityPosition: 'bottom-right',
-  },
+  trailingSlash: true,
   images: {
     unoptimized: true,
+  },
+  webpack: (config, { isServer }) => {
+    config.resolve.fallback = { fs: false };
+    return config;
+  },
+  experimental: {
+    appDir: true,
   },
 };
 

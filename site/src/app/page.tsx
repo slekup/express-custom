@@ -1,4 +1,4 @@
-import { Button, CodeBlock, Table } from '@components/index';
+import { Button,  Table } from '@components/index';
 import ApiData from '@utils/classes/ApiData';
 
 export default async function Home() {
