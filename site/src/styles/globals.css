@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @import './themes.css';
-@import './fonts/fonts.css';
+/* @import './fonts/fonts.css'; */
 
 html {
   scroll-behavior: smooth;
@@ -11,7 +11,7 @@ html {
 
 html,
 body {
-  font-family: 'Mukta', 'Nunito Sans', 'Fira Code', Arial, sans-serif;
+  /* font-family: Mukta, 'Nunito Sans', 'Fira Code', Arial, sans-serif; */
   margin: 0;
   padding: 0;
 }
@@ -34,7 +34,13 @@ body {
   @apply focus:outline-none;
 }
 
+* {
+  scrollbar-width: thin;
+}
+
 ::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
   background: rgb(var(--background));
 }
 

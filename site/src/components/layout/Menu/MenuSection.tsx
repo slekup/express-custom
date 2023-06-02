@@ -15,9 +15,10 @@ interface Props {
       sublinks: { title: string; slug: string }[];
     }[];
   };
+  closeMenu?: () => void;
 }
 
-export default function MenuSection({ data: apiData }: Props) {
+export default function MenuSection({ data: apiData, closeMenu }: Props) {
   const pathname = usePathname();
 
   useEffect(() => {
@@ -97,6 +98,7 @@ export default function MenuSection({ data: apiData }: Props) {
             <button
               className={`${btnStyle} bg-primary/10 text-primary`}
               key={index}
+              onClick={closeMenu}
             >
               {getIcon(link.title)}
               {link.title}
@@ -108,6 +110,7 @@ export default function MenuSection({ data: apiData }: Props) {
               key={index}
               href={`${link.url}`}
               className={`${btnStyle} text-text-secondary/90 hover:bg-default active:bg-default-hover hover:text-text-primary active:text-text`}
+              onClick={closeMenu}
             >
               {getIcon(link.title)}
               {link.title}
