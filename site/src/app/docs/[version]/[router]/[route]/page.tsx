@@ -246,7 +246,7 @@ export default async function Route({ params }: { params: { route: string } }) {
 
   return (
     <>
-      <div className="min-h-[800px] max-w-5xl p-5 lg:p-10">
+      <div className="mx-auto min-h-[800px] w-11/12 max-w-5xl py-5 lg:mx-0 lg:p-10">
         <p className="text-text-faint z-5 relative text-xs font-semibold uppercase">
           {route.category}
         </p>
