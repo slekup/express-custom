@@ -16,7 +16,19 @@ import { TbCode } from 'react-icons/tb';
 const matches: [string[], IconType][] = [
   [['home', 'main', 'primary'], BiHomeAlt],
   [['github'], FaGithub],
-  [['science', 'test', 'testing'], BiTestTube],
+  [
+    [
+      'science',
+      'test',
+      'testing',
+      'data',
+      'analytics',
+      'stats',
+      'track',
+      'experiment',
+    ],
+    BiTestTube,
+  ],
   [['media', 'image', 'video'], BiImageAlt],
   [['admin'], RiAdminLine],
   [['info', 'alert'], ImInfo],
