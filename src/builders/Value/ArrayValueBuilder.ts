@@ -84,6 +84,16 @@ export default class ArrayValueBuilder
   }
 
   /**
+   * Sets the default value of the array.
+   * @param defaultValue The default value of the array.
+   * @returns The array value builder.
+   */
+  public setDefault(defaultValue: unknown[]): this {
+    this.defaultValue = defaultValue;
+    return this;
+  }
+
+  /**
    * Exports the array value.
    * @returns The array value.
    */

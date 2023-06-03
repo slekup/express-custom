@@ -1,4 +1,4 @@
-import { BaseValueSchema, ValueCheck } from '@typings/schema';
+import { BaseValueSchema, SchemaTypes, ValueCheck } from '@typings/schema';
 
 export interface ExportedValue<T> {
   type: string;
@@ -20,6 +20,7 @@ export default class BaseValueBuilder implements BaseValueSchema {
   public required: boolean;
   public checks: ValueCheck[];
   public structure?: string;
+  public defaultValue?: SchemaTypes;
 
   /**
    * Sets the name of the value.
@@ -27,7 +28,7 @@ export default class BaseValueBuilder implements BaseValueSchema {
   public constructor() {
     this.name = 'Name not provided';
     this.description = 'Description not provided';
-    this.required = true; // Default to true
+    this.required = false; // Default to false
     this.checks = [];
   }
 

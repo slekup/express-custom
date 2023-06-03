@@ -18,6 +18,16 @@ export default class BooleanValueBuilder
   }
 
   /**
+   * Sets the default value of the value.
+   * @param defaultValue The default value of the value.
+   * @returns The boolean value builder.
+   */
+  public setDefault(defaultValue: boolean): this {
+    this.defaultValue = defaultValue;
+    return this;
+  }
+
+  /**
    * Exports the value.
    * @returns The exported value.
    */

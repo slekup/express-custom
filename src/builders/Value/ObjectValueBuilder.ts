@@ -30,6 +30,16 @@ export default class ObjectValueBuilder<T>
   }
 
   /**
+   * Sets the default value of the value.
+   * @param defaultValue The default value of the value.
+   * @returns The object value builder.
+   */
+  public setDefault(defaultValue: object): this {
+    this.defaultValue = defaultValue;
+    return this;
+  }
+
+  /**
    * Exports the value.
    * @returns The exported value.
    */

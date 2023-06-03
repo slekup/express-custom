@@ -1,3 +1,6 @@
+//  Disable the no-param-reassign rule as it is needed to assign default values to undefined parameters.
+/* eslint-disable no-param-reassign */
+
 import { Response } from 'express';
 
 import { Schema } from '@typings/schema';
@@ -154,10 +157,25 @@ export default class SchemaBuilder {
       ? Object.entries(schema as Schema)
       : Object.entries(schema as BuildersSchema);
 
-    // Check if all required fields have been provided
     for (const [key, value] of schemaFields) {
-      if (value.required && !data[key])
-        return `The field "${key}" has not been provided.`;
+      // Check if all required fields have been provided.
+      // If the field has a default value as the required value is not provided, set the field to the default value.
+      if (value.required) {
+        if (!data[key] && value.defaultValue) {
+          data[key] = value.defaultValue;
+          break;
+        } else if (!data[key]) {
+          return `The field "${key}" has not been provided.`;
+        }
+      }
+
+      // For non required fields, if the value is not provided, set the field to the default value if it exists.
+      if (!data[key] && value.defaultValue) {
+        data[key] = value.defaultValue;
+        return false;
+      } else if (!data[key]) {
+        return false;
+      }
     }
 
     // Check if all provided fields are the correct type
@@ -357,16 +375,19 @@ export default class SchemaBuilder {
   /**
    * Run the validation function, and if the response object is provided, send a response if the validation fails.
    * @param data The object data to validate.
-   * @param res The response object.
+   * @param options The options to use when validating.
+   * @param options.res The response object.
    * @returns A JSON response meaning it's invalid, or null if it's valid.
    */
   public async validate(
     data: Record<string, unknown>,
-    res: Response
-  ): Promise<Response | null> {
+    options?: { res?: Response }
+  ): Promise<Response | null | string> {
     const result = await this.validateBase(data, this.schema);
-    if (result) return res.status(400).json({ status: 400, message: result });
-    return null;
+    if (typeof result !== 'string') return null;
+    if (options?.res)
+      return options.res.status(400).json({ status: 400, message: result });
+    return result;
   }
 
   /**
