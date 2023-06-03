@@ -62,6 +62,16 @@ export default class StringValueBuilder
   }
 
   /**
+   * Sets the default value of the value.
+   * @param defaultValue The default value of the value.
+   * @returns The string value builder.
+   */
+  public setDefault(defaultValue: string): this {
+    this.defaultValue = defaultValue;
+    return this;
+  }
+
+  /**
    * Exports the value.
    * @returns The exported value.
    */

@@ -8,6 +8,16 @@ export type StringTest =
 
 export type SchemaOption = string | number | boolean | null | undefined;
 
+export type SchemaTypes =
+  | string
+  | number
+  | boolean
+  | unknown[]
+  | object
+  | null
+  | undefined
+  | unknown;
+
 export type ValueTypes =
   | 'string'
   | 'number'
@@ -25,9 +35,10 @@ export interface ValueCheck {
 export type StructureType = `{${string}}` | `[${string}]`;
 
 export interface BaseValueSchema {
-  description: string;
-  required: boolean;
+  description?: string;
+  required?: boolean;
   structure?: string;
+  defaultValue?: SchemaTypes;
   options?: SchemaOption[];
   checks?: ValueCheck[];
   type?: ValueTypes;

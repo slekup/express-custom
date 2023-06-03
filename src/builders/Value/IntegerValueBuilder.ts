@@ -40,6 +40,16 @@ export default class IntegerValueBuilder
   }
 
   /**
+   * Sets the default value of the value.
+   * @param defaultValue The default value of the value.
+   * @returns The integer value builder.
+   */
+  public setDefault(defaultValue: number): this {
+    this.defaultValue = defaultValue;
+    return this;
+  }
+
+  /**
    * Exports the value.
    * @returns The exported value.
    */

@@ -1,21 +1,23 @@
+import fs from 'fs';
 import { Server } from 'http';
+import path from 'path';
 
+import Config from '@typings/config';
 import { RateLimit } from '@typings/core';
 import { errorMiddleware } from '@utils/middleware';
+import logger, { cli } from '../bin/utils/logger';
 import BaseAppBuilder from './Base/BaseAppBuilder';
-import { structures } from './StructureBuilder';
+import SchemaBuilder from './SchemaBuilder';
+import StructureBuilder from './StructureBuilder';
 import VersionBuilder, { ExportedVersion } from './VersionBuilder';
 
-interface ExportedApi {
-  name: string;
-  description: string;
+export type ExportedApi = Config & {
   baseUrl: string;
   port: number;
-  logo?: string;
-  structures: Record<string, unknown>;
+  structures: StructureBuilder[];
   rateLimit?: Partial<RateLimit>;
   versions: ExportedVersion[];
-}
+};
 
 /**
  * The ApiBuilder class is used to build the API.
@@ -23,40 +25,30 @@ interface ExportedApi {
 export default class ApiBuilder extends BaseAppBuilder<'app'> {
   private port: number;
   private versions: VersionBuilder[];
-  private name: string;
-  private description: string;
   private baseUrl: string;
-  private logo?: string;
+  private structures: StructureBuilder[];
 
   /**
    * The constructor of the ApiBuilder class.
    * @param config The configuration of the API.
-   * @param config.name The name of the API.
-   * @param config.description The description of the API.
    * @param config.baseUrl The base URL of the API.
    * @param config.port The port of the API.
-   * @param config.logo The logo of the API.
+   * @param config.structures The structures of the API.
    */
   public constructor({
-    name,
-    description,
     baseUrl,
     port,
-    logo,
+    structures,
   }: {
-    name: string;
-    description: string;
     baseUrl: string;
     port: number;
-    logo?: string;
+    structures?: StructureBuilder[];
   }) {
     super('app');
     this.versions = [];
-    this.name = name;
-    this.description = description;
     this.baseUrl = baseUrl;
     this.port = port;
-    this.logo = logo ?? undefined;
+    this.structures = structures ?? [];
   }
 
   /**
@@ -68,46 +60,6 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
     this.versions.push(version);
     const versionValues = version.values();
     this.raw.use(versionValues.path, versionValues.raw);
-    return this;
-  }
-
-  /**
-   * Sets the name of the API.
-   * @param name The name of the API.
-   * @returns The API builder.
-   */
-  public setName(name: string): this {
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * Sets the description of the API.
-   * @param description The description for the API.
-   * @returns The API builder.
-   */
-  public setDescription(description: string): this {
-    this.description = description;
-    return this;
-  }
-
-  /**
-   * Sets the base URL of the API.
-   * @param url The base URL of the API.
-   * @returns The API builder.
-   */
-  public setBaseUrl(url: string): this {
-    this.baseUrl = url;
-    return this;
-  }
-
-  /**
-   * Sets the logo of the API.
-   * @param logo The logo of the API.
-   * @returns The API builder.
-   */
-  public setLogo(logo: string): this {
-    this.logo = logo;
     return this;
   }
 
@@ -136,23 +88,159 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
   }
 
   /**
+   * Loads the configuration of the API.
+   * @returns The configuration of the API.
+   */
+  private static loadConfig = async (): Promise<Readonly<Config>> => {
+    let config: Partial<Config> = {};
+    const configPath = path.join(process.cwd(), 'express-custom.json');
+
+    try {
+      const configFile = await fs.promises.readFile(configPath, 'utf-8');
+      try {
+        config = JSON.parse(configFile.toString()) as Partial<Config>;
+      } catch (error) {
+        logger.error(
+          `${cli.err} Failed to parse config.json file (invalid JSON).`
+        );
+        throw new Error(error as string);
+      }
+    } catch (error) {
+      logger.error(
+        `${cli.err} No express-custom.json found, trying package.json`
+      );
+
+      try {
+        // Read package.json
+        const packageJSON = await fs.promises.readFile(
+          path.join(process.cwd(), 'package.json')
+        );
+
+        // Parse the JSON
+        try {
+          const configFile = (
+            JSON.parse(packageJSON.toString()) as {
+              'express-custom'?: Partial<Config>;
+            }
+          )['express-custom'];
+
+          if (typeof configFile !== 'object') {
+            logger.error(
+              `${cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`
+            );
+            throw new Error('Invalid JSON');
+          }
+
+          config = configFile;
+        } catch (error) {
+          logger.error(
+            `${cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`
+          );
+          throw new Error(error as string);
+        }
+      } catch (error) {
+        // Failed to read package.json
+        logger.error(
+          `${cli.err} Failed to load express-custom config from package.json`
+        );
+        throw new Error(error as string);
+      }
+    }
+
+    const fileExtRegex = /\.ts$|\.js$/;
+
+    const configSchema = new SchemaBuilder()
+      .addString((option) =>
+        option
+          .setName('file')
+          .setRequired(true)
+          .setMax(256)
+          .addCheck({
+            /**
+             * Checks if the value ends with .ts or .js.
+             * @param value The value to check.
+             * @returns Whether the value passes the check.
+             */
+            run: (value) => fileExtRegex.test(value),
+            response:
+              'The file must be a JavaScript or TypeScript file (.js or .ts).',
+          })
+      )
+      .addString((value) =>
+        value.setName('output').setDefault('docs').setMax(256)
+      )
+      .addString((option) => option.setName('name').setDefault('My API'))
+      .addString((option) =>
+        option.setName('description').setDefault('Made with Express Custom')
+      )
+      .addString((option) => option.setName('logo').setDefault('/logo.png'))
+      .addString((option) => option.setName('customDir').setMax(256))
+      .addString((option) => option.setName('theme').setDefault('default'))
+      .addString((option) => option.setName('codeTheme').setDefault('framer'))
+      .addObject((option) =>
+        option
+          .setName('socials')
+          .setDefault({})
+          .setProperties({
+            discord: {
+              type: 'string',
+            },
+            github: {
+              type: 'string',
+            },
+            instagram: {
+              type: 'string',
+            },
+            facebook: {
+              type: 'string',
+            },
+            linkedin: {
+              type: 'string',
+            },
+            youtube: {
+              type: 'string',
+            },
+            twitter: {
+              type: 'string',
+            },
+            email: {
+              type: 'string',
+            },
+          })
+      );
+
+    const result = await configSchema.validate(config);
+
+    if (typeof result === 'string') {
+      logger.error(
+        `${cli.err} Validation error while processing express-config.json`
+      );
+      logger.error(`${cli.err} Error: ${result}`);
+      process.exit(1);
+    }
+
+    const validatedConfig = config as Config;
+
+    return validatedConfig;
+  };
+
+  /**
    * Adds a router to the API.
    * @returns The API data.
    */
-  public export(): Readonly<ExportedApi> {
-    if (!this.name) throw new Error('The name of the API is not set.');
-    if (!this.description)
-      throw new Error('The description of the API is not set.');
+  public async export(): Promise<Readonly<ExportedApi>> {
     if (!this.baseUrl) throw new Error('The base URL of the API is not set.');
     if (!this.port) throw new Error('The port of the API is not set.');
 
+    logger.info('Running export');
+
+    const config = await ApiBuilder.loadConfig();
+
     return {
-      name: this.name,
-      description: this.description,
+      ...config,
       baseUrl: this.baseUrl,
       port: this.port,
-      ...(this.logo && { logo: this.logo }),
-      structures,
+      structures: this.structures,
       rateLimit: this.ratelimit,
       versions: this.versions.map((version) => version.export()),
     };

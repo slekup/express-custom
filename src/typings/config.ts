@@ -27,7 +27,7 @@ export default interface Config {
   description: string;
   logo: string;
   output: string;
-  customDir: string;
+  customDir?: string;
   theme: Themes;
   socials: Socials;
 }
