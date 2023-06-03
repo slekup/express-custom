@@ -1,20 +1,24 @@
-'use client';
-
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useEffect } from 'react';
 
-import routeToSlug from '@utils/functions/routeToSlug';
-import { IApiData } from 'src/typings/core';
+import { AiOutlineApi } from 'react-icons/ai';
+
+import matches from '@contants/matches';
 
 interface Props {
-  data: IApiData;
+  data: {
+    name: string;
+    links: {
+      title: string;
+      url: string;
+      sublinks: { title: string; slug: string }[];
+    }[];
+  };
+  closeMenu?: () => void;
 }
 
-export default function MenuSection({ data }: Props) {
-  const btnStyle =
-    'block w-full text-left py-1.5 px-2.5 cursor-pointer hover:text-text active:text-text hover:bg-default-hover active:bg-default-active text-sm font-medium rounded-md';
-
+export default function MenuSection({ data: apiData, closeMenu }: Props) {
   const pathname = usePathname();
 
   useEffect(() => {
@@ -68,42 +72,48 @@ export default function MenuSection({ data }: Props) {
     };
   }, []);
 
+  const btnStyle =
+    'block w-full text-left py-2 px-2.5 cursor-pointer text-sm font-semibold rounded-md';
+
+  const getIcon = (title: string): JSX.Element => {
+    for (const [keys, Icon] of matches) {
+      for (const key of keys) {
+        if (title.toLowerCase().includes(key)) {
+          return <Icon className="-mt-1 mr-2 inline-block h-5 w-5" />;
+        }
+      }
+    }
+
+    return <AiOutlineApi className="-mt-1 mr-2 inline-block h-5 w-5" />;
+  };
+
   return (
     <>
-      <p className="text-xs uppercase text-text-primary mb-1 font-semibold">
-        {data.router.name}
+      <p className="text-text-secondary mx-2.5 mb-1 mt-5 text-base font-bold uppercase">
+        {apiData.name}
       </p>
-      {data.router.routes.map((route, index) =>
-        `/${routeToSlug(route.name)}` === pathname ? (
+      {apiData.links.map((link, index) =>
+        link.url === pathname ? (
           <div className="" key={index}>
             <button
-              className={`${btnStyle} bg-default-hover text-text`}
+              className={`${btnStyle} bg-primary/10 text-primary`}
               key={index}
+              onClick={closeMenu}
             >
-              {route.name}
+              {getIcon(link.title)}
+              {link.title}
             </button>
-            <div className="my-2">
-              {route.endpoints.map((endpoint, endpointIndex) => (
-                <Link
-                  key={endpointIndex}
-                  href={`${routeToSlug(route.name)}#${routeToSlug(
-                    endpoint.name
-                  )}`}
-                  className={`block w-full mx-3 text-sm text-text-secondary hover:text-text hover:underline`}
-                >
-                  {endpoint.name}
-                </Link>
-              ))}
-            </div>
           </div>
         ) : (
           <div className="" key={index}>
             <Link
               key={index}
-              href={`${routeToSlug(route.name)}`}
-              className={`${btnStyle} text-text-secondary`}
+              href={`${link.url}`}
+              className={`${btnStyle} text-text-secondary/90 hover:bg-default active:bg-default-hover hover:text-text-primary active:text-text`}
+              onClick={closeMenu}
             >
-              {route.name}
+              {getIcon(link.title)}
+              {link.title}
             </Link>
           </div>
         )

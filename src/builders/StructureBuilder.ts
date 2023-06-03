@@ -9,8 +9,6 @@ interface StructureField {
   option?: string;
 }
 
-export const structures: Record<string, unknown> = {};
-
 /**
  * The StructureBuilder class is used to build a example structures for object schemas and value options.
  */
@@ -38,7 +36,6 @@ export default class StructureBuilder {
     this.name = name;
     this.type = type;
     this.fields = fields;
-    structures[name] = this;
   }
 
   /**

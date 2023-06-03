@@ -7,12 +7,15 @@
     "module": "NodeNext",
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "alwaysStrict": true,
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
     "baseUrl": "./",
+    "outDir": "dist",
     "paths": {
       "@builders/*": [
         "src/builders/*"

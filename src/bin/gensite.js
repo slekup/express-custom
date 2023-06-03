@@ -8,9 +8,9 @@ const fs = require('fs-extra');
 const path = require('path');
 const { promisify } = require('util');
 
-const { cli, site } = require('./utils/log');
+const { cli, site } = require('../bin/utils/log');
 const loadRouter = require('./utils/loadRouter');
-const logInfo = require('./utils/logInfo');
+const logInfo = require('../bin/utils/logInfo');
 
 const fileName = process.argv[2];
 const outDir =
