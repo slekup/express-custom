@@ -6,9 +6,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider
       enableSystem={false}
-      defaultTheme={'light'}
+      defaultTheme={'default'}
       themes={[
-        'light',
+        'default',
         'dark',
         'facebook',
         'slack',

@@ -4,6 +4,28 @@ import { Server } from 'http';
 import { Options } from 'express-rate-limit';
 import { ClientSession } from 'mongoose';
 
+type Themes = 'default' | 'dark' | 'facebook' | 'slack' | 'stack-overflow' | 'raspberry' | 'brave' | 'terminal' | 'high-contrast-light' | 'high-contrast-dark';
+interface Socials {
+    discord: string;
+    github: string;
+    instagram: string;
+    facebook: string;
+    linkedin: string;
+    youtube: string;
+    twitter: string;
+    email: string;
+}
+interface Config {
+    file: string;
+    name: string;
+    description: string;
+    logo: string;
+    output: string;
+    customDir?: string;
+    theme: Themes;
+    socials: Socials;
+}
+
 type Middleware = (req: Request, res: Response, next: NextFunction) => void;
 type PathString = `/${string}`;
 interface RateLimit {
@@ -40,17 +62,58 @@ declare class BaseAppBuilder<T = 'router'> {
     addMiddleware(middleware: Middleware): this;
 }
 
+type StructureType = 'schema' | 'option';
+interface StructureField {
+    name: string;
+    description: string;
+    type?: 'string' | 'number' | 'boolean' | 'object' | 'array';
+    required?: boolean;
+    structure?: string;
+    option?: string;
+}
+/**
+ * The StructureBuilder class is used to build a example structures for object schemas and value options.
+ */
+declare class StructureBuilder {
+    private name;
+    private type;
+    private fields;
+    /**
+     * The name of the structure.
+     * @param fields The fields of the structure.
+     * @param fields.name The name of the field.
+     * @param fields.type The type of the field.
+     * @param fields.fields The fields of the field.
+     */
+    constructor({ name, type, fields, }: {
+        name: string;
+        type: StructureType;
+        fields: StructureField[];
+    });
+    /**
+     * Exports the structure.
+     * @returns The exported structure.
+     */
+    export(): {
+        name: string;
+        type: StructureType;
+        fields: StructureField[];
+    };
+}
+
 type StringTest = 'email' | 'username' | 'passwordStrength' | 'phoneNumber' | 'ipAddress' | 'url';
 type SchemaOption = string | number | boolean | null | undefined;
+type SchemaTypes = string | number | boolean | unknown[] | object | null | undefined | unknown;
 type ValueTypes = 'string' | 'number' | 'integer' | 'boolean' | 'object' | 'array' | 'image';
 interface ValueCheck {
     run: ((value: string) => boolean) | ((value: string) => Promise<boolean>);
     response: string;
 }
 interface BaseValueSchema {
-    description: string;
-    required: boolean;
+    description?: string;
+    required?: boolean;
     structure?: string;
+    defaultValue?: SchemaTypes;
     options?: SchemaOption[];
     checks?: ValueCheck[];
     type?: ValueTypes;
@@ -117,6 +180,7 @@ declare class BaseValueBuilder implements BaseValueSchema {
     required: boolean;
     checks: ValueCheck[];
     structure?: string;
+    defaultValue?: SchemaTypes;
     /**
      * Sets the name of the value.
      */
@@ -200,6 +264,12 @@ declare class ArrayValueBuilder extends BaseValueBuilder implements ArrayValue<V
      */
     setItems(items: ValueSchema | ValueSchema[]): this;
     /**
+     * Sets the default value of the array.
+     * @param defaultValue The default value of the array.
+     * @returns The array value builder.
+     */
+    setDefault(defaultValue: unknown[]): this;
+    /**
      * Exports the array value.
      * @returns The array value.
      */
@@ -215,6 +285,12 @@ declare class BooleanValueBuilder extends BaseValueBuilder implements BooleanVal
      * Creates an instance of the boolean value builder class.
      */
     constructor();
+    /**
+     * Sets the default value of the value.
+     * @param defaultValue The default value of the value.
+     * @returns The boolean value builder.
+     */
+    setDefault(defaultValue: boolean): this;
     /**
      * Exports the value.
      * @returns The exported value.
@@ -262,6 +338,12 @@ declare class IntegerValueBuilder extends BaseValueBuilder implements IntegerVal
      */
     setMax(max: number): this;
     /**
+     * Sets the default value of the value.
+     * @param defaultValue The default value of the value.
+     * @returns The integer value builder.
+     */
+    setDefault(defaultValue: number): this;
+    /**
      * Exports the value.
      * @returns The exported value.
      */
@@ -292,6 +374,12 @@ declare class NumberValueBuilder extends BaseValueBuilder implements NumberValue
      */
     setMax(max: number): this;
     /**
+     * Sets the default value of the value.
+     * @param defaultValue The default value of the value.
+     * @returns The number value builder.
+     */
+    setDefault(defaultValue: number): this;
+    /**
      * Exports the value.
      * @returns The exported value.
      */
@@ -314,6 +402,12 @@ declare class ObjectValueBuilder<T> extends BaseValueBuilder implements ObjectVa
      * @returns The value builder.
      */
     setProperties(properties: Schema): this;
+    /**
+     * Sets the default value of the value.
+     * @param defaultValue The default value of the value.
+     * @returns The object value builder.
+     */
+    setDefault(defaultValue: object): this;
     /**
      * Exports the value.
      * @returns The exported value.
@@ -358,6 +452,12 @@ declare class StringValueBuilder extends BaseValueBuilder implements StringValue
      * @returns The string value builder.
      */
     setTest(test: StringTest): this;
+    /**
+     * Sets the default value of the value.
+     * @param defaultValue The default value of the value.
+     * @returns The string value builder.
+     */
+    setDefault(defaultValue: string): this;
     /**
      * Exports the value.
      * @returns The exported value.
@@ -430,10 +530,13 @@ declare class SchemaBuilder {
     /**
      * Run the validation function, and if the response object is provided, send a response if the validation fails.
      * @param data The object data to validate.
-     * @param res The response object.
+     * @param options The options to use when validating.
+     * @param options.res The response object.
      * @returns A JSON response meaning it's invalid, or null if it's valid.
      */
-    validate(data: Record<string, unknown>, res: Response): Promise<Response | null>;
+    validate(data: Record<string, unknown>, options?: {
+        res?: Response;
+    }): Promise<Response | null | string>;
     /**
      * Export the schema.
      * @returns The exported schema.
@@ -482,38 +585,20 @@ declare class EndpointBuilder {
     ratelimit?: Partial<RateLimit>;
     /**
      * Creates a new endpoint.
+     * @param options The options for the endpoint.
+     * @param options.disabled The disabled state of the endpoint.
+     * @param options.name The name of the endpoint.
+     * @param options.description The description of the endpoint.
+     * @param options.path The path of the endpoint.
+     * @param options.method The method of the endpoint.
      */
-    constructor();
-    /**
-     * Sets the disabled state of the endpoint.
-     * @param disabled The disabled state of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setDisabled(disabled: boolean): this;
-    /**
-     * Sets the name of the endpoint.
-     * @param name The name of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setName(name: string): this;
-    /**
-     * Sets the description of the endpoint.
-     * @param description The description of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setDescription(description: string): this;
-    /**
-     * Sets the path of the endpoint.
-     * @param path The path of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setPath(path: PathString): this;
-    /**
-     * Sets the method of the endpoint.
-     * @param method The method of the endpoint.
-     * @returns The endpoint builder.
-     */
-    setMethod(method: RequestMethod): this;
+    constructor({ disabled, name, description, path, method, }: {
+        disabled?: boolean;
+        name: string;
+        description: string;
+        path: PathString;
+        method: RequestMethod;
+    });
     /**
      * Sets the notes of the endpoint.
      * @param notes The notes of the endpoint.
@@ -581,27 +666,16 @@ declare class RouteBuilder extends BaseAppBuilder {
     private endpoints;
     /**
      * Creates a new route.
-     * @param path The path of the route.
+     * @param options The options for the route.
+     * @param options.path The path of the route.
+     * @param options.name The name of the route.
+     * @param options.description The description of the route.
      */
-    constructor(path?: PathString);
-    /**
-     * Sets the path of the route.
-     * @param name The name of the route.
-     * @returns The route builder.
-     */
-    setName(name: string): this;
-    /**
-     * Sets the description of the route.
-     * @param description The description of the route.
-     * @returns The route builder.
-     */
-    setDescription(description: string): this;
-    /**
-     * Sets the path of the route.
-     * @param path The path to set the router to.
-     * @returns The router builder.
-     */
-    setPath(path: `/${string}`): this;
+    constructor({ name, description, path, }: {
+        name: string;
+        description: string;
+        path: PathString;
+    });
     /**
      * Adds an endpoint to the route.
      * @param endpoint The endpoint to add to the route.
@@ -716,41 +790,32 @@ declare class VersionBuilder extends BaseAppBuilder<'app'> {
     }>;
 }
 
-interface ExportedApi {
-    name: string;
-    description: string;
+type ExportedApi = Config & {
     baseUrl: string;
     port: number;
-    logo: string;
-    structures: Record<string, unknown>;
+    structures: StructureBuilder[];
     rateLimit?: Partial<RateLimit>;
     versions: ExportedVersion[];
-}
+};
 /**
  * The ApiBuilder class is used to build the API.
  */
 declare class ApiBuilder extends BaseAppBuilder<'app'> {
     private port;
     private versions;
-    private name;
-    private description;
     private baseUrl;
-    private logo;
+    private structures;
     /**
      * The constructor of the ApiBuilder class.
      * @param config The configuration of the API.
-     * @param config.name The name of the API.
-     * @param config.description The description of the API.
      * @param config.baseUrl The base URL of the API.
      * @param config.port The port of the API.
-     * @param config.logo The logo of the API.
+     * @param config.structures The structures of the API.
      */
-    constructor({ name, description, baseUrl, port, logo, }: {
-        name: string;
-        description: string;
+    constructor({ baseUrl, port, structures, }: {
         baseUrl: string;
         port: number;
-        logo?: string;
+        structures?: StructureBuilder[];
     });
     /**
      * Adds a version to the API.
@@ -759,87 +824,21 @@ declare class ApiBuilder extends BaseAppBuilder<'app'> {
      */
     addVersion(version: VersionBuilder): this;
     /**
-     * Sets the name of the API.
-     * @param name The name of the API.
-     * @returns The API builder.
-     */
-    setName(name: string): this;
-    /**
-     * Sets the description of the API.
-     * @param description The description for the API.
-     * @returns The API builder.
-     */
-    setDescription(description: string): this;
-    /**
-     * Sets the base URL of the API.
-     * @param url The base URL of the API.
-     * @returns The API builder.
-     */
-    setBaseUrl(url: string): this;
-    /**
-     * Sets the logo of the API.
-     * @param logo The logo of the API.
-     * @returns The API builder.
-     */
-    setLogo(logo: string): this;
-    /**
      * Initializes the API.
      * @param callback The callback to run when the API is initialized.
      * @returns The server.
      */
     startServer(callback?: () => void): Server;
     /**
+     * Loads the configuration of the API.
+     * @returns The configuration of the API.
+     */
+    private static loadConfig;
+    /**
      * Adds a router to the API.
      * @returns The API data.
      */
-    export(): Readonly<ExportedApi>;
-}
-
-type StructureType = 'schema' | 'option';
-interface StructureField {
-    name: string;
-    description: string;
-    type?: 'string' | 'number' | 'boolean' | 'object' | 'array';
-    required?: boolean;
-    structure?: string;
-    option?: string;
-}
-/**
- * The StructureBuilder class is used to build a example structures for object schemas and value options.
- */
-declare class StructureBuilder {
-    private name;
-    private type;
-    private fields;
-    /**
-     * The name of the structure.
-     * @param fields The fields of the structure.
-     * @param fields.name The name of the field.
-     * @param fields.type The type of the field.
-     * @param fields.fields The fields of the field.
-     */
-    constructor({ name, type, fields, }: {
-        name: string;
-        type: StructureType;
-        fields: StructureField[];
-    });
-    /**
-     * Exports the structure.
-     * @returns The exported structure.
-     */
-    export(): {
-        name: string;
-        type: StructureType;
-        fields: StructureField[];
-    };
-}
-
-type Themes = 'light' | 'dark' | 'facebook' | 'slack' | 'stack-overflow' | 'raspberry' | 'brave' | 'terminal' | 'high-contrast-light' | 'high-contrast-dark';
-interface Config {
-    file: string;
-    output: string;
-    customDir: string;
-    theme: Themes;
+    export(): Promise<Readonly<ExportedApi>>;
 }
 
 export { ApiBuilder, Config, EndpointBuilder, RouteBuilder, RouterBuilder, SchemaBuilder, StructureBuilder, VersionBuilder };

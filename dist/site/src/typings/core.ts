@@ -77,6 +77,21 @@ interface RateLimit {
   max?: number;
 }
 
+export interface StructureField {
+  name: string;
+  description: string;
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  required?: boolean;
+  schema?: string;
+  option?: string;
+}
+
+export interface Structure {
+  name: string;
+  type: 'schema' | 'option';
+  fields: StructureField[];
+}
+
 interface Endpoint {
   name: string;
   description: string;
@@ -99,19 +114,29 @@ export interface Route {
   rateLimit?: RateLimit;
 }
 
-export interface StructureField {
+interface Router {
   name: string;
-  description: string;
-  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
-  required?: boolean;
-  schema?: string;
-  option?: string;
+  path: string;
+  rateLimit?: RateLimit;
+  routes: Route[];
 }
 
-export interface Structure {
-  name: string;
-  type: 'schema' | 'option';
-  fields: StructureField[];
+interface Version {
+  version: number;
+  rateLimit?: RateLimit;
+  routers: Router[];
+}
+
+interface Socials {
+  discord: string;
+  github: string;
+  instagram: string;
+  facebook: string;
+  linkedin: string;
+  youtube: string;
+  twitter: string;
+  email: string;
+  [key: string]: string | undefined;
 }
 
 export interface IApiData {
@@ -119,18 +144,10 @@ export interface IApiData {
   description: string;
   baseUrl: string;
   port: number;
-  logo: string;
+  logo?: string;
   structures?: Structure[];
   rateLimit?: RateLimit;
   custom?: boolean;
-  versions: {
-    version: number;
-    rateLimit?: RateLimit;
-    routes: {
-      name: string;
-      path: string;
-      rateLimit?: RateLimit;
-      routes: Route[];
-    }[];
-  }[];
+  socials?: Socials;
+  versions: Version[];
 }

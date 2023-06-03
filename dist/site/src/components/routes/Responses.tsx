@@ -5,6 +5,7 @@ import Highlight from 'react-highlight';
 import { HiChevronDown } from 'react-icons/hi';
 
 import { EndpointResponse } from '@typings/core';
+import { CodeBlock } from '..';
 
 interface Props {
   responses: EndpointResponse[];
@@ -17,7 +18,7 @@ export default function Responses({ responses, index }: Props) {
   return (
     <div className="relative mt-5">
       <button
-        className="text-xs text-text-primary py-1 px-2 rounded-md bg-default hover:bg-default-hover active:bg-default-active flex active:cursor-wait"
+        className="text-text-primary bg-default hover:bg-default-hover active:bg-default-active flex rounded-md px-2 py-1 text-xs active:cursor-wait"
         onClick={() => {
           if (showResponses.some((responseIndex) => responseIndex === index))
             setShowResponses(
@@ -42,13 +43,8 @@ export default function Responses({ responses, index }: Props) {
         }`}
       >
         {responses.map((response, responseIndex) => (
-          <div
-            className="relative mt-3 overflow-hidden rounded-lg"
-            key={responseIndex}
-          >
-            <Highlight className="json overflow-x-auto">
-              {JSON.stringify(response, null, 2)}
-            </Highlight>
+          <div className="mt-3" key={responseIndex}>
+            <CodeBlock code={JSON.stringify(response, null, 2)} lang="json" />
           </div>
         ))}
       </div>

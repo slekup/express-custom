@@ -200,20 +200,19 @@ export default class EndpointBuilder {
         // Validate the request
         if (
           this.paramSchema &&
-          (await this.paramSchema.validate(req.params, res))
+          (await this.paramSchema.validate(req.params, { res }))
         )
           return;
         if (
           this.querySchema &&
-          (await this.querySchema.validate(req.query, res))
+          (await this.querySchema.validate(req.query, { res }))
         )
           return;
         if (
           this.bodySchema &&
-          (await this.bodySchema.validate(
-            req.body as Record<string, unknown>,
-            res
-          ))
+          (await this.bodySchema.validate(req.body as Record<string, unknown>, {
+            res,
+          }))
         )
           return;
 

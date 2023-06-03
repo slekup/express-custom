@@ -3,6 +3,7 @@ import path from 'path';
 
 import { IApiData, Route } from '@typings/core';
 import routeToSlug from '@utils/functions/routeToSlug';
+import toSlug from '@utils/functions/toSlug';
 
 export default class ApiData {
   public data?: IApiData;
@@ -27,16 +28,18 @@ export default class ApiData {
     return this.data;
   }
 
-  /**
-   * Get the slugs for all routes.
-   * @returns The slugs for all routes.
-   */
-  public getRouteSlugs(): { title: string; route: string }[] {
+  public getParams(): { version: string; router: string; route: string }[] {
     if (!this.data) throw new Error('Data not fetched');
-    return this.data.router.routes.map((route) => ({
-      title: route.name,
-      route: routeToSlug(route.name),
-    }));
+
+    return this.data.versions.flatMap((version) =>
+      version.routers.flatMap((router) =>
+        router.routes.map((route) => ({
+          version: version.version.toString(),
+          router: router.name,
+          route: toSlug(route.name),
+        }))
+      )
+    );
   }
 
   /**
@@ -46,11 +49,17 @@ export default class ApiData {
    */
   public getRoute(route: string): Route {
     if (!this.data) throw new Error('Data not fetched');
-    return {
-      category: this.data.router.name,
-      ...this.data.router.routes.find(
-        (routeObj) => routeToSlug(routeObj.name) === route
-      ),
-    } as Route;
+
+    const routes = this.data.versions.flatMap((version) =>
+      version.routers.flatMap((router) => router.routes)
+    );
+
+    const found = routes.find(
+      (currentRoute) => routeToSlug(currentRoute.name) === route
+    );
+
+    if (!found) throw new Error('Route not found');
+
+    return found;
   }
 }
