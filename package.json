@@ -1,6 +1,6 @@
 {
   "name": "express-custom",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Easily define and document custom express routes and endpoints.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
