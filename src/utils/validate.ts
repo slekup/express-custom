@@ -131,6 +131,16 @@ export const validateUrl = (url: string): boolean => {
 };
 
 /**
+ * Tests if a path is valid.
+ * @param path The path to test.
+ * @returns True if the path is valid, false otherwise.
+ */
+export const validatePath = (path: string): boolean => {
+  const pathRegex = /^\/(?:[a-zA-Z0-9_]+\/)?[a-zA-Z0-9_]*$/;
+  return pathRegex.test(path);
+};
+
+/**
  * Tests if an image is valid.
  * @param image The image to test.
  * @returns True if the image is valid, false otherwise.

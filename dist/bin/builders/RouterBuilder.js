@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const BaseAppBuilder_1 = __importDefault(require("./Base/BaseAppBuilder"));
+const SchemaBuilder_1 = __importDefault(require("./SchemaBuilder"));
 /**
  * The router builder class.
  */
@@ -19,6 +20,18 @@ class RouterBuilder extends BaseAppBuilder_1.default {
      */
     constructor({ path, name }) {
         super();
+        const constructorSchema = new SchemaBuilder_1.default()
+            .addString((option) => option
+            .setName('path')
+            .setRequired(true)
+            .setMin(1)
+            .setMax(100)
+            .setTest('path'))
+            .addString((option) => option.setName('name').setRequired(true).setMin(1).setMax(50));
+        constructorSchema.validate({ path, name }).then((result) => {
+            if (typeof result === 'string')
+                throw new Error(`Router (${name || path}): ${result}`);
+        });
         this.path = path;
         this.name = name;
         this.routes = [];
@@ -34,17 +47,6 @@ class RouterBuilder extends BaseAppBuilder_1.default {
         return this;
     }
     /**
-     * Exports the routes and endpoints data.
-     * @returns The exported data.
-     */
-    export() {
-        return {
-            name: this.name,
-            path: this.path,
-            routes: this.routes.map((route) => route.export()),
-        };
-    }
-    /**
      * Returns the router values.
      * @returns The router values.
      */
@@ -56,6 +58,25 @@ class RouterBuilder extends BaseAppBuilder_1.default {
             defaultCategory: this.name,
             routes: this.routes,
             middlewares: this.middlewares,
+        };
+    }
+    /**
+     * Validates the router.
+     */
+    validate() {
+        if (!this.routes.length)
+            throw new Error('No routes provided');
+        this.routes.forEach((route) => route.validate());
+    }
+    /**
+     * Exports the routes and endpoints data.
+     * @returns The exported data.
+     */
+    export() {
+        return {
+            name: this.name,
+            path: this.path,
+            routes: this.routes.map((route) => route.export()),
         };
     }
 }

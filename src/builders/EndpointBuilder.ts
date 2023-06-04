@@ -95,6 +95,40 @@ export default class EndpointBuilder {
     path: PathString;
     method: RequestMethod;
   }) {
+    const constructorSchema = new SchemaBuilder()
+      .addBoolean((option) =>
+        option.setName('disabled').setRequired(false).setDefault(false)
+      )
+      .addString((option) =>
+        option.setName('name').setRequired(true).setMin(1).setMax(50)
+      )
+      .addString((option) =>
+        option.setName('description').setRequired(true).setMin(1).setMax(100)
+      )
+      .addString((option) =>
+        option
+          .setName('path')
+          .setRequired(true)
+          .setMin(1)
+          .setMax(100)
+          .setTest('path')
+      )
+      .addString((option) =>
+        option
+          .setName('method')
+          .setRequired(true)
+          .setMin(1)
+          .setMax(100)
+          .setOptions(['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'])
+      );
+
+    constructorSchema
+      .validate({ disabled, name, description, path, method })
+      .then((result) => {
+        if (typeof result === 'string')
+          throw new Error(`Endpoint (${name || path}): ${result}`);
+      });
+
     this.disabled = disabled ?? false;
     this.name = name;
     this.description = description;

@@ -93,22 +93,6 @@ exports.default = async (fileName) => {
         const module = requireModule(filePath);
         const time = `${Date.now() - timeStart}ms`;
         logger_1.default.info(`${logger_1.cli.suc} ⚡ Loaded API file in ${time}`);
-        // Disable console output from the imported file
-        const originalConsoleMethods = {};
-        /**
-         * Empty function to suppress output.
-         * @returns Nothing.
-         */
-        const noop = () => null;
-        // Define the console methods to intercept (you can add more if needed)
-        const consoleMethods = ['log', 'info', 'warn', 'error'];
-        // Replace the console methods with empty functions
-        for (const method of consoleMethods) {
-            /* eslint-disable-next-line no-console */
-            originalConsoleMethods[method] = console[method];
-            /* eslint-disable-next-line no-console */
-            console[method] = noop;
-        }
         // Access the exported API
         if (!module.default) {
             logger_1.default.error(`${logger_1.cli.err} Failed to load the API file, no default export.`);
@@ -117,11 +101,6 @@ exports.default = async (fileName) => {
         const api = module.default;
         // Return the exported API
         apiData = await api.export();
-        // Restore the original console methods
-        for (const method of consoleMethods) {
-            /* eslint-disable-next-line no-console */
-            console[method] = originalConsoleMethods[method];
-        }
     }
     catch (error) {
         logger_1.default.error(`${logger_1.cli.err} Failed to load the API file, you have errors in your code!`);

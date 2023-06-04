@@ -56,12 +56,15 @@ const { ApiBuilder } = require('express-custom');
 
 The main class is the `ApiBuilder` class. This class is used to create your API and start the server.
 
+It's recommended that you run any functions such as `startServer` in a seperate main file, and import the API into that file. This is so your application does not run when you use the export commands.
+
 ```ts
 const api = new ApiBuilder({
   baseUrl: 'https://example.com/api',
   port: 5000,
 });
 
+// In the main file
 const server = api.startServer(() => {
   console.log('Server started on port 5000');
 });
@@ -157,8 +160,6 @@ This will export the API to a `api.json` file in the specified output folder in 
 
 You can create MDX files to document further details about your API. These files will be rendered and displayed on the next.js documentation site.
 
-If you make the MDX files in sub-directories, the names of the sub-directories will be used as the category names, otherwise the category name for all the MDX files will default to the name of the `customDir` folder.
-
 > Custom documentation stays the same for every API version.
 
 ## Configuration
@@ -174,7 +175,14 @@ Create a express-custom.json file in your project directory or add an "express-c
   "name": "My API",
   "description": "My API description",
   "logo": "https://example.com/logo.png",
-  "customDir": "welcome",
+  "customDocs": [
+    {
+      "category": "Welcome",
+      "slug": "welcome",
+      "basePath": "./custom-docs",
+      "files": ["getting-started"]
+    }
+  ]
   "theme": "default",
   "socials": {
     "github": "https://github.com/slekup/express-custom"
@@ -222,11 +230,31 @@ The logo of your API. This will be used as the logo of the next.js documentation
 
 Defaults to the Express Custom logo.
 
-### `customDir`
+### `customDocs`
 
 > `string`
 
-An optional directory containing mdx documentation. See [MDX Documentation](#mdx-documentation).
+An array of objects containing the `category`, `slug`, `basePath`, and `files`.
+
+- `category` - The name of the category.
+- `slug` - The slug to be used in the url.
+- `basePath` - The base path (directory) to the MDX files.
+- `files` - An array of file names.
+
+```json
+{
+  "customDocs": [
+    {
+      "category": "Welcome",
+      "slug": "welcome",
+      "basePath": "./custom-docs",
+      "files": ["getting-started"]
+    }
+  ]
+}
+```
+
+Each file must be an MDX file, but defining the extension in the config is optional. See [MDX Documentation](#mdx-documentation).
 
 ### `theme`
 

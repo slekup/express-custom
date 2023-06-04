@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateImage = exports.validateUrl = exports.validateColor = exports.validateIpv4Address = exports.validatePhoneNumber = exports.valiedatePassword = exports.validateUsername = exports.validateEmail = exports.validateTime = exports.timeToCronExpression = exports.validateCronExpression = void 0;
+exports.validateImage = exports.validatePath = exports.validateUrl = exports.validateColor = exports.validateIpv4Address = exports.validatePhoneNumber = exports.valiedatePassword = exports.validateUsername = exports.validateEmail = exports.validateTime = exports.timeToCronExpression = exports.validateCronExpression = void 0;
 /**
  * Validate a cron expression.
  * @param expression The cron expression to validate.
@@ -126,6 +126,16 @@ const validateUrl = (url) => {
     }
 };
 exports.validateUrl = validateUrl;
+/**
+ * Tests if a path is valid.
+ * @param path The path to test.
+ * @returns True if the path is valid, false otherwise.
+ */
+const validatePath = (path) => {
+    const pathRegex = /^\/(?:[a-zA-Z0-9_]+\/)?[a-zA-Z0-9_]*$/;
+    return pathRegex.test(path);
+};
+exports.validatePath = validatePath;
 /**
  * Tests if an image is valid.
  * @param image The image to test.

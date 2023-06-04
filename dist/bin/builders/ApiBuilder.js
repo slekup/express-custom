@@ -38,21 +38,32 @@ const SchemaBuilder_1 = __importDefault(require("./SchemaBuilder"));
 class ApiBuilder extends BaseAppBuilder_1.default {
     port;
     versions;
+    routers;
     baseUrl;
     structures;
+    config;
     /**
      * The constructor of the ApiBuilder class.
-     * @param config The configuration of the API.
-     * @param config.baseUrl The base URL of the API.
-     * @param config.port The port of the API.
-     * @param config.structures The structures of the API.
+     * @param options The configuration of the API.
+     * @param options.baseUrl The base URL of the API.
+     * @param options.port The port of the API.
+     * @param options.structures The structures of the API.
      */
     constructor({ baseUrl, port, structures, }) {
         super('app');
+        const constructorSchema = new SchemaBuilder_1.default()
+            .addString((option) => option.setName('baseUrl').setRequired(true).setMin(1).setMax(100))
+            .addNumber((option) => option.setName('port').setMin(0).setMax(65536).setRequired(true));
+        constructorSchema.validate({ baseUrl, port }).then((result) => {
+            if (typeof result === 'string')
+                throw new Error(result);
+        });
         this.versions = [];
+        this.routers = [];
         this.baseUrl = baseUrl;
         this.port = port;
         this.structures = structures ?? [];
+        this.config = undefined;
     }
     /**
      * Adds a version to the API.
@@ -66,11 +77,23 @@ class ApiBuilder extends BaseAppBuilder_1.default {
         return this;
     }
     /**
+     * Adds a router directly to the API.
+     * @param router An instance of the RouterBuilder class.
+     * @returns The API builder.
+     */
+    addRouter(router) {
+        this.routers.push(router);
+        const routerValues = router.values();
+        this.raw.use(routerValues.path, routerValues.raw);
+        return this;
+    }
+    /**
      * Initializes the API.
      * @param callback The callback to run when the API is initialized.
      * @returns The server.
      */
     startServer(callback) {
+        this.validate();
         this.raw.get('/', (req, res) => res.json({
             message: 'Welcome to Slekup API',
             versions: this.versions.map((version) => ({
@@ -87,7 +110,7 @@ class ApiBuilder extends BaseAppBuilder_1.default {
      * Loads the configuration of the API.
      * @returns The configuration of the API.
      */
-    static loadConfig = async () => {
+    async loadConfig() {
         let config = {};
         const configPath = path_1.default.join(process.cwd(), 'express-custom.json');
         try {
@@ -183,8 +206,27 @@ class ApiBuilder extends BaseAppBuilder_1.default {
             process.exit(1);
         }
         const validatedConfig = config;
+        this.config = validatedConfig;
         return validatedConfig;
-    };
+    }
+    /**
+     * Gets the configuration of the API.
+     * @returns The configuration of the API.
+     */
+    async getConfig() {
+        if (this.config)
+            return this.config;
+        const config = await this.loadConfig();
+        return config;
+    }
+    /**
+     * Validates the API instance.
+     */
+    async validate() {
+        if (this.versions.length === 0 || this.routers.length === 0)
+            throw new Error('No versions or routers provided to the API');
+        await this.loadConfig();
+    }
     /**
      * Adds a router to the API.
      * @returns The API data.
@@ -194,8 +236,7 @@ class ApiBuilder extends BaseAppBuilder_1.default {
             throw new Error('The base URL of the API is not set.');
         if (!this.port)
             throw new Error('The port of the API is not set.');
-        logger_1.default.info('Running export');
-        const config = await ApiBuilder.loadConfig();
+        const config = await this.loadConfig();
         return {
             ...config,
             baseUrl: this.baseUrl,
@@ -203,6 +244,7 @@ class ApiBuilder extends BaseAppBuilder_1.default {
             structures: this.structures,
             rateLimit: this.ratelimit,
             versions: this.versions.map((version) => version.export()),
+            routers: this.routers.map((router) => router.export()),
         };
     }
 }

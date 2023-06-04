@@ -4,7 +4,8 @@ export type StringTest =
   | 'passwordStrength'
   | 'phoneNumber'
   | 'ipAddress'
-  | 'url';
+  | 'url'
+  | 'path';
 
 export type SchemaOption = string | number | boolean | null | undefined;
 
