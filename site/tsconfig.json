@@ -26,22 +26,22 @@
         "name": "typescript-plugin-css-modules"
       }
     ],
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "@components/*": [
-        "./src/components/*"
+        "src/components/*"
       ],
       "@contants/*": [
-        "./src/contants/*"
+        "src/contants/*"
       ],
       "@styles/*": [
-        "./src/styles/*"
+        "src/styles/*"
       ],
       "@typings/*": [
-        "./src/typings/*"
+        "src/typings/*"
       ],
       "@utils/*": [
-        "./src/utils/*"
+        "src/utils/*"
       ],
     }
   },

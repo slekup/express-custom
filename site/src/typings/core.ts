@@ -22,6 +22,7 @@ export interface SchemaCheck {
 export interface BaseSchema<T = unknown> {
   description: string;
   required: boolean;
+  type: SchemaTypes;
   options?: SchemaOption[];
   enum?: unknown[];
   items?: SchemaItems;
@@ -32,7 +33,7 @@ export interface BaseSchema<T = unknown> {
   schema?: `{${string}}`;
 }
 
-export type Schema = BaseSchema<Schema>;
+export type Schema = Record<string, BaseSchema<Schema>>;
 
 type StatusCode =
   | 200
@@ -70,32 +71,10 @@ type RequestMethod =
   | 'TRACE'
   | 'CONNECT';
 
-interface Endpoint {
-  name: string;
-  description: string;
-  path: string;
-  method: RequestMethod;
-  notes: Note[];
-  params: Schema;
-  queries: Schema;
-  body: Schema;
-  responses: EndpointResponse[];
-}
-
-export interface Route {
-  category?: string;
-  name: string;
-  description: string;
-  path: string;
-  endpoints: Endpoint[];
-}
-
-export interface CustomDocs {
-  docs: {
-    title: string;
-    excerpt: string;
-    content: string;
-  }[];
+interface RateLimit {
+  statusCode?: number;
+  window?: number;
+  max?: number;
 }
 
 export interface StructureField {
@@ -113,11 +92,62 @@ export interface Structure {
   fields: StructureField[];
 }
 
-export interface ApiData {
+interface Endpoint {
+  name: string;
+  description: string;
+  path: string;
+  method: RequestMethod;
+  notes: Note[];
+  params: Schema;
+  queries: Schema;
+  body: Schema;
+  responses: EndpointResponse[];
+  rateLimit?: RateLimit;
+}
+
+export interface Route {
+  category?: string;
+  name: string;
+  description: string;
+  path: string;
+  endpoints: Endpoint[];
+  rateLimit?: RateLimit;
+}
+
+interface Router {
+  name: string;
+  path: string;
+  rateLimit?: RateLimit;
+  routes: Route[];
+}
+
+interface Version {
+  version: number;
+  rateLimit?: RateLimit;
+  routers: Router[];
+}
+
+interface Socials {
+  discord: string;
+  github: string;
+  instagram: string;
+  facebook: string;
+  linkedin: string;
+  youtube: string;
+  twitter: string;
+  email: string;
+  [key: string]: string | undefined;
+}
+
+export interface IApiData {
+  name: string;
+  description: string;
+  baseUrl: string;
+  port: number;
+  logo?: string;
   structures?: Structure[];
-  custom?: CustomDocs;
-  router: {
-    name: string;
-    routes: Route[];
-  };
+  rateLimit?: RateLimit;
+  custom?: boolean;
+  socials?: Socials;
+  versions: Version[];
 }
