@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const BaseAppBuilder_1 = __importDefault(require("./Base/BaseAppBuilder"));
+const SchemaBuilder_1 = __importDefault(require("./SchemaBuilder"));
 /**
  * The route builder class.
  */
@@ -21,8 +22,21 @@ class RouteBuilder extends BaseAppBuilder_1.default {
      * @param options.name The name of the route.
      * @param options.description The description of the route.
      */
-    constructor({ name, description, path, }) {
+    constructor({ path, name, description, }) {
         super();
+        const constructorSchema = new SchemaBuilder_1.default()
+            .addString((option) => option
+            .setName('path')
+            .setRequired(true)
+            .setMin(1)
+            .setMax(100)
+            .setTest('path'))
+            .addString((option) => option.setName('name').setRequired(true).setMin(1).setMax(50))
+            .addString((option) => option.setName('description').setRequired(true).setMin(1).setMax(1000));
+        constructorSchema.validate({ name, description, path }).then((result) => {
+            if (typeof result === 'string')
+                throw new Error(`Route (${name || path}): ${result}`);
+        });
         this.path = path;
         this.name = name;
         this.description = description;
@@ -71,6 +85,13 @@ class RouteBuilder extends BaseAppBuilder_1.default {
             this.addEndpoint(value);
         }
         return this;
+    }
+    /**
+     * Validates the route.
+     */
+    validate() {
+        if (this.endpoints.length === 0)
+            throw new Error(`Route ${this.name} has no endpoints`);
     }
     /**
      * Exports the route.

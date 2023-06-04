@@ -4,6 +4,7 @@ import rateLimit, { Options } from 'express-rate-limit';
 import { RateLimit } from '@typings/core';
 import BaseAppBuilder from './Base/BaseAppBuilder';
 import RouterBuilder, { ExportedRouter } from './RouterBuilder';
+import SchemaBuilder from './SchemaBuilder';
 
 export interface ExportedVersion {
   version: number;
@@ -25,6 +26,15 @@ export default class VersionBuilder extends BaseAppBuilder<'app'> {
    */
   public constructor({ version }: { version: number }) {
     super('app');
+
+    const constructorSchema = new SchemaBuilder().addNumber((option) =>
+      option.setName('version').setRequired(true).setMin(1).setMax(10_000)
+    );
+
+    constructorSchema.validate({ version }).then((result) => {
+      if (typeof result === 'string') throw new Error(result);
+    });
+
     this.routers = [];
     this.version = version;
   }
@@ -90,5 +100,13 @@ export default class VersionBuilder extends BaseAppBuilder<'app'> {
       raw: this.raw,
       version: this.version,
     };
+  }
+
+  /**
+   * Validates the version builder.
+   */
+  public validate(): void {
+    if (!this.routers.length) throw new Error('No routers provided');
+    this.routers.forEach((router) => router.validate());
   }
 }

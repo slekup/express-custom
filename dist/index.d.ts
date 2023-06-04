@@ -62,46 +62,7 @@ declare class BaseAppBuilder<T = 'router'> {
     addMiddleware(middleware: Middleware): this;
 }
 
-type StructureType = 'schema' | 'option';
-interface StructureField {
-    name: string;
-    description: string;
-    type?: 'string' | 'number' | 'boolean' | 'object' | 'array';
-    required?: boolean;
-    structure?: string;
-    option?: string;
-}
-/**
- * The StructureBuilder class is used to build a example structures for object schemas and value options.
- */
-declare class StructureBuilder {
-    private name;
-    private type;
-    private fields;
-    /**
-     * The name of the structure.
-     * @param fields The fields of the structure.
-     * @param fields.name The name of the field.
-     * @param fields.type The type of the field.
-     * @param fields.fields The fields of the field.
-     */
-    constructor({ name, type, fields, }: {
-        name: string;
-        type: StructureType;
-        fields: StructureField[];
-    });
-    /**
-     * Exports the structure.
-     * @returns The exported structure.
-     */
-    export(): {
-        name: string;
-        type: StructureType;
-        fields: StructureField[];
-    };
-}
-
-type StringTest = 'email' | 'username' | 'passwordStrength' | 'phoneNumber' | 'ipAddress' | 'url';
+type StringTest = 'email' | 'username' | 'passwordStrength' | 'phoneNumber' | 'ipAddress' | 'url' | 'path';
 type SchemaOption = string | number | boolean | null | undefined;
 type SchemaTypes = string | number | boolean | unknown[] | object | null | undefined | unknown;
 type ValueTypes = 'string' | 'number' | 'integer' | 'boolean' | 'object' | 'array' | 'image';
@@ -671,10 +632,10 @@ declare class RouteBuilder extends BaseAppBuilder {
      * @param options.name The name of the route.
      * @param options.description The description of the route.
      */
-    constructor({ name, description, path, }: {
+    constructor({ path, name, description, }: {
+        path: PathString;
         name: string;
         description: string;
-        path: PathString;
     });
     /**
      * Adds an endpoint to the route.
@@ -688,6 +649,10 @@ declare class RouteBuilder extends BaseAppBuilder {
      * @returns The route builder.
      */
     addEndpointFile(endpointFile: Record<string, EndpointBuilder>): this;
+    /**
+     * Validates the route.
+     */
+    validate(): void;
     /**
      * Exports the route.
      * @returns The exported route.
@@ -724,11 +689,6 @@ declare class RouterBuilder extends BaseAppBuilder {
      */
     addRoute(route: RouteBuilder): this;
     /**
-     * Exports the routes and endpoints data.
-     * @returns The exported data.
-     */
-    export(): Readonly<ExportedRouter>;
-    /**
      * Returns the router values.
      * @returns The router values.
      */
@@ -740,6 +700,54 @@ declare class RouterBuilder extends BaseAppBuilder {
         routes: RouteBuilder[];
         middlewares: Middleware[];
     }>;
+    /**
+     * Validates the router.
+     */
+    validate(): void;
+    /**
+     * Exports the routes and endpoints data.
+     * @returns The exported data.
+     */
+    export(): Readonly<ExportedRouter>;
+}
+
+type StructureType = 'schema' | 'option';
+interface StructureField {
+    name: string;
+    description: string;
+    type?: 'string' | 'number' | 'boolean' | 'object' | 'array';
+    required?: boolean;
+    structure?: string;
+    option?: string;
+}
+/**
+ * The StructureBuilder class is used to build a example structures for object schemas and value options.
+ */
+declare class StructureBuilder {
+    private name;
+    private type;
+    private fields;
+    /**
+     * The name of the structure.
+     * @param fields The fields of the structure.
+     * @param fields.name The name of the field.
+     * @param fields.type The type of the field.
+     * @param fields.fields The fields of the field.
+     */
+    constructor({ name, type, fields, }: {
+        name: string;
+        type: StructureType;
+        fields: StructureField[];
+    });
+    /**
+     * Exports the structure.
+     * @returns The exported structure.
+     */
+    export(): {
+        name: string;
+        type: StructureType;
+        fields: StructureField[];
+    };
 }
 
 interface ExportedVersion {
@@ -788,6 +796,10 @@ declare class VersionBuilder extends BaseAppBuilder<'app'> {
         raw: Router;
         version: number;
     }>;
+    /**
+     * Validates the version builder.
+     */
+    validate(): void;
 }
 
 type ExportedApi = Config & {
@@ -796,6 +808,7 @@ type ExportedApi = Config & {
     structures: StructureBuilder[];
     rateLimit?: Partial<RateLimit>;
     versions: ExportedVersion[];
+    routers: ExportedRouter[];
 };
 /**
  * The ApiBuilder class is used to build the API.
@@ -803,14 +816,16 @@ type ExportedApi = Config & {
 declare class ApiBuilder extends BaseAppBuilder<'app'> {
     private port;
     private versions;
+    private routers;
     private baseUrl;
     private structures;
+    private config?;
     /**
      * The constructor of the ApiBuilder class.
-     * @param config The configuration of the API.
-     * @param config.baseUrl The base URL of the API.
-     * @param config.port The port of the API.
-     * @param config.structures The structures of the API.
+     * @param options The configuration of the API.
+     * @param options.baseUrl The base URL of the API.
+     * @param options.port The port of the API.
+     * @param options.structures The structures of the API.
      */
     constructor({ baseUrl, port, structures, }: {
         baseUrl: string;
@@ -824,6 +839,12 @@ declare class ApiBuilder extends BaseAppBuilder<'app'> {
      */
     addVersion(version: VersionBuilder): this;
     /**
+     * Adds a router directly to the API.
+     * @param router An instance of the RouterBuilder class.
+     * @returns The API builder.
+     */
+    addRouter(router: RouterBuilder): this;
+    /**
      * Initializes the API.
      * @param callback The callback to run when the API is initialized.
      * @returns The server.
@@ -833,7 +854,16 @@ declare class ApiBuilder extends BaseAppBuilder<'app'> {
      * Loads the configuration of the API.
      * @returns The configuration of the API.
      */
-    private static loadConfig;
+    private loadConfig;
+    /**
+     * Gets the configuration of the API.
+     * @returns The configuration of the API.
+     */
+    getConfig(): Promise<Readonly<Config>>;
+    /**
+     * Validates the API instance.
+     */
+    private validate;
     /**
      * Adds a router to the API.
      * @returns The API data.

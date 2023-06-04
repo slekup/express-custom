@@ -214,6 +214,9 @@ class SchemaBuilder {
                 // Test if a url is valid
                 if (req.test === 'url' && !(0, validate_1.validateUrl)(testVal))
                     return `The field "${key}" must be a valid IPv4 address.`;
+                // Test if a path is valid
+                if (req.test === 'path' && !(0, validate_1.validatePath)(testVal))
+                    return `The field "${key}" must be a valid path.`;
                 // Test if the schema value is a string
                 if (typeof data[key] !== 'string')
                     return `The field "${key}" must be a string.`;

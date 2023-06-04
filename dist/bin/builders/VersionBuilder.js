@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const BaseAppBuilder_1 = __importDefault(require("./Base/BaseAppBuilder"));
+const SchemaBuilder_1 = __importDefault(require("./SchemaBuilder"));
 /**
  * The version builder class.
  */
@@ -18,6 +19,11 @@ class VersionBuilder extends BaseAppBuilder_1.default {
      */
     constructor({ version }) {
         super('app');
+        const constructorSchema = new SchemaBuilder_1.default().addNumber((option) => option.setName('version').setRequired(true).setMin(1).setMax(10_000));
+        constructorSchema.validate({ version }).then((result) => {
+            if (typeof result === 'string')
+                throw new Error(result);
+        });
         this.routers = [];
         this.version = version;
     }
@@ -73,6 +79,14 @@ class VersionBuilder extends BaseAppBuilder_1.default {
             raw: this.raw,
             version: this.version,
         };
+    }
+    /**
+     * Validates the version builder.
+     */
+    validate() {
+        if (!this.routers.length)
+            throw new Error('No routers provided');
+        this.routers.forEach((router) => router.validate());
     }
 }
 exports.default = VersionBuilder;
