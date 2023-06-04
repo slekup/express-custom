@@ -8,6 +8,7 @@ import {
   validateEmail,
   validateImage,
   validateIpv4Address,
+  validatePath,
   validatePhoneNumber,
   validateUrl,
   validateUsername,
@@ -299,6 +300,10 @@ export default class SchemaBuilder {
         // Test if a url is valid
         if (req.test === 'url' && !validateUrl(testVal))
           return `The field "${key}" must be a valid IPv4 address.`;
+
+        // Test if a path is valid
+        if (req.test === 'path' && !validatePath(testVal))
+          return `The field "${key}" must be a valid path.`;
 
         // Test if the schema value is a string
         if (typeof data[key] !== 'string')

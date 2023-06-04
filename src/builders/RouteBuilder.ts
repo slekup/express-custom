@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { PathString } from '@typings/core';
 import BaseAppBuilder from './Base/BaseAppBuilder';
 import EndpointBuilder, { ExportedEndpoint } from './EndpointBuilder';
+import SchemaBuilder from './SchemaBuilder';
 
 export interface ExportedRoute {
   name: string;
@@ -29,15 +30,37 @@ export default class RouteBuilder extends BaseAppBuilder {
    * @param options.description The description of the route.
    */
   public constructor({
+    path,
     name,
     description,
-    path,
   }: {
+    path: PathString;
     name: string;
     description: string;
-    path: PathString;
   }) {
     super();
+
+    const constructorSchema = new SchemaBuilder()
+      .addString((option) =>
+        option
+          .setName('path')
+          .setRequired(true)
+          .setMin(1)
+          .setMax(100)
+          .setTest('path')
+      )
+      .addString((option) =>
+        option.setName('name').setRequired(true).setMin(1).setMax(50)
+      )
+      .addString((option) =>
+        option.setName('description').setRequired(true).setMin(1).setMax(1000)
+      );
+
+    constructorSchema.validate({ name, description, path }).then((result) => {
+      if (typeof result === 'string')
+        throw new Error(`Route (${name || path}): ${result}`);
+    });
+
     this.path = path;
     this.name = name;
     this.description = description;
@@ -96,6 +119,14 @@ export default class RouteBuilder extends BaseAppBuilder {
     }
 
     return this;
+  }
+
+  /**
+   * Validates the route.
+   */
+  public validate(): void {
+    if (this.endpoints.length === 0)
+      throw new Error(`Route ${this.name} has no endpoints`);
   }
 
   /**
