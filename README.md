@@ -26,7 +26,7 @@ Express custom is a library built on top of express that allows you to easily cr
 
 Some additional features include schema validation, rate-limiting, and error handling.
 
-> To use this library, your API must or will be versioned (v1/v2/etc) and your endpoints must or will be grouped by categories (routers) and sub-categories (routes). For example, you could have a category called "User Endpoints" and a sub-category called "User Authentication Endpoints".
+> To use this library, your API should preferably be versioned (v1/v2/etc) and your endpoints must or will be grouped by categories (routers) and sub-categories (routes). For example, you could have a category called "User Endpoints" and a sub-category called "User Authentication Endpoints".
 
 ## Installation
 
