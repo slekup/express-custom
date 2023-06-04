@@ -7,21 +7,24 @@
     "module": "NodeNext",
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "alwaysStrict": true,
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
-    "baseUrl": "./src",
+    "baseUrl": "./",
+    "outDir": "dist",
     "paths": {
       "@builders/*": [
-        "builders/*"
+        "src/builders/*"
       ],
       "@typings/*": [
-        "typings/*"
+        "src/typings/*"
       ],
       "@utils/*": [
-        "utils/*"
+        "src/utils/*"
       ]
     },
   },

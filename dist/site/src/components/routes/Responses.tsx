@@ -5,29 +5,32 @@ import Highlight from 'react-highlight';
 import { HiChevronDown } from 'react-icons/hi';
 
 import { EndpointResponse } from '@typings/core';
+import { CodeBlock } from '..';
 
 interface Props {
   responses: EndpointResponse[];
   index: number;
 }
 
-const Responses = ({ responses, index }: Props) => {
+export default function Responses({ responses, index }: Props) {
   const [showResponses, setShowResponses] = useState<number[]>([]);
 
   return (
     <div className="relative mt-5">
       <button
-        className="btn-sm btn-default flex active:cursor-wait"
+        className="text-text-primary bg-default hover:bg-default-hover active:bg-default-active flex rounded-md px-2 py-1 text-xs active:cursor-wait"
         onClick={() => {
-          if (showResponses.some((i) => i === index))
-            setShowResponses(showResponses.filter((i) => i !== index));
+          if (showResponses.some((responseIndex) => responseIndex === index))
+            setShowResponses(
+              showResponses.filter((responseIndex) => responseIndex !== index)
+            );
           else setShowResponses([...showResponses, index]);
         }}
       >
         <span>Show Responses ({responses.length})</span>
         <HiChevronDown
           className={`ml-1 mt-0.5 h-4 w-4 transition duration-300 ${
-            showResponses.includes(index) && 'rotate-180'
+            showResponses.includes(index) ? 'rotate-180' : ''
           }`}
         />
       </button>
@@ -40,18 +43,11 @@ const Responses = ({ responses, index }: Props) => {
         }`}
       >
         {responses.map((response, responseIndex) => (
-          <div
-            className="relative mt-3 overflow-hidden rounded-lg"
-            key={responseIndex}
-          >
-            <Highlight className="json overflow-x-auto">
-              {JSON.stringify(response, null, 2)}
-            </Highlight>
+          <div className="mt-3" key={responseIndex}>
+            <CodeBlock code={JSON.stringify(response, null, 2)} lang="json" />
           </div>
         ))}
       </div>
     </div>
   );
-};
-
-export default Responses;
+}

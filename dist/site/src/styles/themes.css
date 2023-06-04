@@ -1,9 +1,9 @@
+@import './themes/default.css';
 @import './themes/brave.css';
 @import './themes/dark.css';
 @import './themes/facebook.css';
 @import './themes/high-contrast-dark.css';
 @import './themes/high-contrast-light.css';
-@import './themes/light.css';
 @import './themes/raspberry.css';
 @import './themes/slack.css';
 @import './themes/stack-overflow.css';
