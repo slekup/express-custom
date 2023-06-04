@@ -3,11 +3,13 @@
 @tailwind utilities;
 
 @import './themes.css';
-@import './fonts/fonts.css';
+
+html {
+  scroll-behavior: smooth;
+}
 
 html,
 body {
-  font-family: 'Mukta', 'Nunito Sans', 'Fira Code', Arial, sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -30,7 +32,13 @@ body {
   @apply focus:outline-none;
 }
 
+* {
+  scrollbar-width: thin;
+}
+
 ::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
   background: rgb(var(--background));
 }
 
@@ -107,29 +115,7 @@ input[type='number']::-webkit-outer-spin-button {
   text-decoration: underline;
 }
 
-/* Table */
-table {
-  @apply my-5 border-t border-l border-border border border-collapse table-auto text-text-secondary break-words w-full !important;
-}
-
-tbody tr {
-  @apply odd:bg-default;
-}
-
-th,
-td {
-  @apply border-r border-b border-border border-collapse;
-}
-
-th {
-  @apply px-3 py-2 text-sm font-medium text-text-secondary;
-}
-
-td {
-  @apply px-3 py-2 text-sm font-medium text-text;
-}
-
 /* Code */
 .code {
-  @apply text-[14px] py-0.5 px-1.5 mx-0 rounded-sm bg-default-hover text-text font-semibold cursor-auto transition duration-200;
+  @apply bg-default-hover text-text-primary mx-0 cursor-auto rounded-sm px-1.5 py-0.5 text-[14px] font-semibold transition duration-200;
 }

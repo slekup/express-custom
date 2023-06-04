@@ -1,154 +1,293 @@
-# Express Custom
+<div align="center">
 
-Enhance your express app with builders, schema validation, next.js documentation, and more.
+[![Express Custom Logo](https://i.imgur.com/TSBzoVB.png)](https://github.com/slekup/express-custom)
 
-- Easily define express routes and endpoints with builders.
-- Validate requests against schemas.
-- Automatically generate documentation for your API with next.js.
-- Export your routes and endpoints to JSON.
-- Forget about error handling, it's all done for you.
+</div>
 
-## Table of Contents
+<div align="center">
 
-- [Getting Started](#getting-started)
-  - [Install](#install)
-  - [Usage](#usage)
-    - [Setup the router](#setup-the-router)
-    - [Create the route](#create-the-route)
-    - [Create the endpoint](#create-the-endpoint)
+<a href="https://www.npmjs.com/package/express-rate-limit" target="_blank">Demo (soon)</a> • <a href="https://www.npmjs.com/package/express-rate-limit" target="_blank">Documentation (soon)</a> • <a href="https://discord.gg/p5rxxQN7DT" target="_blank">Discord</a> • <a href="https://github.com/slekup/express-custom" target="_blank">GitHub</a>
 
-# Getting Started
+</div>
 
-## Install
+---
+
+<div align="center">
+
+Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.
+
+![npm version](https://img.shields.io/npm/v/express-custom.svg) ![npm downloads](https://img.shields.io/npm/dm/express-custom) ![npm size](https://img.shields.io/bundlephobia/min/express-custom)
+
+</div>
+
+---
+
+Express custom is a library built on top of express that allows you to easily create and manage your express routes and endpoints. Using this format, you can generate a custom next.js documentation site for your API, export everything to a JSON file, and more.
+
+Some additional features include schema validation, rate-limiting, and error handling.
+
+> To use this library, your API must or will be versioned (v1/v2/etc) and your endpoints must or will be grouped by categories (routers) and sub-categories (routes). For example, you could have a category called "User Endpoints" and a sub-category called "User Authentication Endpoints".
+
+## Installation
 
 ```bash
-npm install express-custom
+# Using npm
+> npm install express-custom
+# Using yarn or pnpm
+> yarn/pnpm add express-custom
 ```
 
 ## Usage
 
-Use the `express-custom` function to create an express app just like you would with the `express` function.
+### Importing
+
+This library supports both typescript and javascript, with ES6 modules and CommonJS.
+
+**This package has only been tested for Node 18+**
 
 ```ts
-// index.ts
-import express from 'express-custom';
-// or import express from 'express';
-import router from './routes';
-
-const app = express();
-
-app.use(router.getRouter());
-
-app.listen(5000);
+// ES6 modules
+import { ApiBuilder } from 'express-custom';
+// CommonJS
+const { ApiBuilder } = require('express-custom');
 ```
 
-### Setup the router
+### Create the API
 
-Initialize the router with a user route:
+The main class is the `ApiBuilder` class. This class is used to create your API and start the server.
+
+It's recommended that you run any functions such as `startServer` in a seperate main file, and import the API into that file. This is so your application does not run when you use the export commands.
 
 ```ts
-// routes/index.ts
-import { RouterBuilder } from 'express-custom';
+const api = new ApiBuilder({
+  baseUrl: 'https://example.com/api',
+  port: 5000,
+});
 
-import userRoute from './user.ts';
-
-const router = new RouterBuilder()
-  .setDefaultCategory('Website Endpoints')
-  .setPath('/')
-  .addRoute('User Endpoints', userRoute);
-
-export default router;
-```
-
-### Create the route
-
-```ts
-// routes/user.ts
-import { RouteBuilder } from 'express-custom';
-
-import middleware from '../utils/middleware.ts';
-import { getUser } from '../controllers/user/user.ts';
-
-const route = new RouteBuilder()
-  .setName('User')
-  .setDescription('The user route')
-  .setPath('/user')
-  .addMiddleware(middleware)
-  .addEndpoint(getUser);
-
-export default route;
-```
-
-### Create the endpoint
-
-Define the endpoint information and add a controller function to handle the request.
-
-```ts
-// controllers/user/user.ts
-import { EndpointBuilder } from 'express-custom';
-
-export const getUser = new EndpointBuilder()
-  .setName('Get User')
-  .setDescription('Get a user by id')
-  .setPath('/:id')
-  .setMethod('GET')
-  .setParamSchema((schema) =>
-    schema.addParam((value) =>
-      value.setName('id').setDescription('The id of the user')
-    )
-  )
-  .setController((req, res) => {
-    res.json({ user: req.user });
-  });
-```
-
-## Generate a Static Next.js Site
-
-This will build and export a static next.js site to a new docs folder in your project directory.
-
-```bash
-npx gensite ./src/routes/index.ts docs
-```
-
-or use the `generateSite` function:
-
-```ts
-await router.generateSite({
-  apiUrl: 'https://example.com',
-  outDir: './docs',
-  title: 'My API',
-  description: 'My API description',
-  version: '1.0.0',
-  logo: 'https://example.com/logo.png',
-  customDocs: ['./custom-docs/custom.mdx'],
+// In the main file
+const server = api.startServer(() => {
+  console.log('Server started on port 5000');
 });
 ```
 
-## Export the Routes and Endpoints to a JSON File
+### Add a version to the API
 
-Export the routes and endpoints to a JSON file at the specified path.
+To add a version to your API, use the `addVersion` function. This function takes a `VersionBuilder` object. The `VersionBuilder` class is used to create a version for your API. You can add multiple versions to your API.
 
-```bash
-npx exportRoutes ./src/routes/index.ts routes.json
-```
-
-```bash
-npx exportRoutes ./src/routes/index.ts routes.json --list
-```
-
-or use the `export` and `exportList` functions:
+The version number must be a number. The version number is used in the url to access the version. For example, if you have a version with the number 1, the url to access that version would be `https://example.com/api/v1`.
 
 ```ts
-import fs from 'fs';
+const v1 = new VersionBuilder({
+  version: 1,
+});
 
-// An array of the route and endpoint objects
-const routesJSON = router.export();
-fs.writeFileSync('./routes.json', JSON.stringify(routesJSON));
+// Add routers, routes and endpoints to the version ...
 
-// An array of the urls for each endpoint
-const routesList = router.exportList('./routes-list.json');
+api.addVersion(v1);
 ```
 
-## Debugging
+### Add a router to the version
 
-Set the environment variable `DEBUG_EXPRESS_CUSTOM` to true to see debug messages for express-custom.
+To add a router to your API, use the `addRouter` function. This function takes a `RouterBuilder` object. The `RouterBuilder` class is used to create a router for your API. You can add multiple routers to your API.
+
+The path is the path to the router. For example, if you have a router with the path `/user`, the url to access that router would be `https://example.com/api/v1/user`.
+
+```ts
+const userRouter = new RouterBuilder({
+  name: 'User Endpoints',
+  path: '/user',
+});
+
+// Add routes and endpoints to the router ...
+
+v1.addRouter(userRouter);
+```
+
+### Add a route to the router
+
+To add a route to your API, use the `addRoute` function. This function takes a `RouteBuilder` object. The `RouteBuilder` class is used to create a route for your API. You can add multiple routes to your API.
+
+The path is the path to the route. For example, if you have a route with the path `/auth`, the url to access that route would be `https://example.com/api/v1/user/auth`.
+
+```ts
+const authRoute = new RouteBuilder({
+  name: 'User Authentication Endpoints',
+  description: 'Endpoints for user authentication',
+  path: '/auth',
+});
+
+// Add endpoints to the route ...
+
+userRouter.addRoute(authRoute);
+```
+
+### Add an endpoint to the route
+
+To add an endpoint to your API, use the `addEndpoint` function. This function takes an `EndpointBuilder` object. The `EndpointBuilder` class is used to create an endpoint for your API. You can add multiple endpoints to your API.
+
+The path is the path to the endpoint. For example, if you have an endpoint with the path `/login`, the url to access that endpoint would be `https://example.com/api/v1/user/auth/login`.
+
+```ts
+const loginEndpoint = new EndpointBuilder({
+  name: 'Login',
+  description: 'Login to your account',
+  path: '/login',
+  method: 'POST',
+}).setController((req, res) => {
+  res.json({ user: req.user });
+});
+
+authRoute.addEndpoint(loginEndpoint);
+```
+
+## Generate a Next.js Documentation Site
+
+This will build a static next.js site to the specified output folder in your project directory.
+
+```bash
+> npx gensite
+```
+
+## Export the API to a JSON File
+
+This will export the API to a `api.json` file in the specified output folder in your project directory.
+
+```bash
+> npx export-api
+```
+
+## MDX Documentation
+
+You can create MDX files to document further details about your API. These files will be rendered and displayed on the next.js documentation site.
+
+> Custom documentation stays the same for every API version.
+
+## Configuration
+
+Create a express-custom.json file in your project directory or add an "express-custom" section to your package.json file to configure the library.
+
+**Example `express-custom.json`:**
+
+```json
+{
+  "file": "src/index.ts",
+  "output": "docs",
+  "name": "My API",
+  "description": "My API description",
+  "logo": "https://example.com/logo.png",
+  "customDocs": [
+    {
+      "category": "Welcome",
+      "slug": "welcome",
+      "basePath": "./custom-docs",
+      "files": ["getting-started"]
+    }
+  ]
+  "theme": "default",
+  "socials": {
+    "github": "https://github.com/slekup/express-custom"
+  }
+}
+```
+
+### `file` (required)
+
+> `string`
+
+The file the API instance is exported from.
+
+This must be a relative path to the file from the project directory. The default export of this file must be an instance of the `ApiBuilder` class.
+
+### `output`
+
+> `string`
+
+The output directory for the next.js documentation site.
+
+Defaults to `docs`.
+
+### `name`
+
+> `string`
+
+The name of the API.
+
+This will be used as the title of the next.js documentation site. Defaults to `API Documentation`.
+
+If provided, this must be inbetween 1 and 25 characters.
+
+### `description`
+
+> `string`
+
+The description of your API.
+
+### `logo`
+
+> `string`
+
+The logo of your API. This will be used as the logo of the next.js documentation site. This must be a url to an image.
+
+Defaults to the Express Custom logo.
+
+### `customDocs`
+
+> `string`
+
+An array of objects containing the `category`, `slug`, `basePath`, and `files`.
+
+- `category` - The name of the category.
+- `slug` - The slug to be used in the url.
+- `basePath` - The base path (directory) to the MDX files.
+- `files` - An array of file names.
+
+```json
+{
+  "customDocs": [
+    {
+      "category": "Welcome",
+      "slug": "welcome",
+      "basePath": "./custom-docs",
+      "files": ["getting-started"]
+    }
+  ]
+}
+```
+
+Each file must be an MDX file, but defining the extension in the config is optional. See [MDX Documentation](#mdx-documentation).
+
+### `theme`
+
+> `string`
+
+The theme for the next.js documentation site.
+
+Available themes: `default`, `dark`.
+
+Defaults to `default` (light theme).
+
+### `codeTheme`
+
+> `string`
+
+The codeblock theme for the next.js documentation site.
+
+The site uses highlight.js for code highlighting. See [highlight.js demo](https://highlightjs.org/static/demo/) for available themes.
+
+Defaults to `base16/framer`.
+
+### `socials`
+
+> `object`
+
+Social links for the next.js documentation site.
+
+Available socials: `discord`, `github`, `instagram`, `facebook`, `linkedin`, `youtube`, `twitter`, `email`.
+
+## Issues and Contributing
+
+If you have any issues or would like to contribute, please [open an issue](https://github.com/slekup/express-custom/issues/new) or pull request.
+
+## License
+
+Copyright © [slekup](https://github.com/slekup)
