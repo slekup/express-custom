@@ -7,6 +7,7 @@ import { RateLimit } from '@typings/core';
 import { errorMiddleware } from '@utils/middleware';
 import logger, { cli } from '../bin/utils/logger';
 import BaseAppBuilder from './Base/BaseAppBuilder';
+import RouterBuilder, { ExportedRouter } from './RouterBuilder';
 import SchemaBuilder from './SchemaBuilder';
 import StructureBuilder from './StructureBuilder';
 import VersionBuilder, { ExportedVersion } from './VersionBuilder';
@@ -17,6 +18,7 @@ export type ExportedApi = Config & {
   structures: StructureBuilder[];
   rateLimit?: Partial<RateLimit>;
   versions: ExportedVersion[];
+  routers: ExportedRouter[];
 };
 
 /**
@@ -25,15 +27,17 @@ export type ExportedApi = Config & {
 export default class ApiBuilder extends BaseAppBuilder<'app'> {
   private port: number;
   private versions: VersionBuilder[];
+  private routers: RouterBuilder[];
   private baseUrl: string;
   private structures: StructureBuilder[];
+  private config?: Config;
 
   /**
    * The constructor of the ApiBuilder class.
-   * @param config The configuration of the API.
-   * @param config.baseUrl The base URL of the API.
-   * @param config.port The port of the API.
-   * @param config.structures The structures of the API.
+   * @param options The configuration of the API.
+   * @param options.baseUrl The base URL of the API.
+   * @param options.port The port of the API.
+   * @param options.structures The structures of the API.
    */
   public constructor({
     baseUrl,
@@ -45,10 +49,25 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
     structures?: StructureBuilder[];
   }) {
     super('app');
+
+    const constructorSchema = new SchemaBuilder()
+      .addString((option) =>
+        option.setName('baseUrl').setRequired(true).setMin(1).setMax(100)
+      )
+      .addNumber((option) =>
+        option.setName('port').setMin(0).setMax(65536).setRequired(true)
+      );
+
+    constructorSchema.validate({ baseUrl, port }).then((result) => {
+      if (typeof result === 'string') throw new Error(result);
+    });
+
     this.versions = [];
+    this.routers = [];
     this.baseUrl = baseUrl;
     this.port = port;
     this.structures = structures ?? [];
+    this.config = undefined;
   }
 
   /**
@@ -64,11 +83,25 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
   }
 
   /**
+   * Adds a router directly to the API.
+   * @param router An instance of the RouterBuilder class.
+   * @returns The API builder.
+   */
+  public addRouter(router: RouterBuilder): this {
+    this.routers.push(router);
+    const routerValues = router.values();
+    this.raw.use(routerValues.path, routerValues.raw);
+    return this;
+  }
+
+  /**
    * Initializes the API.
    * @param callback The callback to run when the API is initialized.
    * @returns The server.
    */
   public startServer(callback?: () => void): Server {
+    this.validate();
+
     this.raw.get('/', (req, res) =>
       res.json({
         message: 'Welcome to Slekup API',
@@ -91,7 +124,7 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
    * Loads the configuration of the API.
    * @returns The configuration of the API.
    */
-  private static loadConfig = async (): Promise<Readonly<Config>> => {
+  private async loadConfig(): Promise<Readonly<Config>> {
     let config: Partial<Config> = {};
     const configPath = path.join(process.cwd(), 'express-custom.json');
 
@@ -221,8 +254,30 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
 
     const validatedConfig = config as Config;
 
+    this.config = validatedConfig;
+
     return validatedConfig;
-  };
+  }
+
+  /**
+   * Gets the configuration of the API.
+   * @returns The configuration of the API.
+   */
+  public async getConfig(): Promise<Readonly<Config>> {
+    if (this.config) return this.config;
+    const config = await this.loadConfig();
+    return config;
+  }
+
+  /**
+   * Validates the API instance.
+   */
+  private async validate(): Promise<void> {
+    if (this.versions.length === 0 || this.routers.length === 0)
+      throw new Error('No versions or routers provided to the API');
+
+    await this.loadConfig();
+  }
 
   /**
    * Adds a router to the API.
@@ -232,9 +287,7 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
     if (!this.baseUrl) throw new Error('The base URL of the API is not set.');
     if (!this.port) throw new Error('The port of the API is not set.');
 
-    logger.info('Running export');
-
-    const config = await ApiBuilder.loadConfig();
+    const config = await this.loadConfig();
 
     return {
       ...config,
@@ -243,6 +296,7 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
       structures: this.structures,
       rateLimit: this.ratelimit,
       versions: this.versions.map((version) => version.export()),
+      routers: this.routers.map((router) => router.export()),
     };
   }
 }
