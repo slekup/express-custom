@@ -1,7 +1,7 @@
-export { default as ArrayValueBuilder } from './ArrayValueBuilder';
-export { default as BooleanValueBuilder } from './BooleanValueBuilder';
-export { default as ImageValueBuilder } from './ImageValueBuilder';
-export { default as IntegerValueBuilder } from './IntegerValueBuilder';
-export { default as NumberValueBuilder } from './NumberValueBuilder';
-export { default as ObjectValueBuilder } from './ObjectValueBuilder';
-export { default as StringValueBuilder } from './StringValueBuilder';
+export { default as ArrayValue } from './ArrayValue';
+export { default as BooleanValue } from './BooleanValue';
+export { default as ImageValue } from './ImageValue';
+export { default as IntegerValue } from './IntegerValue';
+export { default as NumberValue } from './NumberValue';
+export { default as ObjectValue } from './ObjectValue';
+export { default as StringValue } from './StringValue';

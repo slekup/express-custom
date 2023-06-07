@@ -1,8 +1,38 @@
 import express, { Request, Response, NextFunction, Express, Router } from 'express';
 export { default } from 'express';
 import { Server } from 'http';
-import { Options } from 'express-rate-limit';
 import { ClientSession } from 'mongoose';
+import { Options } from 'express-rate-limit';
+
+type Middleware = (req: Request, res: Response, next: NextFunction) => void;
+type PathString = `/${string}`;
+interface RateLimit {
+    statusCode: number;
+    window: number;
+    max: number;
+}
+type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'OPTIONS' | 'HEAD' | 'TRACE' | 'CONNECT';
+type EndpointMessageType = 'INFO' | 'WARNING' | 'DANGER' | 'SUCCESS';
+interface EndpointNote {
+    type: EndpointMessageType;
+    text: string;
+}
+type StatusCode = 200 | 201 | 204 | 301 | 400 | 401 | 403 | 404 | 405 | 409 | 500 | 501;
+interface EndpointResponse {
+    status: StatusCode;
+    message: string;
+    [key: string]: unknown;
+}
+type ControllerType = (req: Request, res: Response, session: ClientSession) => Promise<unknown> | unknown;
+type StructureType = 'schema' | 'option';
+interface StructureField {
+    name: string;
+    description: string;
+    type?: 'string' | 'number' | 'boolean' | 'object' | 'array';
+    required?: boolean;
+    structure?: string;
+    option?: string;
+}
 
 type Themes = 'default' | 'dark' | 'facebook' | 'slack' | 'stack-overflow' | 'raspberry' | 'brave' | 'terminal' | 'high-contrast-light' | 'high-contrast-dark';
 interface Socials {
@@ -22,42 +52,86 @@ interface Config {
     logo: string;
     output: string;
     customDir?: string;
+    hide: {
+        rateLimits: boolean;
+    };
     theme: Themes;
     socials: Socials;
 }
-
-type Middleware = (req: Request, res: Response, next: NextFunction) => void;
-type PathString = `/${string}`;
-interface RateLimit {
-    statusCode: number;
-    window: number;
-    max: number;
+interface ExportedValue<T> {
+    type: string;
+    min?: number;
+    max?: number;
+    options?: string[];
+    test?: string;
+    items?: T;
+    properties?: T;
 }
+type ExportedSchema = Record<string, ExportedValue<ExportedSchema>>;
+interface ExportedEndpoint {
+    name: string;
+    description: string;
+    path: string;
+    method: RequestMethod;
+    notes: EndpointNote[];
+    params: ExportedSchema;
+    queries: ExportedSchema;
+    body: ExportedSchema;
+    responses: EndpointResponse[];
+}
+interface ExportedRoute {
+    name: string;
+    description: string;
+    path: PathString;
+    endpoints: ExportedEndpoint[];
+}
+interface ExportedGroup {
+    name: string;
+    path: PathString;
+    routes: ExportedRoute[];
+}
+interface ExportedVersion {
+    version: number;
+    rateLimit?: Partial<RateLimit>;
+    groups: ExportedGroup[];
+}
+interface ExportedStructure {
+    name: string;
+    type: StructureType;
+    fields: StructureField[];
+}
+type ExportedApi = Config & {
+    baseUrl: string;
+    port: number;
+    structures: ExportedStructure[];
+    rateLimit?: Partial<RateLimit>;
+    versions: ExportedVersion[];
+    groups: ExportedGroup[];
+};
 
 /**
- * Base app builder class.
+ * The BaseApp class, used to build on top of an express app or router.
  */
-declare class BaseAppBuilder<T = 'router'> {
+declare class BaseApp<T extends 'router' | 'app'> {
     raw: (T extends 'app' ? Express : never) | (T extends 'router' ? Router : never);
     protected ratelimit?: Partial<RateLimit>;
     protected middlewares: Middleware[];
     /**
-     * Creates an instance of the base app builder class.
-     * Router is the default type, so only pass 'app' to create an express app.
-     * @param type The type of the builder.
+     * Creates an instance of the BaseApp class.
+     * Pass 'app' to create an express app, and 'router' for an express router.
+     * @param type The type of the base app - 'app' or 'router'.
      */
     constructor(type?: T);
     /**
-     * Adds a router to the API.
-     * @param options The options of the rate limit.
-     * @param showInDocs Whether to show the rate limit in the docs.
-     * @returns The API builder.
+     * Sets the rate limit for the base app or router.
+     * @param options The rate limit options provided by the express-rate-limit package.
+     * @returns The BaseApp class.
      */
-    setRateLimit(options: Partial<Options>, showInDocs?: boolean): this;
+    setRateLimit(options: Partial<Options>): this;
     /**
      * Adds a middleware to the route. Add it before adding the route.
      * @param middleware The middleware to add to the route.
-     * @returns The router builder.
+     * @returns The BaseApp class.
      */
     addMiddleware(middleware: Middleware): this;
 }
@@ -66,10 +140,10 @@ type StringTest = 'email' | 'username' | 'passwordStrength' | 'phoneNumber' | 'i
 type SchemaOption = string | number | boolean | null | undefined;
 type SchemaTypes = string | number | boolean | unknown[] | object | null | undefined | unknown;
 type ValueTypes = 'string' | 'number' | 'integer' | 'boolean' | 'object' | 'array' | 'image';
-interface ValueCheck {
-    run: ((value: string) => boolean) | ((value: string) => Promise<boolean>);
-    response: string;
-}
+type ValueCheck = [
+    ((value: string) => boolean) | ((value: string) => Promise<boolean>),
+    string
+];
 interface BaseValueSchema {
     description?: string;
     required?: boolean;
@@ -122,114 +196,66 @@ interface StringValue extends BaseValueSchema {
 type ValueSchema = ArrayValue<ValueSchema> | BooleanValue | ImageValue | NumberValue | IntegerValue | ObjectValue<Record<string, ValueSchema>> | StringValue;
 type Schema = Record<string, ValueSchema>;
 
-interface ExportedValue<T> {
-    type: string;
-    min?: number;
-    max?: number;
-    options?: string[];
-    test?: string;
-    items?: T;
-    properties?: T;
+interface BaseValueOptions {
+    name: string;
+    description?: string;
+    required?: boolean;
+    checks?: ValueCheck[];
+    structure?: string;
+    defaultValue?: SchemaTypes;
 }
 /**
- * The base value builder class.
- * This class is not used for any value types, but is used to provide a base for all value builders.
+ * The BaseValue class. Used as a foundation for all value builders.
  */
-declare class BaseValueBuilder implements BaseValueSchema {
+declare class BaseValue implements BaseValueSchema {
     name: string;
-    description: string;
+    description?: string;
     required: boolean;
     checks: ValueCheck[];
     structure?: string;
     defaultValue?: SchemaTypes;
     /**
-     * Sets the name of the value.
+     * Creates a new instance of the BaseValue class.
+     * @param options The options of the value.
+     * @param options.name The name of the value.
+     * @param options.description The description of the value.
+     * @param options.required Whether the value is required.
+     * @param options.checks The checks of the value.
      */
-    constructor();
+    constructor(options: BaseValueOptions);
     /**
-     * Sets the name of the value.
-     * @param name The name of the value.
-     * @returns The base value builder.
+     * Validates the value.
      */
-    setName(name: string): this;
-    /**
-     * Sets the description of the value.
-     * @param description The description of the value.
-     * @returns The base value builder.
-     */
-    setDescription(description: string): this;
-    /**
-     * Sets whether the value is required.
-     * @param required Whether the value is required.
-     * @returns The base value builder.
-     */
-    setRequired(required: boolean): this;
-    /**
-     * Add a custom function that returns a boolean to test the value against.
-     * @param check The checks of the value.
-     * @returns The base value builder.
-     */
-    addCheck(check: ValueCheck): this;
-    /**
-     * Sets the structure of the value.
-     * @param structure The structure of the value.
-     * @returns The base value builder.
-     */
-    setStructure(structure: string): this;
+    validate(): void;
 }
 
-/**
- * The array value builder class.
- */
-declare class ArrayValueBuilder extends BaseValueBuilder implements ArrayValue<ValueSchema> {
-    type: "array";
+type ArrayValueOptions = BaseValueOptions & {
     min?: number;
     max?: number;
     unique?: boolean;
     contains?: ArrayContains;
     items?: ValueSchema | ValueSchema[];
+};
+/**
+ * The array value builder class.
+ */
+declare class ArrayValueBuilder extends BaseValue implements ArrayValue<ValueSchema> {
+    type: "array";
+    min?: number;
+    max?: number;
+    unique: boolean;
+    contains?: ArrayContains;
+    items?: ValueSchema | ValueSchema[];
     /**
      * Creates an instance of the array value builder class.
+     * @param options The options of the array value.
+     * @param options.min The minimum amount of items in the array value.
+     * @param options.max The maximum amount of items in the array value.
+     * @param options.unique Whether the array value is unique.
+     * @param options.contains The type that the array value needs to contain.
+     * @param options.items The items of the array value.
      */
-    constructor();
-    /**
-     * Sets the min of the value.
-     * @param min The min of the value.
-     * @returns The string value builder.
-     */
-    setMin(min: number): this;
-    /**
-     * Sets the max of the value.
-     * @param max The max of the value.
-     * @returns The string value builder.
-     */
-    setMax(max: number): this;
-    /**
-     * Sets whether the value is unique.
-     * @param unique Whether the value is unique.
-     * @returns The string value builder.
-     */
-    setUnique(unique: boolean): this;
-    /**
-     * Set only one type that the array needs to contain.
-     * @param contains The type that the array needs to contain.
-     * @param min The minimum amount of times the type needs to be in the array.
-     * @param max The maximum amount of times the type needs to be in the array.
-     * @returns The string value builder.
-     */
-    setContains(contains: ValueTypes, min?: number, max?: number): this;
-    /**
-     * Sets the items that the array needs to contain.
-     * @param items The items that the array needs to contain.
-     * @returns The string value builder.
-     */
-    setItems(items: ValueSchema | ValueSchema[]): this;
-    /**
-     * Sets the default value of the array.
-     * @param defaultValue The default value of the array.
-     * @returns The array value builder.
-     */
-    setDefault(defaultValue: unknown[]): this;
+    constructor({ min, max, unique, contains, items, ...options }: ArrayValueOptions);
     /**
      * Exports the array value.
      * @returns The array value.
@@ -237,21 +263,17 @@ declare class ArrayValueBuilder extends BaseValueBuilder implements ArrayValue<V
     export(): unknown;
 }
 
+type BooleanValueOptions = BaseValueOptions;
 /**
  * The boolean value builder class.
  */
-declare class BooleanValueBuilder extends BaseValueBuilder implements BooleanValue {
+declare class BooleanValueBuilder extends BaseValue implements BooleanValue {
     type: "boolean";
     /**
      * Creates an instance of the boolean value builder class.
+     * @param options The options of the boolean value.
      */
-    constructor();
-    /**
-     * Sets the default value of the value.
-     * @param defaultValue The default value of the value.
-     * @returns The boolean value builder.
-     */
-    setDefault(defaultValue: boolean): this;
+    constructor(options: BooleanValueOptions);
     /**
      * Exports the value.
      * @returns The exported value.
@@ -259,15 +281,17 @@ declare class BooleanValueBuilder extends BaseValueBuilder implements BooleanVal
     export(): unknown;
 }
 
+type ImageValueOptions = BaseValueOptions;
 /**
  * The image value builder class.
  */
-declare class ImageValueBuilder extends BaseValueBuilder implements ImageValue {
+declare class ImageValueBuilder extends BaseValue implements ImageValue {
     type: "image";
     /**
      * Creates an instance of the image value builder class.
+     * @param options The options of the image value.
      */
-    constructor();
+    constructor(options: ImageValueOptions);
     /**
      * Exports the value.
      * @returns The exported value.
@@ -275,35 +299,22 @@ declare class ImageValueBuilder extends BaseValueBuilder implements ImageValue {
     export(): unknown;
 }
 
+type IntegerValueOptions = BaseValueOptions & {
+    min?: number;
+    max?: number;
+};
 /**
  * The integer value builder class.
  */
-declare class IntegerValueBuilder extends BaseValueBuilder implements IntegerValue {
+declare class IntegerValueBuilder extends BaseValue implements IntegerValue {
     type: "integer";
     min?: number;
     max?: number;
     /**
      * Creates an instance of the integer value builder class.
+     * @param options The options of the integer value.
      */
-    constructor();
-    /**
-     * Sets the minimun value the integer can be.
-     * @param min The min of the value.
-     * @returns The integer value builder.
-     */
-    setMin(min: number): this;
-    /**
-     * Sets the maximum value the integer can be.
-     * @param max The max of the value.
-     * @returns The integer value builder.
-     */
-    setMax(max: number): this;
-    /**
-     * Sets the default value of the value.
-     * @param defaultValue The default value of the value.
-     * @returns The integer value builder.
-     */
-    setDefault(defaultValue: number): this;
+    constructor(options: IntegerValueOptions);
     /**
      * Exports the value.
      * @returns The exported value.
@@ -311,35 +322,22 @@ declare class IntegerValueBuilder extends BaseValueBuilder implements IntegerVal
     export(): unknown;
 }
 
+type NumberValueOptions = BaseValueOptions & {
+    min?: number;
+    max?: number;
+};
 /**
  * The number value builder class.
  */
-declare class NumberValueBuilder extends BaseValueBuilder implements NumberValue {
+declare class NumberValueBuilder extends BaseValue implements NumberValue {
     type: "number";
     min?: number;
     max?: number;
     /**
      * Creates an instance of the number value builder class.
+     * @param options The options of the number value.
      */
-    constructor();
-    /**
-     * Sets the minimum value the number can be.
-     * @param min The min of the value.
-     * @returns The number value builder.
-     */
-    setMin(min: number): this;
-    /**
-     * Sets the maximum value the number can be.
-     * @param max The max of the value.
-     * @returns The number value builder.
-     */
-    setMax(max: number): this;
-    /**
-     * Sets the default value of the value.
-     * @param defaultValue The default value of the value.
-     * @returns The number value builder.
-     */
-    setDefault(defaultValue: number): this;
+    constructor(options: NumberValueOptions);
     /**
      * Exports the value.
      * @returns The exported value.
@@ -347,28 +345,20 @@ declare class NumberValueBuilder extends BaseValueBuilder implements NumberValue
     export(): unknown;
 }
 
+type ObjectValueOptions = BaseValueOptions & {
+    properties: Schema;
+};
 /**
  * The object value builder class.
  */
-declare class ObjectValueBuilder<T> extends BaseValueBuilder implements ObjectValue<T> {
+declare class ObjectValueBuilder<T> extends BaseValue implements ObjectValue<T> {
     type: "object";
     properties: Schema;
     /**
      * Creates an instance of the object value builder class.
+     * @param options The options of the object value builder class.
      */
-    constructor();
-    /**
-     * Sets the properties of the value.
-     * @param properties The properties of the value.
-     * @returns The value builder.
-     */
-    setProperties(properties: Schema): this;
-    /**
-     * Sets the default value of the value.
-     * @param defaultValue The default value of the value.
-     * @returns The object value builder.
-     */
-    setDefault(defaultValue: object): this;
+    constructor(options: ObjectValueOptions);
     /**
      * Exports the value.
      * @returns The exported value.
@@ -376,49 +366,26 @@ declare class ObjectValueBuilder<T> extends BaseValueBuilder implements ObjectVa
     export(): unknown;
 }
 
-/**
- * The string value builder class.
- */
-declare class StringValueBuilder extends BaseValueBuilder implements StringValue {
-    type: "string";
+type StringValueOptions = BaseValueOptions & {
     min?: number;
     max?: number;
     options?: string[];
     test?: StringTest;
+};
+/**
+ * The string value builder class.
+ */
+declare class StringValueBuilder extends BaseValue implements StringValue {
+    type: "string";
+    min?: number;
+    max?: number;
+    options: string[];
+    test?: StringTest;
     /**
      * Creates an instance of the string value builder class.
+     * @param options The options of the string value.
      */
-    constructor();
-    /**
-     * Sets the min of the value.
-     * @param min The min of the value.
-     * @returns The string value builder.
-     */
-    setMin(min: number): Omit<this, 'setMin'>;
-    /**
-     * Sets the max of the value.
-     * @param max The max of the value.
-     * @returns The string value builder.
-     */
-    setMax(max: number): this;
-    /**
-     * Set an array of string values which the value must be one of.
-     * @param options An array of string options.
-     * @returns The string value builder.
-     */
-    setOptions(options: string[]): this;
-    /**
-     * Sets the test regex for the string to be tested against.
-     * @param test The test of the value.
-     * @returns The string value builder.
-     */
-    setTest(test: StringTest): this;
-    /**
-     * Sets the default value of the value.
-     * @param defaultValue The default value of the value.
-     * @returns The string value builder.
-     */
-    setDefault(defaultValue: string): this;
+    constructor(options: StringValueOptions);
     /**
      * Exports the value.
      * @returns The exported value.
@@ -426,7 +393,6 @@ declare class StringValueBuilder extends BaseValueBuilder implements StringValue
     export(): unknown;
 }
 
-type ExportedSchema = Record<string, ExportedValue<ExportedSchema>>;
 type ValueBuilders = ArrayValueBuilder | StringValueBuilder | NumberValueBuilder | IntegerValueBuilder | BooleanValueBuilder | ObjectValueBuilder<ValueBuilders> | ImageValueBuilder;
 type BuildersSchema = Record<string, ValueBuilders>;
 /**
@@ -440,46 +406,46 @@ declare class SchemaBuilder {
     constructor();
     /**
      * Adds a array value to the schema.
-     * @param callback The callback to build the array value.
+     * @param options The options of the array value.
      * @returns The schema builder.
      */
-    addArray(callback: (value: ArrayValueBuilder) => void): this;
+    addArray(options: ArrayValueOptions): this;
     /**
      * Adds a string value to the schema.
-     * @param callback The callback to build the string value.
+     * @param options The options of the string value.
      * @returns The schema builder.
      */
-    addString(callback: (value: StringValueBuilder) => void): this;
+    addString(options: StringValueOptions): this;
     /**
      * Adds a number value to the schema.
-     * @param callback The callback to build the number value.
+     * @param options The options of the number value.
      * @returns The schema builder.
      */
-    addNumber(callback: (value: NumberValueBuilder) => void): this;
+    addNumber(options: NumberValueOptions): this;
     /**
      * Adds a integer value to the schema.
-     * @param callback The callback to build the integer value.
+     * @param options The options of the integer value.
      * @returns The schema builder.
      */
-    addInteger(callback: (value: IntegerValueBuilder) => void): this;
+    addInteger(options: IntegerValueOptions): this;
     /**
      * Adds a boolean value to the schema.
-     * @param callback The callback to build the boolean value.
+     * @param options The options of the boolean value.
      * @returns The schema builder.
      */
-    addBoolean(callback: (value: BooleanValueBuilder) => void): this;
+    addBoolean(options: BooleanValueOptions): this;
     /**
      * Adds a object value to the schema.
-     * @param callback The callback to build the object value.
+     * @param options The options of the object value.
      * @returns The schema builder.
      */
-    addObject(callback: (value: ObjectValueBuilder<ValueBuilders>) => void): this;
+    addObject(options: ObjectValueOptions): this;
     /**
      * Adds a image value to the schema.
-     * @param callback The callback to build the image value.
+     * @param options The options of the image value.
      * @returns The schema builder.
      */
-    addImage(callback: (value: ImageValueBuilder) => void): this;
+    addImage(options: ImageValueOptions): this;
     /**
      * Validate an object against a schema.
      * @param data The object data to validate.
@@ -505,29 +471,6 @@ declare class SchemaBuilder {
     export(): ExportedSchema;
 }
 
-type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'OPTIONS' | 'HEAD' | 'TRACE' | 'CONNECT';
-type EndpointMessageType = 'INFO' | 'WARNING' | 'DANGER' | 'SUCCESS';
-interface EndpointNote {
-    type: EndpointMessageType;
-    text: string;
-}
-type StatusCode = 200 | 201 | 204 | 301 | 400 | 401 | 403 | 404 | 405 | 409 | 500 | 501;
-interface EndpointResponse {
-    status: StatusCode;
-    message: string;
-    [key: string]: unknown;
-}
-interface ExportedEndpoint {
-    name: string;
-    description: string;
-    path: string;
-    method: RequestMethod;
-    notes: EndpointNote[];
-    params: ExportedSchema;
-    queries: ExportedSchema;
-    body: ExportedSchema;
-    responses: EndpointResponse[];
-}
 /**
  * The endpoint builder class.
  */
@@ -542,23 +485,29 @@ declare class EndpointBuilder {
     querySchema?: SchemaBuilder;
     bodySchema?: SchemaBuilder;
     responses: EndpointResponse[];
-    controller: (req: Request, res: Response, next: NextFunction) => void;
+    controller?: (req: Request, res: Response, next: NextFunction) => void;
     ratelimit?: Partial<RateLimit>;
     /**
      * Creates a new endpoint.
      * @param options The options for the endpoint.
-     * @param options.disabled The disabled state of the endpoint.
      * @param options.name The name of the endpoint.
      * @param options.description The description of the endpoint.
      * @param options.path The path of the endpoint.
      * @param options.method The method of the endpoint.
+     * @param options.controller The controller of the endpoint.
+     * @param options.notes The notes of the endpoint.
+     * @param options.responses The responses of the endpoint.
+     * @param options.disabled The disabled state of the endpoint.
      */
-    constructor({ disabled, name, description, path, method, }: {
-        disabled?: boolean;
+    constructor(options: {
         name: string;
         description: string;
         path: PathString;
         method: RequestMethod;
+        controller?: ControllerType;
+        notes?: EndpointNote[];
+        responses?: EndpointResponse[];
+        disabled?: boolean;
     });
     /**
      * Sets the notes of the endpoint.
@@ -602,7 +551,11 @@ declare class EndpointBuilder {
      * @param res The response.
      * @param next The next function.
      */
-    execute(req: Request, res: Response, next: NextFunction): void;
+    execute: (req: Request, res: Response, next: NextFunction) => void;
+    /**
+     * Validates the endpoint.
+     */
+    validate(): void;
     /**
      * Exports the endpoint.
      * @returns The exported endpoint.
@@ -610,16 +563,10 @@ declare class EndpointBuilder {
     export(): Readonly<ExportedEndpoint>;
 }
 
-interface ExportedRoute {
-    name: string;
-    description: string;
-    path: PathString;
-    endpoints: ExportedEndpoint[];
-}
 /**
  * The route builder class.
  */
-declare class RouteBuilder extends BaseAppBuilder {
+declare class RouteBuilder extends BaseApp<'router'> {
     raw: Router;
     private path;
     private name;
@@ -640,7 +587,7 @@ declare class RouteBuilder extends BaseAppBuilder {
     /**
      * Adds an endpoint to the route.
      * @param endpoint The endpoint to add to the route.
-     * @returns The router builder.
+     * @returns The route builder.
      */
     addEndpoint(endpoint: EndpointBuilder): this;
     /**
@@ -660,66 +607,52 @@ declare class RouteBuilder extends BaseAppBuilder {
     export(): Readonly<ExportedRoute>;
 }
 
-interface ExportedRouter {
-    name: string;
-    path: PathString;
-    routes: ExportedRoute[];
-}
 /**
- * The router builder class.
+ * The group builder class, used to build a group of routes.
  */
-declare class RouterBuilder extends BaseAppBuilder {
+declare class GroupBuilder extends BaseApp<'router'> {
     private path;
     private name;
     private routes;
     /**
-     * Creates a new router builder.
-     * @param params The router parameters.
-     * @param params.path The path of the router.
-     * @param params.name The name of the router.
+     * Creates a new group builder.
+     * @param params The group parameters.
+     * @param params.path The path of the group.
+     * @param params.name The name of the group.
      */
     constructor({ path, name }: {
         path: PathString;
         name: string;
     });
     /**
-     * Uses a router.
-     * @param route The router to use.
-     * @returns The router builder.
+     * Uses a group.
+     * @param route The group to use.
+     * @returns The group builder.
      */
     addRoute(route: RouteBuilder): this;
     /**
-     * Returns the router values.
-     * @returns The router values.
+     * Returns the group values.
+     * @returns The group values.
      */
     values(): Readonly<{
         raw: Router;
         ratelimit?: Partial<RateLimit>;
-        path: `/${string}`;
+        path: PathString;
         defaultCategory: string;
         routes: RouteBuilder[];
         middlewares: Middleware[];
     }>;
     /**
-     * Validates the router.
+     * Validates the group.
      */
     validate(): void;
     /**
      * Exports the routes and endpoints data.
      * @returns The exported data.
      */
-    export(): Readonly<ExportedRouter>;
+    export(): Readonly<ExportedGroup>;
 }
 
-type StructureType = 'schema' | 'option';
-interface StructureField {
-    name: string;
-    description: string;
-    type?: 'string' | 'number' | 'boolean' | 'object' | 'array';
-    required?: boolean;
-    structure?: string;
-    option?: string;
-}
 /**
  * The StructureBuilder class is used to build a example structures for object schemas and value options.
  */
@@ -743,24 +676,15 @@ declare class StructureBuilder {
      * Exports the structure.
      * @returns The exported structure.
      */
-    export(): {
-        name: string;
-        type: StructureType;
-        fields: StructureField[];
-    };
+    export(): ExportedStructure;
 }
 
-interface ExportedVersion {
-    version: number;
-    rateLimit?: Partial<RateLimit>;
-    routers: ExportedRouter[];
-}
 /**
  * The version builder class.
  */
-declare class VersionBuilder extends BaseAppBuilder<'app'> {
+declare class VersionBuilder extends BaseApp<'app'> {
     private version;
-    private routers;
+    private groups;
     /**
      * Creates a new version builder.
      * @param config The configuration of the API.
@@ -770,25 +694,25 @@ declare class VersionBuilder extends BaseAppBuilder<'app'> {
         version: number;
     });
     /**
-     * Adds a router to the API.
+     * Sets the global rate limit for the version.
      * @param options The options of the rate limit.
      * @param showInDocs Whether to show the rate limit in the docs.
      * @returns The API builder.
      */
     setRateLimit(options: Partial<Options>, showInDocs?: boolean): this;
     /**
-     * Adds a router to the API.
-     * @param router The router to add.
+     * Adds a group to the API.
+     * @param group The group to add.
      * @returns The API builder.
      */
-    addRouter(router: RouterBuilder): this;
+    addGroup(group: GroupBuilder): this;
     /**
-     * Adds a router to the API.
+     * Adds a group to the API.
      * @returns The API data.
      */
     export(): Readonly<ExportedVersion>;
     /**
-     * Adds a router to the API.
+     * Gets the version values.
      * @returns The API data.
      */
     values(): Readonly<{
@@ -802,33 +726,25 @@ declare class VersionBuilder extends BaseAppBuilder<'app'> {
     validate(): void;
 }
 
-type ExportedApi = Config & {
-    baseUrl: string;
-    port: number;
-    structures: StructureBuilder[];
-    rateLimit?: Partial<RateLimit>;
-    versions: ExportedVersion[];
-    routers: ExportedRouter[];
-};
 /**
  * The ApiBuilder class is used to build the API.
  */
-declare class ApiBuilder extends BaseAppBuilder<'app'> {
+declare class Api extends BaseApp<'app'> {
     private port;
     private versions;
-    private routers;
+    private groups;
     private baseUrl;
     private structures;
     private config?;
     /**
      * The constructor of the ApiBuilder class.
      * @param options The configuration of the API.
-     * @param options.baseUrl The base URL of the API.
+     * @param options.url The base URL of the API.
      * @param options.port The port of the API.
      * @param options.structures The structures of the API.
      */
-    constructor({ baseUrl, port, structures, }: {
-        baseUrl: string;
+    constructor(options: {
+        url: string;
         port: number;
         structures?: StructureBuilder[];
     });
@@ -839,17 +755,17 @@ declare class ApiBuilder extends BaseAppBuilder<'app'> {
      */
     addVersion(version: VersionBuilder): this;
     /**
-     * Adds a router directly to the API.
-     * @param router An instance of the RouterBuilder class.
+     * Adds a group directly to the API without a version.
+     * @param group An instance of the GroupBuilder class.
      * @returns The API builder.
      */
-    addRouter(router: RouterBuilder): this;
+    addGroup(group: GroupBuilder): this;
     /**
      * Initializes the API.
      * @param callback The callback to run when the API is initialized.
      * @returns The server.
      */
-    startServer(callback?: () => void): Server;
+    start(callback?: (() => void) | (() => Promise<void>)): Server;
     /**
      * Loads the configuration of the API.
      * @returns The configuration of the API.
@@ -865,10 +781,10 @@ declare class ApiBuilder extends BaseAppBuilder<'app'> {
      */
     private validate;
     /**
-     * Adds a router to the API.
+     * Adds a group to the API.
      * @returns The API data.
      */
     export(): Promise<Readonly<ExportedApi>>;
 }
 
-export { ApiBuilder, Config, EndpointBuilder, RouteBuilder, RouterBuilder, SchemaBuilder, StructureBuilder, VersionBuilder };
+export { Api, Config, EndpointBuilder as Endpoint, GroupBuilder as Group, RouteBuilder as Route, SchemaBuilder as Schema, StructureBuilder as Structure, VersionBuilder as Version };
