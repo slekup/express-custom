@@ -2,7 +2,7 @@ import { Router } from 'express';
 import rateLimit, { Options } from 'express-rate-limit';
 
 import { ExportedVersion } from '@typings/exports';
-import PackageError from '@utils/PackageError';
+import ExpressCustomError from '@utils/ExpressCustomError';
 import BaseApp from './Base/BaseApp';
 import GroupBuilder from './Group';
 import SchemaBuilder from './Schema';
@@ -30,7 +30,7 @@ export default class VersionBuilder extends BaseApp<'app'> {
     });
 
     constructorSchema.validate({ version }).then((result) => {
-      if (typeof result === 'string') throw new PackageError(result);
+      if (typeof result === 'string') throw new ExpressCustomError(result);
     });
 
     this.groups = [];
@@ -40,19 +40,16 @@ export default class VersionBuilder extends BaseApp<'app'> {
   /**
    * Sets the global rate limit for the version.
    * @param options The options of the rate limit.
-   * @param showInDocs Whether to show the rate limit in the docs.
    * @returns The API builder.
    */
-  public setRateLimit(options: Partial<Options>, showInDocs?: boolean): this {
-    // If showInDocs is undefined, it will default to true.
-    if (showInDocs || showInDocs === undefined)
-      this.ratelimit = {
-        statusCode: options.statusCode ?? 429,
-        ...(typeof options.windowMs === 'number'
-          ? { window: options.windowMs }
-          : {}),
-        ...(typeof options.max === 'number' ? { max: options.max } : {}),
-      };
+  public override setRateLimit(options: Partial<Options>): this {
+    this.ratelimit = {
+      statusCode: options.statusCode ?? 429,
+      ...(typeof options.windowMs === 'number'
+        ? { window: options.windowMs }
+        : {}),
+      ...(typeof options.max === 'number' ? { max: options.max } : {}),
+    };
 
     // Use the express-rate-limit middleware.
     this.raw.use(`v${this.version}`, rateLimit(options));
@@ -104,7 +101,7 @@ export default class VersionBuilder extends BaseApp<'app'> {
    * Validates the version builder.
    */
   public validate(): void {
-    if (!this.groups.length) throw new PackageError('No groups provided');
+    if (!this.groups.length) throw new ExpressCustomError('No groups provided');
     this.groups.forEach((group) => group.validate());
   }
 }

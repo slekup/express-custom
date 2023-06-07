@@ -28,7 +28,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const index_1 = require("@utils/index");
+const index_1 = require("../../utils/index");
 const logger_1 = __importStar(require("./logger"));
 /**
  * Get the express-custom.json config.

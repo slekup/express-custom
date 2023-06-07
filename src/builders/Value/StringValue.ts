@@ -18,7 +18,7 @@ export default class StringValueBuilder
   public type = 'string' as const;
   public min?: number;
   public max?: number;
-  public options: string[];
+  public options?: string[];
   public test?: StringTest;
 
   /**
@@ -27,10 +27,10 @@ export default class StringValueBuilder
    */
   public constructor(options: StringValueOptions) {
     super(options);
-    this.min = options.min;
-    this.max = options.max;
-    this.options = options.options ?? [];
-    this.test = options.test;
+    if (options.min) this.min = options.min;
+    if (options.max) this.max = options.max;
+    if (options.options) this.options = options.options;
+    if (options.test) this.test = options.test;
   }
 
   /**

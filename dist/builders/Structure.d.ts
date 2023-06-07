@@ -25,3 +25,4 @@ export default class StructureBuilder {
      */
     export(): ExportedStructure;
 }
+//# sourceMappingURL=Structure.d.ts.map

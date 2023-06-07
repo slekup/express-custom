@@ -1,4 +1,3 @@
-import { Router } from 'express';
 import { PathString } from '@typings/core';
 import { ExportedRoute } from '@typings/exports';
 import BaseApp from './Base/BaseApp';
@@ -7,7 +6,6 @@ import EndpointBuilder from './Endpoint';
  * The route builder class.
  */
 export default class RouteBuilder extends BaseApp<'router'> {
-    raw: Router;
     private path;
     private name;
     private description;
@@ -46,3 +44,4 @@ export default class RouteBuilder extends BaseApp<'router'> {
      */
     export(): Readonly<ExportedRoute>;
 }
+//# sourceMappingURL=Route.d.ts.map
