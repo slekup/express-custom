@@ -19,7 +19,7 @@ export default class ArrayValueBuilder
   public type = 'array' as const;
   public min?: number;
   public max?: number;
-  public unique: boolean;
+  public unique?: boolean;
   public contains?: ArrayContains;
   public items?: ValueSchema | ValueSchema[];
 
@@ -41,11 +41,11 @@ export default class ArrayValueBuilder
     ...options
   }: ArrayValueOptions) {
     super(options);
-    this.min = min;
-    this.max = max;
+    if (min) this.min = min;
+    if (max) this.max = max;
     this.unique = unique ?? false;
-    this.contains = contains;
-    this.items = items;
+    if (contains) this.contains = contains;
+    if (items) this.items = items;
   }
 
   /**

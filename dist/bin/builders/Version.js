@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
-const PackageError_1 = __importDefault(require("@utils/PackageError"));
+const ExpressCustomError_1 = __importDefault(require("@utils/ExpressCustomError"));
 const BaseApp_1 = __importDefault(require("./Base/BaseApp"));
 const Schema_1 = __importDefault(require("./Schema"));
 /**
@@ -28,7 +28,7 @@ class VersionBuilder extends BaseApp_1.default {
         });
         constructorSchema.validate({ version }).then((result) => {
             if (typeof result === 'string')
-                throw new PackageError_1.default(result);
+                throw new ExpressCustomError_1.default(result);
         });
         this.groups = [];
         this.version = version;
@@ -36,19 +36,16 @@ class VersionBuilder extends BaseApp_1.default {
     /**
      * Sets the global rate limit for the version.
      * @param options The options of the rate limit.
-     * @param showInDocs Whether to show the rate limit in the docs.
      * @returns The API builder.
      */
-    setRateLimit(options, showInDocs) {
-        // If showInDocs is undefined, it will default to true.
-        if (showInDocs || showInDocs === undefined)
-            this.ratelimit = {
-                statusCode: options.statusCode ?? 429,
-                ...(typeof options.windowMs === 'number'
-                    ? { window: options.windowMs }
-                    : {}),
-                ...(typeof options.max === 'number' ? { max: options.max } : {}),
-            };
+    setRateLimit(options) {
+        this.ratelimit = {
+            statusCode: options.statusCode ?? 429,
+            ...(typeof options.windowMs === 'number'
+                ? { window: options.windowMs }
+                : {}),
+            ...(typeof options.max === 'number' ? { max: options.max } : {}),
+        };
         // Use the express-rate-limit middleware.
         this.raw.use(`v${this.version}`, (0, express_rate_limit_1.default)(options));
         return this;
@@ -91,7 +88,7 @@ class VersionBuilder extends BaseApp_1.default {
      */
     validate() {
         if (!this.groups.length)
-            throw new PackageError_1.default('No groups provided');
+            throw new ExpressCustomError_1.default('No groups provided');
         this.groups.forEach((group) => group.validate());
     }
 }

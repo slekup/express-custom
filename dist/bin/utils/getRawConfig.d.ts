@@ -6,3 +6,4 @@ export type RawConfig = Partial<Pick<Config, 'file'>> & Required<Pick<Config, 'f
  */
 declare const _default: () => Promise<RawConfig>;
 export default _default;
+//# sourceMappingURL=getRawConfig.d.ts.map

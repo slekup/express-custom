@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { ClientSession } from 'mongoose';
 export type Middleware = (req: Request, res: Response, next: NextFunction) => void;
 export type PathString = `/${string}`;
 export interface RateLimit {
@@ -19,7 +18,7 @@ export interface EndpointResponse {
     message: string;
     [key: string]: unknown;
 }
-export type ControllerType = (req: Request, res: Response, session: ClientSession) => Promise<unknown> | unknown;
+export type ControllerType = (req: Request, res: Response) => Promise<unknown> | unknown;
 export type StructureType = 'schema' | 'option';
 export interface StructureField {
     name: string;
@@ -30,3 +29,4 @@ export interface StructureField {
     option?: string;
 }
 export {};
+//# sourceMappingURL=core.d.ts.map

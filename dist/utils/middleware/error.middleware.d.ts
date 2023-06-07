@@ -22,3 +22,4 @@ declare const _default: {
     errorHandler: typeof errorHandler;
 };
 export default _default;
+//# sourceMappingURL=error.middleware.d.ts.map

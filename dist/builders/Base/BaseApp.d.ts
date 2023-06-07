@@ -27,3 +27,4 @@ export default class BaseApp<T extends 'router' | 'app'> {
      */
     addMiddleware(middleware: Middleware): this;
 }
+//# sourceMappingURL=BaseApp.d.ts.map

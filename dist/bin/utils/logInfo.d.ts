@@ -1,4 +1,4 @@
-import { ExportedApi } from '@typings/exports';
+import { ExportedApi } from '../../typings/exports';
 /**
  * Log information about the process.
  * @param apiData The API data.
@@ -7,3 +7,4 @@ import { ExportedApi } from '@typings/exports';
  */
 declare const _default: (apiData: Readonly<ExportedApi>, fileTimeStart: number, text: string) => void;
 export default _default;
+//# sourceMappingURL=logInfo.d.ts.map

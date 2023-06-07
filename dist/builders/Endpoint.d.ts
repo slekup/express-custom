@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { ClientSession } from 'mongoose';
 import { ControllerType, EndpointNote, EndpointResponse, PathString, RateLimit, RequestMethod } from '@typings/core';
 import { ExportedEndpoint } from '@typings/exports';
 import SchemaBuilder from './Schema';
@@ -17,7 +16,7 @@ export default class EndpointBuilder {
     querySchema?: SchemaBuilder;
     bodySchema?: SchemaBuilder;
     responses: EndpointResponse[];
-    controller?: (req: Request, res: Response, next: NextFunction) => void;
+    controller: (req: Request, res: Response, next: NextFunction) => void;
     ratelimit?: Partial<RateLimit>;
     /**
      * Creates a new endpoint.
@@ -36,7 +35,7 @@ export default class EndpointBuilder {
         description: string;
         path: PathString;
         method: RequestMethod;
-        controller?: ControllerType;
+        controller: ControllerType;
         notes?: EndpointNote[];
         responses?: EndpointResponse[];
         disabled?: boolean;
@@ -76,7 +75,7 @@ export default class EndpointBuilder {
      * @param controller The controlller function to run.
      * @returns The endpoint builder.
      */
-    setController(controller: (req: Request, res: Response, session: ClientSession) => Promise<unknown> | unknown): this;
+    setController(controller: (req: Request, res: Response) => Promise<unknown> | unknown): this;
     /**
      * Executes the endpoint function.
      * @param req The request.
@@ -85,12 +84,9 @@ export default class EndpointBuilder {
      */
     execute: (req: Request, res: Response, next: NextFunction) => void;
     /**
-     * Validates the endpoint.
-     */
-    validate(): void;
-    /**
      * Exports the endpoint.
      * @returns The exported endpoint.
      */
     export(): Readonly<ExportedEndpoint>;
 }
+//# sourceMappingURL=Endpoint.d.ts.map

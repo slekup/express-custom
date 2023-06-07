@@ -28,7 +28,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const PackageError_1 = __importDefault(require("@utils/PackageError"));
+const ExpressCustomError_1 = __importDefault(require("@utils/ExpressCustomError"));
 const middleware_1 = require("@utils/middleware");
 const logger_1 = __importStar(require("../bin/utils/logger"));
 const BaseApp_1 = __importDefault(require("./Base/BaseApp"));
@@ -40,7 +40,7 @@ class Api extends BaseApp_1.default {
     port;
     versions;
     groups;
-    baseUrl;
+    url;
     structures;
     config;
     /**
@@ -67,11 +67,11 @@ class Api extends BaseApp_1.default {
         });
         constructorSchema.validate(options).then((result) => {
             if (typeof result === 'string')
-                throw new PackageError_1.default(result);
+                throw new ExpressCustomError_1.default(`Api: ${result}`);
         });
         this.versions = [];
         this.groups = [];
-        this.baseUrl = options.url;
+        this.url = options.url;
         this.port = options.port;
         this.structures = options.structures ?? [];
         this.config = undefined;
@@ -109,7 +109,7 @@ class Api extends BaseApp_1.default {
             message: `Welcome to ${this.config?.name ?? 'the API'}`,
             versions: this.versions.map((version) => ({
                 version: `v${version.values().version}`,
-                url: `${this.baseUrl}/v${version.values().version}`,
+                url: `${this.url}/v${version.values().version}`,
             })),
         }));
         this.raw.use(middleware_1.errorMiddleware.notFound);
@@ -131,7 +131,7 @@ class Api extends BaseApp_1.default {
             }
             catch (error) {
                 logger_1.default.error(`${logger_1.cli.err} Failed to parse config.json file (invalid JSON).`);
-                throw new PackageError_1.default(error);
+                throw new ExpressCustomError_1.default(error);
             }
         }
         catch (error) {
@@ -144,19 +144,19 @@ class Api extends BaseApp_1.default {
                     const configFile = JSON.parse(packageJSON.toString())['express-custom'];
                     if (typeof configFile !== 'object') {
                         logger_1.default.error(`${logger_1.cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`);
-                        throw new PackageError_1.default('Invalid JSON');
+                        throw new ExpressCustomError_1.default('Invalid JSON');
                     }
                     config = configFile;
                 }
                 catch (error) {
                     logger_1.default.error(`${logger_1.cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`);
-                    throw new PackageError_1.default(error);
+                    throw new ExpressCustomError_1.default(error);
                 }
             }
             catch (error) {
                 // Failed to read package.json
                 logger_1.default.error(`${logger_1.cli.err} Failed to load express-custom config from package.json`);
-                throw new PackageError_1.default(error);
+                throw new ExpressCustomError_1.default(error);
             }
         }
         const fileExtRegex = /\.ts$|\.js$/;
@@ -256,7 +256,7 @@ class Api extends BaseApp_1.default {
      */
     validate() {
         if (this.versions.length === 0 && this.groups.length === 0)
-            throw new PackageError_1.default('No versions or groups provided to the API');
+            throw new ExpressCustomError_1.default('No versions or groups provided to the API');
         this.versions.forEach((version) => version.validate());
         this.groups.forEach((group) => group.validate());
     }
@@ -265,14 +265,14 @@ class Api extends BaseApp_1.default {
      * @returns The API data.
      */
     async export() {
-        if (!this.baseUrl)
-            throw new PackageError_1.default('The base URL of the API is not set.');
+        if (!this.url)
+            throw new ExpressCustomError_1.default('The base URL of the API is not set.');
         if (!this.port)
-            throw new PackageError_1.default('The port of the API is not set.');
+            throw new ExpressCustomError_1.default('The port of the API is not set.');
         const config = await this.loadConfig();
         return {
             ...config,
-            baseUrl: this.baseUrl,
+            url: this.url,
             port: this.port,
             structures: this.structures.map((structure) => structure.export()),
             rateLimit: this.ratelimit,
