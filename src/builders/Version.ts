@@ -1,23 +1,18 @@
 import { Router } from 'express';
 import rateLimit, { Options } from 'express-rate-limit';
 
-import { RateLimit } from '@typings/core';
-import BaseAppBuilder from './Base/BaseAppBuilder';
-import RouterBuilder, { ExportedRouter } from './RouterBuilder';
-import SchemaBuilder from './SchemaBuilder';
-
-export interface ExportedVersion {
-  version: number;
-  rateLimit?: Partial<RateLimit>;
-  routers: ExportedRouter[];
-}
+import { ExportedVersion } from '@typings/exports';
+import PackageError from '@utils/PackageError';
+import BaseApp from './Base/BaseApp';
+import GroupBuilder from './Group';
+import SchemaBuilder from './Schema';
 
 /**
  * The version builder class.
  */
-export default class VersionBuilder extends BaseAppBuilder<'app'> {
+export default class VersionBuilder extends BaseApp<'app'> {
   private version: number;
-  private routers: RouterBuilder[];
+  private groups: GroupBuilder[];
 
   /**
    * Creates a new version builder.
@@ -27,20 +22,23 @@ export default class VersionBuilder extends BaseAppBuilder<'app'> {
   public constructor({ version }: { version: number }) {
     super('app');
 
-    const constructorSchema = new SchemaBuilder().addNumber((option) =>
-      option.setName('version').setRequired(true).setMin(1).setMax(10_000)
-    );
-
-    constructorSchema.validate({ version }).then((result) => {
-      if (typeof result === 'string') throw new Error(result);
+    const constructorSchema = new SchemaBuilder().addNumber({
+      name: 'version',
+      required: true,
+      min: 1,
+      max: 10_000,
     });
 
-    this.routers = [];
+    constructorSchema.validate({ version }).then((result) => {
+      if (typeof result === 'string') throw new PackageError(result);
+    });
+
+    this.groups = [];
     this.version = version;
   }
 
   /**
-   * Adds a router to the API.
+   * Sets the global rate limit for the version.
    * @param options The options of the rate limit.
    * @param showInDocs Whether to show the rate limit in the docs.
    * @returns The API builder.
@@ -63,31 +61,31 @@ export default class VersionBuilder extends BaseAppBuilder<'app'> {
   }
 
   /**
-   * Adds a router to the API.
-   * @param router The router to add.
+   * Adds a group to the API.
+   * @param group The group to add.
    * @returns The API builder.
    */
-  public addRouter(router: RouterBuilder): this {
-    this.routers.push(router);
-    const routerValues = router.values();
-    this.raw.use(`v${this.version}`, routerValues.raw);
+  public addGroup(group: GroupBuilder): this {
+    this.groups.push(group);
+    const groupValues = group.values();
+    this.raw.use(`v${this.version}`, groupValues.raw);
     return this;
   }
 
   /**
-   * Adds a router to the API.
+   * Adds a group to the API.
    * @returns The API data.
    */
   public export(): Readonly<ExportedVersion> {
     return {
       version: this.version,
       rateLimit: this.ratelimit,
-      routers: this.routers.map((router) => router.export()),
+      groups: this.groups.map((group) => group.export()),
     };
   }
 
   /**
-   * Adds a router to the API.
+   * Gets the version values.
    * @returns The API data.
    */
   public values(): Readonly<{
@@ -106,7 +104,7 @@ export default class VersionBuilder extends BaseAppBuilder<'app'> {
    * Validates the version builder.
    */
   public validate(): void {
-    if (!this.routers.length) throw new Error('No routers provided');
-    this.routers.forEach((router) => router.validate());
+    if (!this.groups.length) throw new PackageError('No groups provided');
+    this.groups.forEach((group) => group.validate());
   }
 }

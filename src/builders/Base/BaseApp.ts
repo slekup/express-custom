@@ -2,11 +2,12 @@ import express, { Express, Router } from 'express';
 import { Options, rateLimit } from 'express-rate-limit';
 
 import { Middleware, RateLimit } from '@typings/core';
+import PackageError from '@utils/PackageError';
 
 /**
- * Base app builder class.
+ * The BaseApp class, used to build on top of an express app or router.
  */
-export default class BaseAppBuilder<T = 'router'> {
+export default class BaseApp<T extends 'router' | 'app'> {
   public raw:
     | (T extends 'app' ? Express : never)
     | (T extends 'router' ? Router : never);
@@ -14,9 +15,9 @@ export default class BaseAppBuilder<T = 'router'> {
   protected middlewares: Middleware[];
 
   /**
-   * Creates an instance of the base app builder class.
-   * Router is the default type, so only pass 'app' to create an express app.
-   * @param type The type of the builder.
+   * Creates an instance of the BaseApp class.
+   * Pass 'app' to create an express app, and 'router' for an express router.
+   * @param type The type of the base app - 'app' or 'router'.
    */
   public constructor(type: T = 'router' as T) {
     if (type === 'app') {
@@ -28,23 +29,20 @@ export default class BaseAppBuilder<T = 'router'> {
   }
 
   /**
-   * Adds a router to the API.
-   * @param options The options of the rate limit.
-   * @param showInDocs Whether to show the rate limit in the docs.
-   * @returns The API builder.
+   * Sets the rate limit for the base app or router.
+   * @param options The rate limit options provided by the express-rate-limit package.
+   * @returns The BaseApp class.
    */
-  public setRateLimit(options: Partial<Options>, showInDocs?: boolean): this {
-    if (this.ratelimit) throw new Error('Rate limit already set.');
+  public setRateLimit(options: Partial<Options>): this {
+    if (this.ratelimit) throw new PackageError('Rate limit already set.');
 
-    // If showInDocs is undefined, it will default to true.
-    if (showInDocs || showInDocs === undefined)
-      this.ratelimit = {
-        statusCode: options.statusCode ?? 429,
-        ...(typeof options.windowMs === 'number'
-          ? { window: options.windowMs }
-          : {}),
-        ...(typeof options.max === 'number' ? { max: options.max } : {}),
-      };
+    this.ratelimit = {
+      statusCode: options.statusCode ?? 429,
+      ...(typeof options.windowMs === 'number'
+        ? { window: options.windowMs }
+        : {}),
+      ...(typeof options.max === 'number' ? { max: options.max } : {}),
+    };
 
     // Use the express-rate-limit middleware.
     this.raw.use(rateLimit(options));
@@ -55,7 +53,7 @@ export default class BaseAppBuilder<T = 'router'> {
   /**
    * Adds a middleware to the route. Add it before adding the route.
    * @param middleware The middleware to add to the route.
-   * @returns The router builder.
+   * @returns The BaseApp class.
    */
   public addMiddleware(middleware: Middleware): this {
     this.middlewares.push(middleware);
