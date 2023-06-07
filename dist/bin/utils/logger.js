@@ -1,30 +1,82 @@
-import colors from 'colors';
-import * as winston from 'winston';
-export const cli = {
-    inf: colors.blue('CLI'),
-    suc: colors.green('CLI'),
-    err: colors.red('CLI'),
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
-export const site = {
-    inf: colors.blue('SITE'),
-    suc: colors.green('SITE'),
-    err: colors.red('SITE'),
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const colors_1 = __importDefault(require("colors"));
+const winston = __importStar(require("winston"));
+/**
+ * Returns a color based on the log level.
+ * @param level The log level.
+ * @returns The colored log level.
+ */
+const levelColor = (level) => {
+    switch (level) {
+        case 'error': {
+            return colors_1.default.red(level.toUpperCase());
+        }
+        case 'warn': {
+            return colors_1.default.yellow(level.toUpperCase());
+        }
+        case 'info': {
+            return colors_1.default.green(level.toUpperCase());
+        }
+        case 'debug': {
+            return colors_1.default.blue(level.toUpperCase());
+        }
+        case 'trace': {
+            return colors_1.default.magenta(level.toUpperCase());
+        }
+        default: {
+            return colors_1.default.white(level.toUpperCase());
+        }
+    }
 };
 /**
  * The format for the console transport.
  */
-const consoleFormat = winston.format.combine(winston.format.colorize(), winston.format.errors({ stack: true }), winston.format.printf(({ message, stack }) => {
+const consoleFormat = winston.format.combine(
+// winston.format.prettyPrint(),
+winston.format.colorize(), winston.format.ms(), winston.format.errors({ stack: true }), 
+// winston.format.splat(),
+// winston.format.json(),
+winston.format.printf(({ ms, level, message, stack }) => {
     let msg = message;
     // Append the stack trace to the message if it is present
     if (stack)
         msg += `\n${stack}`;
-    return msg;
+    /* eslint-disable no-control-regex */
+    const ANSI_REGEX = /\u001b\[[0-9]{1,2}m/gi;
+    return `[${colors_1.default.gray('express-custom')}] ${colors_1.default.cyan(ms)} [${levelColor(level.replace(ANSI_REGEX, ''))}]: ${msg}`;
 }));
 /**
  * The logger instance - console transports only.
  */
 const logger = winston.createLogger({
-    level: 'info',
+    level: 'debug',
     format: consoleFormat,
     transports: [
         // Console transport
@@ -33,5 +85,4 @@ const logger = winston.createLogger({
         }),
     ],
 });
-export default logger;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibG9nZ2VyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vc3JjL2Jpbi91dGlscy9sb2dnZXIudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxNQUFNLE1BQU0sUUFBUSxDQUFDO0FBRTVCLE9BQU8sS0FBSyxPQUFPLE1BQU0sU0FBUyxDQUFDO0FBRW5DLE1BQU0sQ0FBQyxNQUFNLEdBQUcsR0FBRztJQUNqQixHQUFHLEVBQUUsTUFBTSxDQUFDLElBQUksQ0FBQyxLQUFLLENBQUM7SUFDdkIsR0FBRyxFQUFFLE1BQU0sQ0FBQyxLQUFLLENBQUMsS0FBSyxDQUFDO0lBQ3hCLEdBQUcsRUFBRSxNQUFNLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBQztDQUN2QixDQUFDO0FBRUYsTUFBTSxDQUFDLE1BQU0sSUFBSSxHQUFHO0lBQ2xCLEdBQUcsRUFBRSxNQUFNLENBQUMsSUFBSSxDQUFDLE1BQU0sQ0FBQztJQUN4QixHQUFHLEVBQUUsTUFBTSxDQUFDLEtBQUssQ0FBQyxNQUFNLENBQUM7SUFDekIsR0FBRyxFQUFFLE1BQU0sQ0FBQyxHQUFHLENBQUMsTUFBTSxDQUFDO0NBQ3hCLENBQUM7QUFFRjs7R0FFRztBQUNILE1BQU0sYUFBYSxHQUFHLE9BQU8sQ0FBQyxNQUFNLENBQUMsT0FBTyxDQUMxQyxPQUFPLENBQUMsTUFBTSxDQUFDLFFBQVEsRUFBRSxFQUN6QixPQUFPLENBQUMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxFQUFFLEtBQUssRUFBRSxJQUFJLEVBQUUsQ0FBQyxFQUN0QyxPQUFPLENBQUMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxDQUFDLEVBQUUsT0FBTyxFQUFFLEtBQUssRUFBcUIsRUFBRSxFQUFFO0lBQzlELElBQUksR0FBRyxHQUFHLE9BQWlCLENBQUM7SUFDNUIseURBQXlEO0lBQ3pELElBQUksS0FBSztRQUFFLEdBQUcsSUFBSSxLQUFLLEtBQWUsRUFBRSxDQUFDO0lBQ3pDLE9BQU8sR0FBRyxDQUFDO0FBQ2IsQ0FBQyxDQUFDLENBQ0gsQ0FBQztBQUVGOztHQUVHO0FBQ0gsTUFBTSxNQUFNLEdBQUcsT0FBTyxDQUFDLFlBQVksQ0FBQztJQUNsQyxLQUFLLEVBQUUsTUFBTTtJQUNiLE1BQU0sRUFBRSxhQUFhO0lBQ3JCLFVBQVUsRUFBRTtRQUNWLG9CQUFvQjtRQUNwQixJQUFJLE9BQU8sQ0FBQyxVQUFVLENBQUMsT0FBTyxDQUFDO1lBQzdCLEtBQUssRUFBRSxNQUFNO1NBQ2QsQ0FBQztLQUNIO0NBQ0YsQ0FBQyxDQUFDO0FBRUgsZUFBZSxNQUFNLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgY29sb3JzIGZyb20gJ2NvbG9ycyc7XHJcbmltcG9ydCB7IFRyYW5zZm9ybWFibGVJbmZvIH0gZnJvbSAnbG9nZm9ybSc7XHJcbmltcG9ydCAqIGFzIHdpbnN0b24gZnJvbSAnd2luc3Rvbic7XHJcblxyXG5leHBvcnQgY29uc3QgY2xpID0ge1xyXG4gIGluZjogY29sb3JzLmJsdWUoJ0NMSScpLFxyXG4gIHN1YzogY29sb3JzLmdyZWVuKCdDTEknKSxcclxuICBlcnI6IGNvbG9ycy5yZWQoJ0NMSScpLFxyXG59O1xyXG5cclxuZXhwb3J0IGNvbnN0IHNpdGUgPSB7XHJcbiAgaW5mOiBjb2xvcnMuYmx1ZSgnU0lURScpLFxyXG4gIHN1YzogY29sb3JzLmdyZWVuKCdTSVRFJyksXHJcbiAgZXJyOiBjb2xvcnMucmVkKCdTSVRFJyksXHJcbn07XHJcblxyXG4vKipcclxuICogVGhlIGZvcm1hdCBmb3IgdGhlIGNvbnNvbGUgdHJhbnNwb3J0LlxyXG4gKi9cclxuY29uc3QgY29uc29sZUZvcm1hdCA9IHdpbnN0b24uZm9ybWF0LmNvbWJpbmUoXHJcbiAgd2luc3Rvbi5mb3JtYXQuY29sb3JpemUoKSxcclxuICB3aW5zdG9uLmZvcm1hdC5lcnJvcnMoeyBzdGFjazogdHJ1ZSB9KSxcclxuICB3aW5zdG9uLmZvcm1hdC5wcmludGYoKHsgbWVzc2FnZSwgc3RhY2sgfTogVHJhbnNmb3JtYWJsZUluZm8pID0+IHtcclxuICAgIGxldCBtc2cgPSBtZXNzYWdlIGFzIHN0cmluZztcclxuICAgIC8vIEFwcGVuZCB0aGUgc3RhY2sgdHJhY2UgdG8gdGhlIG1lc3NhZ2UgaWYgaXQgaXMgcHJlc2VudFxyXG4gICAgaWYgKHN0YWNrKSBtc2cgKz0gYFxcbiR7c3RhY2sgYXMgc3RyaW5nfWA7XHJcbiAgICByZXR1cm4gbXNnO1xyXG4gIH0pXHJcbik7XHJcblxyXG4vKipcclxuICogVGhlIGxvZ2dlciBpbnN0YW5jZSAtIGNvbnNvbGUgdHJhbnNwb3J0cyBvbmx5LlxyXG4gKi9cclxuY29uc3QgbG9nZ2VyID0gd2luc3Rvbi5jcmVhdGVMb2dnZXIoe1xyXG4gIGxldmVsOiAnaW5mbycsXHJcbiAgZm9ybWF0OiBjb25zb2xlRm9ybWF0LFxyXG4gIHRyYW5zcG9ydHM6IFtcclxuICAgIC8vIENvbnNvbGUgdHJhbnNwb3J0XHJcbiAgICBuZXcgd2luc3Rvbi50cmFuc3BvcnRzLkNvbnNvbGUoe1xyXG4gICAgICBsZXZlbDogJ2luZm8nLFxyXG4gICAgfSksXHJcbiAgXSxcclxufSk7XHJcblxyXG5leHBvcnQgZGVmYXVsdCBsb2dnZXI7XHJcbiJdfQ==
+exports.default = logger;
