@@ -6,7 +6,7 @@
 
 <div align="center">
 
-<a href="https://www.npmjs.com/package/express-rate-limit" target="_blank">Demo (soon)</a> • <a href="https://www.npmjs.com/package/express-rate-limit" target="_blank">Documentation (soon)</a> • <a href="https://discord.gg/p5rxxQN7DT" target="_blank">Discord</a> • <a href="https://github.com/slekup/express-custom" target="_blank">GitHub</a>
+<a href="https://www.npmjs.com/package/express-rate-limit" target="_blank">Demo (soon)</a> • <a href="https://www.npmjs.com/package/express-rate-limit" target="_blank">Documentation (soon)</a> • <a href="https://github.com/slekup/express-custom-examples" target="_blank">Examples</a> • <a href="https://discord.gg/p5rxxQN7DT" target="_blank">Discord</a> • <a href="https://github.com/slekup/express-custom" target="_blank">GitHub</a>
 
 </div>
 
@@ -16,7 +16,8 @@
 
 Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.
 
-![npm version](https://img.shields.io/npm/v/express-custom.svg) ![npm downloads](https://img.shields.io/npm/dm/express-custom) ![npm size](https://img.shields.io/bundlephobia/min/express-custom)
+[![Discord Server](https://img.shields.io/discord/1028009131073880104?color=5865F2&logo=discord&logoColor=white)](https://discord.gg/p5rxxQN7DT)
+![NPM Version](https://img.shields.io/npm/v/express-custom.svg) ![NPM Downloads](https://img.shields.io/npm/dt/express-custom) ![Test Status](https://github.com/slekup/express-custom/actions/workflows/tests.yml/badge.svg) ![NPM Size](https://img.shields.io/bundlephobia/min/express-custom)
 
 </div>
 
