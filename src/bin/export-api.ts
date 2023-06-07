@@ -5,7 +5,7 @@ const fileTimeStart = Date.now();
 import fs from 'fs';
 import path from 'path';
 
-import { ExportedApi } from '../builders/ApiBuilder';
+import { ExportedApi } from '@typings/exports';
 import getRawConfig from './utils/getRawConfig';
 import loadApi from './utils/loadApi';
 import logInfo from './utils/logInfo';

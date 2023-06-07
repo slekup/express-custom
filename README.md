@@ -26,7 +26,8 @@ Express custom is a library built on top of express that allows you to easily cr
 
 Some additional features include schema validation, rate-limiting, and error handling.
 
-> To use this library, your API should preferably be versioned (v1/v2/etc) and your endpoints must or will be grouped by categories (routers) and sub-categories (routes). For example, you could have a category called "User Endpoints" and a sub-category called "User Authentication Endpoints".
+> **Warning**
+> This library is currently in beta. It is not recommended to use this library in production yet. There may be breaking changes in the future.
 
 ## Installation
 
@@ -47,70 +48,70 @@ This library supports both typescript and javascript, with ES6 modules and Commo
 
 ```ts
 // ES6 modules
-import { ApiBuilder } from 'express-custom';
+import { Api } from 'express-custom';
 // CommonJS
-const { ApiBuilder } = require('express-custom');
+const { Api } = require('express-custom');
 ```
 
 ### Create the API
 
-The main class is the `ApiBuilder` class. This class is used to create your API and start the server.
+The main class is the `Api` class. This class is used to create your API and start the server.
 
 It's recommended that you run any functions such as `startServer` in a seperate main file, and import the API into that file. This is so your application does not run when you use the export commands.
 
 ```ts
-const api = new ApiBuilder({
-  baseUrl: 'https://example.com/api',
+const api = new Api({
+  url: 'https://example.com/api',
   port: 5000,
 });
 
 // In the main file
-const server = api.startServer(() => {
+const server = api.start(() => {
   console.log('Server started on port 5000');
 });
 ```
 
 ### Add a version to the API
 
-To add a version to your API, use the `addVersion` function. This function takes a `VersionBuilder` object. The `VersionBuilder` class is used to create a version for your API. You can add multiple versions to your API.
+To add a version to your API, use the `addVersion` function. This function takes a `Version` object. The `Version` class is used to create a version for your API. You can add multiple versions to your API.
 
 The version number must be a number. The version number is used in the url to access the version. For example, if you have a version with the number 1, the url to access that version would be `https://example.com/api/v1`.
 
 ```ts
-const v1 = new VersionBuilder({
+const v1 = new Version({
   version: 1,
 });
 
-// Add routers, routes and endpoints to the version ...
+// Add groups, routes and endpoints to the version ...
 
 api.addVersion(v1);
 ```
 
-### Add a router to the version
+### Add a group to the version
 
-To add a router to your API, use the `addRouter` function. This function takes a `RouterBuilder` object. The `RouterBuilder` class is used to create a router for your API. You can add multiple routers to your API.
+To add a group to your API, use the `addGroup` function. This function takes a `Group` object. The `Group` class is used to create a group for your API. You can add multiple groups to your API.
 
-The path is the path to the router. For example, if you have a router with the path `/user`, the url to access that router would be `https://example.com/api/v1/user`.
+The path is the path to the group. For example, if you have a group with the path `/user`, the url to access that group would be `https://example.com/api/v1/user`.
 
 ```ts
-const userRouter = new RouterBuilder({
+const userGroup = new Group({
   name: 'User Endpoints',
   path: '/user',
 });
 
-// Add routes and endpoints to the router ...
+// Add routes and endpoints to the group ...
 
-v1.addRouter(userRouter);
+v1.addGroup(userGroup);
 ```
 
-### Add a route to the router
+### Add a route to the group
 
-To add a route to your API, use the `addRoute` function. This function takes a `RouteBuilder` object. The `RouteBuilder` class is used to create a route for your API. You can add multiple routes to your API.
+To add a route to your API, use the `addRoute` function. This function takes a `Route` object. The `Route` class is used to create a route for your API. You can add multiple routes to your API.
 
 The path is the path to the route. For example, if you have a route with the path `/auth`, the url to access that route would be `https://example.com/api/v1/user/auth`.
 
 ```ts
-const authRoute = new RouteBuilder({
+const authRoute = new Route({
   name: 'User Authentication Endpoints',
   description: 'Endpoints for user authentication',
   path: '/auth',
@@ -118,23 +119,24 @@ const authRoute = new RouteBuilder({
 
 // Add endpoints to the route ...
 
-userRouter.addRoute(authRoute);
+userGroup.addRoute(authRoute);
 ```
 
 ### Add an endpoint to the route
 
-To add an endpoint to your API, use the `addEndpoint` function. This function takes an `EndpointBuilder` object. The `EndpointBuilder` class is used to create an endpoint for your API. You can add multiple endpoints to your API.
+To add an endpoint to your API, use the `addEndpoint` function. This function takes an `Endpoint` object. The `Endpoint` class is used to create an endpoint for your API. You can add multiple endpoints to your API.
 
 The path is the path to the endpoint. For example, if you have an endpoint with the path `/login`, the url to access that endpoint would be `https://example.com/api/v1/user/auth/login`.
 
 ```ts
-const loginEndpoint = new EndpointBuilder({
+const loginEndpoint = new Endpoint({
   name: 'Login',
   description: 'Login to your account',
   path: '/login',
   method: 'POST',
-}).setController((req, res) => {
-  res.json({ user: req.user });
+  controller: (req, res) => {
+    res.json({ user: req.user });
+  },
 });
 
 authRoute.addEndpoint(loginEndpoint);
@@ -196,7 +198,7 @@ Create a express-custom.json file in your project directory or add an "express-c
 
 The file the API instance is exported from.
 
-This must be a relative path to the file from the project directory. The default export of this file must be an instance of the `ApiBuilder` class.
+This must be a relative path to the file from the project directory. The default export of this file must be an instance of the `Api` class.
 
 ### `output`
 

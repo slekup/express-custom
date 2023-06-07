@@ -28,7 +28,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const winston = __importStar(require("winston"));
-const debug = process.env.DEBUG ? true : false;
 /**
  * Returns a color based on the log level.
  * @param level The log level.
@@ -61,17 +60,17 @@ const levelColor = (level) => {
  */
 const consoleFormat = winston.format.combine(
 // winston.format.prettyPrint(),
-winston.format.colorize(), winston.format.timestamp(), winston.format.ms(), winston.format.errors({ stack: true }), 
+winston.format.colorize(), winston.format.ms(), winston.format.errors({ stack: true }), 
 // winston.format.splat(),
 // winston.format.json(),
-winston.format.printf(({ timestamp, ms, level, message, stack }) => {
+winston.format.printf(({ ms, level, message, stack }) => {
     let msg = message;
     // Append the stack trace to the message if it is present
     if (stack)
         msg += `\n${stack}`;
     /* eslint-disable no-control-regex */
     const ANSI_REGEX = /\u001b\[[0-9]{1,2}m/gi;
-    return `${colors_1.default.gray(timestamp)} (${colors_1.default.magenta(ms)}) [${levelColor(level.replace(ANSI_REGEX, ''))}]: ${msg}`;
+    return `[${colors_1.default.gray('express-custom')}] ${colors_1.default.cyan(ms)} [${levelColor(level.replace(ANSI_REGEX, ''))}]: ${msg}`;
 }));
 /**
  * The logger instance - console transports only.
@@ -82,16 +81,7 @@ const logger = winston.createLogger({
     transports: [
         // Console transport
         new winston.transports.Console({
-            level: debug ? 'debug' : 'info',
-        }),
-        new winston.transports.Console({
-            level: 'error',
-        }),
-        new winston.transports.Console({
-            level: 'warn',
-        }),
-        new winston.transports.Console({
-            level: 'trace',
+            level: 'info',
         }),
     ],
 });

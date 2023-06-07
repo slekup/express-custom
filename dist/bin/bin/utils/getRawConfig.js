@@ -28,6 +28,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const index_1 = require("@utils/index");
 const logger_1 = __importStar(require("./logger"));
 /**
  * Get the express-custom.json config.
@@ -45,7 +46,7 @@ exports.default = async () => {
         }
         catch (error) {
             logger_1.default.error(`${logger_1.cli.err} Failed to parse express-custom.json (invalid JSON)`);
-            throw new Error(error);
+            throw new index_1.PackageError(error);
         }
     }
     catch (error) {
@@ -64,13 +65,13 @@ exports.default = async () => {
             }
             catch (error) {
                 logger_1.default.error(`${logger_1.cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`);
-                throw new Error(error);
+                throw new index_1.PackageError(error);
             }
         }
         catch (error) {
             // Failed to read package.json
             logger_1.default.error(`${logger_1.cli.err} Failed to load express-custom config from package.json`);
-            throw new Error(error);
+            throw new index_1.PackageError(error);
         }
     }
     // Check if the file is a .js or .ts file
