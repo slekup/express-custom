@@ -23,8 +23,8 @@ export default class IntegerValueBuilder
    */
   public constructor(options: IntegerValueOptions) {
     super(options);
-    this.min = options.min;
-    this.max = options.max;
+    if (options.min) this.min = options.min;
+    if (options.max) this.max = options.max;
   }
 
   /**

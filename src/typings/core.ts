@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { ClientSession } from 'mongoose';
 
 export type Middleware = (
   req: Request,
@@ -55,8 +54,7 @@ export interface EndpointResponse {
 
 export type ControllerType = (
   req: Request,
-  res: Response,
-  session: ClientSession
+  res: Response
 ) => Promise<unknown> | unknown;
 
 export type StructureType = 'schema' | 'option';

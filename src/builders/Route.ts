@@ -1,5 +1,3 @@
-import { Router } from 'express';
-
 import { PathString } from '@typings/core';
 import { ExportedRoute } from '@typings/exports';
 import { PackageError } from '@utils/index';
@@ -11,7 +9,6 @@ import SchemaBuilder from './Schema';
  * The route builder class.
  */
 export default class RouteBuilder extends BaseApp<'router'> {
-  public raw: Router = Router();
   private path: PathString;
   private name: string;
   private description: string;
@@ -127,8 +124,6 @@ export default class RouteBuilder extends BaseApp<'router'> {
   public validate(): void {
     if (this.endpoints.length === 0)
       throw new PackageError(`Route ${this.name} has no endpoints`);
-
-    this.endpoints.forEach((endpoint) => endpoint.validate());
   }
 
   /**
