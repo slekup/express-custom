@@ -6,7 +6,8 @@ import * as tsNode from 'ts-node';
 import * as tsconfigPaths from 'tsconfig-paths';
 import { CompilerOptions } from 'typescript';
 
-import ApiBuilder, { ExportedApi } from '../../builders/ApiBuilder';
+import { ExportedApi } from '@typings/exports';
+import Api from '../../builders/Api';
 import logger, { cli } from './logger';
 
 interface TsConfig {
@@ -96,7 +97,7 @@ export default async (fileName: string): Promise<Readonly<ExportedApi>> => {
     logger.info(`${cli.inf} Loading API file`);
 
     const requireModule = createRequire(path.resolve(__dirname, __filename));
-    const module = requireModule(filePath) as { default?: ApiBuilder };
+    const module = requireModule(filePath) as { default?: Api };
 
     const time = `${Date.now() - timeStart}ms`;
     logger.info(`${cli.suc} ⚡ Loaded API file in ${time}`);
@@ -109,7 +110,7 @@ export default async (fileName: string): Promise<Readonly<ExportedApi>> => {
       process.exit(1);
     }
 
-    const api: ApiBuilder = module.default;
+    const api: Api = module.default;
 
     // Return the exported API
     apiData = await api.export();

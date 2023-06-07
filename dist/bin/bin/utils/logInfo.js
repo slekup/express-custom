@@ -46,11 +46,11 @@ ${colors_1.default.magenta('Base URL:')} ${apiData.baseUrl}
 ${colors_1.default.cyan('Versions:')} ${apiData.versions
         .map((version) => version.version)
         .join(', ')}
-${colors_1.default.cyan('Routers:')} ${apiData.versions.reduce((prev, current) => prev + current.routers.length, 0)}
+${colors_1.default.cyan('Groups:')} ${apiData.versions.reduce((prev, current) => prev + current.groups.length, 0)}
 ${colors_1.default.cyan('Routes:')} ${apiData.versions.reduce((prev, current) => prev +
-        current.routers.reduce((prev, current) => prev + current.routes.length, 0), 0)}
+        current.groups.reduce((prev, current) => prev + current.routes.length, 0), 0)}
 ${colors_1.default.cyan('Endpoints:')} ${apiData.versions.reduce((prev, current) => prev +
-        current.routers.reduce((prev, current) => prev +
+        current.groups.reduce((prev, current) => prev +
             current.routes.reduce((prev, current) => prev + current.endpoints.length, 0), 0), 0)}
   `;
     logger_1.default.info(info);

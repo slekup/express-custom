@@ -17,7 +17,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logger = void 0;
+exports.logger = exports.PackageError = void 0;
+var PackageError_1 = require("./PackageError");
+Object.defineProperty(exports, "PackageError", { enumerable: true, get: function () { return __importDefault(PackageError_1).default; } });
 var logger_1 = require("./logger");
 Object.defineProperty(exports, "logger", { enumerable: true, get: function () { return __importDefault(logger_1).default; } });
 __exportStar(require("./validate"), exports);

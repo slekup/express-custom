@@ -1,5 +1,5 @@
+import { ExportedApi } from '@typings/exports';
 import colors from 'colors';
-import { ExportedApi } from '../../builders/ApiBuilder';
 import logger, { cli } from './logger';
 
 /**
@@ -26,15 +26,15 @@ ${colors.magenta('Base URL:')} ${apiData.baseUrl}
 ${colors.cyan('Versions:')} ${apiData.versions
     .map((version: { version: number }) => version.version)
     .join(', ')}
-${colors.cyan('Routers:')} ${apiData.versions.reduce(
-    (prev: number, current: { routers: unknown[] }) =>
-      prev + current.routers.length,
+${colors.cyan('Groups:')} ${apiData.versions.reduce(
+    (prev: number, current: { groups: unknown[] }) =>
+      prev + current.groups.length,
     0
   )}
 ${colors.cyan('Routes:')} ${apiData.versions.reduce(
-    (prev: number, current: { routers: { routes: unknown[] }[] }) =>
+    (prev: number, current: { groups: { routes: unknown[] }[] }) =>
       prev +
-      current.routers.reduce(
+      current.groups.reduce(
         (prev: number, current) => prev + current.routes.length,
         0
       ),
@@ -43,10 +43,10 @@ ${colors.cyan('Routes:')} ${apiData.versions.reduce(
 ${colors.cyan('Endpoints:')} ${apiData.versions.reduce(
     (
       prev: number,
-      current: { routers: { routes: { endpoints: unknown[] }[] }[] }
+      current: { groups: { routes: { endpoints: unknown[] }[] }[] }
     ) =>
       prev +
-      current.routers.reduce(
+      current.groups.reduce(
         (prev: number, current) =>
           prev +
           current.routes.reduce(

@@ -1,98 +1,37 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+import colors from 'colors';
+import * as winston from 'winston';
+export const cli = {
+    inf: colors.blue('CLI'),
+    suc: colors.green('CLI'),
+    err: colors.red('CLI'),
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const colors_1 = __importDefault(require("colors"));
-const winston = __importStar(require("winston"));
-const debug = process.env.DEBUG ? true : false;
-/**
- * Returns a color based on the log level.
- * @param level The log level.
- * @returns The colored log level.
- */
-const levelColor = (level) => {
-    switch (level) {
-        case 'error': {
-            return colors_1.default.red(level.toUpperCase());
-        }
-        case 'warn': {
-            return colors_1.default.yellow(level.toUpperCase());
-        }
-        case 'info': {
-            return colors_1.default.green(level.toUpperCase());
-        }
-        case 'debug': {
-            return colors_1.default.blue(level.toUpperCase());
-        }
-        case 'trace': {
-            return colors_1.default.magenta(level.toUpperCase());
-        }
-        default: {
-            return colors_1.default.white(level.toUpperCase());
-        }
-    }
+export const site = {
+    inf: colors.blue('SITE'),
+    suc: colors.green('SITE'),
+    err: colors.red('SITE'),
 };
 /**
  * The format for the console transport.
  */
-const consoleFormat = winston.format.combine(
-// winston.format.prettyPrint(),
-winston.format.colorize(), winston.format.timestamp(), winston.format.ms(), winston.format.errors({ stack: true }), 
-// winston.format.splat(),
-// winston.format.json(),
-winston.format.printf(({ timestamp, ms, level, message, stack }) => {
+const consoleFormat = winston.format.combine(winston.format.colorize(), winston.format.errors({ stack: true }), winston.format.printf(({ message, stack }) => {
     let msg = message;
     // Append the stack trace to the message if it is present
     if (stack)
         msg += `\n${stack}`;
-    /* eslint-disable no-control-regex */
-    const ANSI_REGEX = /\u001b\[[0-9]{1,2}m/gi;
-    return `${colors_1.default.gray(timestamp)} (${colors_1.default.magenta(ms)}) [${levelColor(level.replace(ANSI_REGEX, ''))}]: ${msg}`;
+    return msg;
 }));
 /**
  * The logger instance - console transports only.
  */
 const logger = winston.createLogger({
-    level: 'debug',
+    level: 'info',
     format: consoleFormat,
     transports: [
         // Console transport
         new winston.transports.Console({
-            level: debug ? 'debug' : 'info',
-        }),
-        new winston.transports.Console({
-            level: 'error',
-        }),
-        new winston.transports.Console({
-            level: 'warn',
-        }),
-        new winston.transports.Console({
-            level: 'trace',
+            level: 'info',
         }),
     ],
 });
-exports.default = logger;
+export default logger;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibG9nZ2VyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vc3JjL2Jpbi91dGlscy9sb2dnZXIudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxNQUFNLE1BQU0sUUFBUSxDQUFDO0FBRTVCLE9BQU8sS0FBSyxPQUFPLE1BQU0sU0FBUyxDQUFDO0FBRW5DLE1BQU0sQ0FBQyxNQUFNLEdBQUcsR0FBRztJQUNqQixHQUFHLEVBQUUsTUFBTSxDQUFDLElBQUksQ0FBQyxLQUFLLENBQUM7SUFDdkIsR0FBRyxFQUFFLE1BQU0sQ0FBQyxLQUFLLENBQUMsS0FBSyxDQUFDO0lBQ3hCLEdBQUcsRUFBRSxNQUFNLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBQztDQUN2QixDQUFDO0FBRUYsTUFBTSxDQUFDLE1BQU0sSUFBSSxHQUFHO0lBQ2xCLEdBQUcsRUFBRSxNQUFNLENBQUMsSUFBSSxDQUFDLE1BQU0sQ0FBQztJQUN4QixHQUFHLEVBQUUsTUFBTSxDQUFDLEtBQUssQ0FBQyxNQUFNLENBQUM7SUFDekIsR0FBRyxFQUFFLE1BQU0sQ0FBQyxHQUFHLENBQUMsTUFBTSxDQUFDO0NBQ3hCLENBQUM7QUFFRjs7R0FFRztBQUNILE1BQU0sYUFBYSxHQUFHLE9BQU8sQ0FBQyxNQUFNLENBQUMsT0FBTyxDQUMxQyxPQUFPLENBQUMsTUFBTSxDQUFDLFFBQVEsRUFBRSxFQUN6QixPQUFPLENBQUMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxFQUFFLEtBQUssRUFBRSxJQUFJLEVBQUUsQ0FBQyxFQUN0QyxPQUFPLENBQUMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxDQUFDLEVBQUUsT0FBTyxFQUFFLEtBQUssRUFBcUIsRUFBRSxFQUFFO0lBQzlELElBQUksR0FBRyxHQUFHLE9BQWlCLENBQUM7SUFDNUIseURBQXlEO0lBQ3pELElBQUksS0FBSztRQUFFLEdBQUcsSUFBSSxLQUFLLEtBQWUsRUFBRSxDQUFDO0lBQ3pDLE9BQU8sR0FBRyxDQUFDO0FBQ2IsQ0FBQyxDQUFDLENBQ0gsQ0FBQztBQUVGOztHQUVHO0FBQ0gsTUFBTSxNQUFNLEdBQUcsT0FBTyxDQUFDLFlBQVksQ0FBQztJQUNsQyxLQUFLLEVBQUUsTUFBTTtJQUNiLE1BQU0sRUFBRSxhQUFhO0lBQ3JCLFVBQVUsRUFBRTtRQUNWLG9CQUFvQjtRQUNwQixJQUFJLE9BQU8sQ0FBQyxVQUFVLENBQUMsT0FBTyxDQUFDO1lBQzdCLEtBQUssRUFBRSxNQUFNO1NBQ2QsQ0FBQztLQUNIO0NBQ0YsQ0FBQyxDQUFDO0FBRUgsZUFBZSxNQUFNLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgY29sb3JzIGZyb20gJ2NvbG9ycyc7XG5pbXBvcnQgeyBUcmFuc2Zvcm1hYmxlSW5mbyB9IGZyb20gJ2xvZ2Zvcm0nO1xuaW1wb3J0ICogYXMgd2luc3RvbiBmcm9tICd3aW5zdG9uJztcblxuZXhwb3J0IGNvbnN0IGNsaSA9IHtcbiAgaW5mOiBjb2xvcnMuYmx1ZSgnQ0xJJyksXG4gIHN1YzogY29sb3JzLmdyZWVuKCdDTEknKSxcbiAgZXJyOiBjb2xvcnMucmVkKCdDTEknKSxcbn07XG5cbmV4cG9ydCBjb25zdCBzaXRlID0ge1xuICBpbmY6IGNvbG9ycy5ibHVlKCdTSVRFJyksXG4gIHN1YzogY29sb3JzLmdyZWVuKCdTSVRFJyksXG4gIGVycjogY29sb3JzLnJlZCgnU0lURScpLFxufTtcblxuLyoqXG4gKiBUaGUgZm9ybWF0IGZvciB0aGUgY29uc29sZSB0cmFuc3BvcnQuXG4gKi9cbmNvbnN0IGNvbnNvbGVGb3JtYXQgPSB3aW5zdG9uLmZvcm1hdC5jb21iaW5lKFxuICB3aW5zdG9uLmZvcm1hdC5jb2xvcml6ZSgpLFxuICB3aW5zdG9uLmZvcm1hdC5lcnJvcnMoeyBzdGFjazogdHJ1ZSB9KSxcbiAgd2luc3Rvbi5mb3JtYXQucHJpbnRmKCh7IG1lc3NhZ2UsIHN0YWNrIH06IFRyYW5zZm9ybWFibGVJbmZvKSA9PiB7XG4gICAgbGV0IG1zZyA9IG1lc3NhZ2UgYXMgc3RyaW5nO1xuICAgIC8vIEFwcGVuZCB0aGUgc3RhY2sgdHJhY2UgdG8gdGhlIG1lc3NhZ2UgaWYgaXQgaXMgcHJlc2VudFxuICAgIGlmIChzdGFjaykgbXNnICs9IGBcXG4ke3N0YWNrIGFzIHN0cmluZ31gO1xuICAgIHJldHVybiBtc2c7XG4gIH0pXG4pO1xuXG4vKipcbiAqIFRoZSBsb2dnZXIgaW5zdGFuY2UgLSBjb25zb2xlIHRyYW5zcG9ydHMgb25seS5cbiAqL1xuY29uc3QgbG9nZ2VyID0gd2luc3Rvbi5jcmVhdGVMb2dnZXIoe1xuICBsZXZlbDogJ2luZm8nLFxuICBmb3JtYXQ6IGNvbnNvbGVGb3JtYXQsXG4gIHRyYW5zcG9ydHM6IFtcbiAgICAvLyBDb25zb2xlIHRyYW5zcG9ydFxuICAgIG5ldyB3aW5zdG9uLnRyYW5zcG9ydHMuQ29uc29sZSh7XG4gICAgICBsZXZlbDogJ2luZm8nLFxuICAgIH0pLFxuICBdLFxufSk7XG5cbmV4cG9ydCBkZWZhdWx0IGxvZ2dlcjtcbiJdfQ==
