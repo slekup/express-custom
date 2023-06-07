@@ -1,60 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import { ClientSession } from 'mongoose';
 
-import { PathString, RateLimit } from '@typings/core';
-import { logger } from '@utils/index';
+import {
+  ControllerType,
+  EndpointNote,
+  EndpointResponse,
+  PathString,
+  RateLimit,
+  RequestMethod,
+} from '@typings/core';
+import { ExportedEndpoint } from '@typings/exports';
+import { PackageError, logger } from '@utils/index';
 import { withErrorHandling } from '@utils/middleware';
-import SchemaBuilder, { ExportedSchema } from './SchemaBuilder';
-
-type RequestMethod =
-  | 'GET'
-  | 'POST'
-  | 'PATCH'
-  | 'PUT'
-  | 'DELETE'
-  | 'OPTIONS'
-  | 'HEAD'
-  | 'TRACE'
-  | 'CONNECT';
-
-type EndpointMessageType = 'INFO' | 'WARNING' | 'DANGER' | 'SUCCESS';
-
-interface EndpointNote {
-  type: EndpointMessageType;
-  text: string;
-}
-
-type StatusCode =
-  | 200
-  | 201
-  | 204
-  | 301
-  | 400
-  | 401
-  | 403
-  | 404
-  | 405
-  | 409
-  | 500
-  | 501;
-
-interface EndpointResponse {
-  status: StatusCode;
-  message: string;
-  [key: string]: unknown;
-}
-
-export interface ExportedEndpoint {
-  name: string;
-  description: string;
-  path: string;
-  method: RequestMethod;
-  notes: EndpointNote[];
-  params: ExportedSchema;
-  queries: ExportedSchema;
-  body: ExportedSchema;
-  responses: EndpointResponse[];
-}
+import SchemaBuilder from './Schema';
 
 /**
  * The endpoint builder class.
@@ -70,79 +28,81 @@ export default class EndpointBuilder {
   public querySchema?: SchemaBuilder;
   public bodySchema?: SchemaBuilder;
   public responses: EndpointResponse[];
-  public controller: (req: Request, res: Response, next: NextFunction) => void;
+  public controller?: (req: Request, res: Response, next: NextFunction) => void;
   public ratelimit?: Partial<RateLimit>;
 
   /**
    * Creates a new endpoint.
    * @param options The options for the endpoint.
-   * @param options.disabled The disabled state of the endpoint.
    * @param options.name The name of the endpoint.
    * @param options.description The description of the endpoint.
    * @param options.path The path of the endpoint.
    * @param options.method The method of the endpoint.
+   * @param options.controller The controller of the endpoint.
+   * @param options.notes The notes of the endpoint.
+   * @param options.responses The responses of the endpoint.
+   * @param options.disabled The disabled state of the endpoint.
    */
-  public constructor({
-    disabled,
-    name,
-    description,
-    path,
-    method,
-  }: {
-    disabled?: boolean;
+  public constructor(options: {
     name: string;
     description: string;
     path: PathString;
     method: RequestMethod;
+    controller?: ControllerType;
+    notes?: EndpointNote[];
+    responses?: EndpointResponse[];
+    disabled?: boolean;
   }) {
-    const constructorSchema = new SchemaBuilder()
-      .addBoolean((option) =>
-        option.setName('disabled').setRequired(false).setDefault(false)
-      )
-      .addString((option) =>
-        option.setName('name').setRequired(true).setMin(1).setMax(50)
-      )
-      .addString((option) =>
-        option.setName('description').setRequired(true).setMin(1).setMax(100)
-      )
-      .addString((option) =>
-        option
-          .setName('path')
-          .setRequired(true)
-          .setMin(1)
-          .setMax(100)
-          .setTest('path')
-      )
-      .addString((option) =>
-        option
-          .setName('method')
-          .setRequired(true)
-          .setMin(1)
-          .setMax(100)
-          .setOptions(['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'])
-      );
+    this.disabled = options.disabled ?? false;
+    this.name = options.name;
+    this.description = options.description;
+    this.path = options.path;
+    this.method = options.method;
+    if (options.controller)
+      this.controller = withErrorHandling(options.controller);
+    else this.controller = undefined;
+    this.notes = options.notes ?? [];
+    this.responses = options.responses ?? [];
 
-    constructorSchema
-      .validate({ disabled, name, description, path, method })
-      .then((result) => {
-        if (typeof result === 'string')
-          throw new Error(`Endpoint (${name || path}): ${result}`);
+    const constructorSchema = new SchemaBuilder()
+      .addBoolean({
+        name: 'disabled',
+        required: false,
+        defaultValue: false,
+      })
+      .addString({
+        name: 'name',
+        required: true,
+        min: 1,
+        max: 50,
+      })
+      .addString({
+        name: 'description',
+        required: true,
+        min: 1,
+        max: 1000,
+      })
+      .addString({
+        name: 'path',
+        required: true,
+        min: 1,
+        max: 100,
+        test: 'path',
+      })
+      .addString({
+        name: 'method',
+        required: true,
+        min: 1,
+        max: 100,
+        options: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
       });
 
-    this.disabled = disabled ?? false;
-    this.name = name;
-    this.description = description;
-    this.path = path;
-    this.method = method;
-    this.notes = [];
-    this.responses = [];
-
-    /**
-     * If the controller is not set, throw an error.
-     */
-    this.controller = () => {
-      throw new Error('Controller not set');
-    };
+    constructorSchema.validate(options).then((result) => {
+      if (typeof result === 'string')
+        throw new PackageError(
+          `Endpoint (${options.name || options.path}): ${result}`
+        );
+    });
   }
 
   /**
@@ -223,14 +183,11 @@ export default class EndpointBuilder {
    * @param res The response.
    * @param next The next function.
    */
-  public execute(req: Request, res: Response, next: NextFunction): void {
+  public execute = (req: Request, res: Response, next: NextFunction): void => {
+    logger.info('[T] running controller');
+
     (async () => {
       try {
-        if (!this.paramSchema && !this.querySchema && !this.bodySchema)
-          return res
-            .status(500)
-            .json({ status: 500, message: 'Schema not set for endpoint.' });
-
         // Validate the request
         if (
           this.paramSchema &&
@@ -250,12 +207,33 @@ export default class EndpointBuilder {
         )
           return;
 
+        logger.info('[T] running controller #2');
+
         // Return the execution of the controller
-        return this.controller(req, res, next);
+        if (this.controller) {
+          logger.info('[T] running controller #3');
+          this.controller(req, res, next);
+        } else {
+          logger.info('[T] running controller #4');
+          logger.error(
+            `Endpoint (${this.name || this.path}): Controller not set`
+          );
+          res.status(500).json({
+            status: 500,
+            message: 'Controller not set for endpoint.',
+          });
+        }
       } catch (error) {
         logger.error(error);
       }
     })();
+  };
+
+  /**
+   * Validates the endpoint.
+   */
+  public validate(): void {
+    if (!this.controller) throw new PackageError('Controller not set');
   }
 
   /**

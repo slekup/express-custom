@@ -1,49 +1,47 @@
 import { Router } from 'express';
 
 import { Middleware, PathString, RateLimit } from '@typings/core';
-import BaseAppBuilder from './Base/BaseAppBuilder';
-import RouteBuilder, { ExportedRoute } from './RouteBuilder';
-import SchemaBuilder from './SchemaBuilder';
-
-export interface ExportedRouter {
-  name: string;
-  path: PathString;
-  routes: ExportedRoute[];
-}
+import { ExportedGroup } from '@typings/exports';
+import { PackageError } from '@utils/index';
+import BaseApp from './Base/BaseApp';
+import RouteBuilder from './Route';
+import SchemaBuilder from './Schema';
 
 /**
- * The router builder class.
+ * The group builder class, used to build a group of routes.
  */
-export default class RouterBuilder extends BaseAppBuilder {
+export default class GroupBuilder extends BaseApp<'router'> {
   private path: PathString;
   private name: string;
   private routes: RouteBuilder[];
 
   /**
-   * Creates a new router builder.
-   * @param params The router parameters.
-   * @param params.path The path of the router.
-   * @param params.name The name of the router.
+   * Creates a new group builder.
+   * @param params The group parameters.
+   * @param params.path The path of the group.
+   * @param params.name The name of the group.
    */
   public constructor({ path, name }: { path: PathString; name: string }) {
     super();
 
     const constructorSchema = new SchemaBuilder()
-      .addString((option) =>
-        option
-          .setName('path')
-          .setRequired(true)
-          .setMin(1)
-          .setMax(100)
-          .setTest('path')
-      )
-      .addString((option) =>
-        option.setName('name').setRequired(true).setMin(1).setMax(50)
-      );
+      .addString({
+        name: 'path',
+        required: true,
+        min: 1,
+        max: 100,
+        test: 'path',
+      })
+      .addString({
+        name: 'name',
+        required: true,
+        min: 1,
+        max: 50,
+      });
 
     constructorSchema.validate({ path, name }).then((result) => {
       if (typeof result === 'string')
-        throw new Error(`Router (${name || path}): ${result}`);
+        throw new PackageError(`Group (${name || path}): ${result}`);
     });
 
     this.path = path;
@@ -52,9 +50,9 @@ export default class RouterBuilder extends BaseAppBuilder {
   }
 
   /**
-   * Uses a router.
-   * @param route The router to use.
-   * @returns The router builder.
+   * Uses a group.
+   * @param route The group to use.
+   * @returns The group builder.
    */
   public addRoute(route: RouteBuilder): this {
     this.routes.push(route);
@@ -63,13 +61,13 @@ export default class RouterBuilder extends BaseAppBuilder {
   }
 
   /**
-   * Returns the router values.
-   * @returns The router values.
+   * Returns the group values.
+   * @returns The group values.
    */
   public values(): Readonly<{
     raw: Router;
     ratelimit?: Partial<RateLimit>;
-    path: `/${string}`;
+    path: PathString;
     defaultCategory: string;
     routes: RouteBuilder[];
     middlewares: Middleware[];
@@ -85,10 +83,10 @@ export default class RouterBuilder extends BaseAppBuilder {
   }
 
   /**
-   * Validates the router.
+   * Validates the group.
    */
   public validate(): void {
-    if (!this.routes.length) throw new Error('No routes provided');
+    if (!this.routes.length) throw new PackageError('No routes provided');
 
     this.routes.forEach((route) => route.validate());
   }
@@ -97,7 +95,7 @@ export default class RouterBuilder extends BaseAppBuilder {
    * Exports the routes and endpoints data.
    * @returns The exported data.
    */
-  public export(): Readonly<ExportedRouter> {
+  public export(): Readonly<ExportedGroup> {
     return {
       name: this.name,
       path: this.path,

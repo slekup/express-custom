@@ -1,21 +1,25 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": [
-      "ESNext"
-    ],
-    "module": "NodeNext",
+    "module": "ESNext",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
     "strict": true,
     "alwaysStrict": true,
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
-    "noEmit": true,
-    "baseUrl": "./",
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "noEmit": false,
     "outDir": "dist",
+    "baseUrl": ".",
     "paths": {
       "@builders/*": [
         "src/builders/*"
@@ -27,15 +31,16 @@
         "src/utils/*"
       ]
     },
+    "lib": [
+      "ESNext"
+    ],
   },
   "include": [
     "src/**/*",
-    "environment.d.ts",
-    "package.json",
   ],
   "exclude": [
     "node_modules",
-    "**/*.spec.ts"
+    "dist"
   ],
   "typedocOptions": {
     "name": "Express Custom Documentation",

@@ -3,6 +3,7 @@
 
 import { Response } from 'express';
 
+import { ExportedSchema, ExportedValue } from '@typings/exports';
 import { Schema } from '@typings/schema';
 import {
   validateEmail,
@@ -14,27 +15,31 @@ import {
   validateUsername,
   valiedatePassword,
 } from '@utils/validate';
-import { ExportedValue } from './Base/BaseValueBuilder';
 import {
-  ArrayValueBuilder,
-  BooleanValueBuilder,
-  ImageValueBuilder,
-  IntegerValueBuilder,
-  NumberValueBuilder,
-  ObjectValueBuilder,
-  StringValueBuilder,
+  ArrayValue,
+  BooleanValue,
+  ImageValue,
+  IntegerValue,
+  NumberValue,
+  ObjectValue,
+  StringValue,
 } from './Value';
-
-export type ExportedSchema = Record<string, ExportedValue<ExportedSchema>>;
+import { ArrayValueOptions } from './Value/ArrayValue';
+import { BooleanValueOptions } from './Value/BooleanValue';
+import { ImageValueOptions } from './Value/ImageValue';
+import { IntegerValueOptions } from './Value/IntegerValue';
+import { NumberValueOptions } from './Value/NumberValue';
+import { ObjectValueOptions } from './Value/ObjectValue';
+import { StringValueOptions } from './Value/StringValue';
 
 type ValueBuilders =
-  | ArrayValueBuilder
-  | StringValueBuilder
-  | NumberValueBuilder
-  | IntegerValueBuilder
-  | BooleanValueBuilder
-  | ObjectValueBuilder<ValueBuilders>
-  | ImageValueBuilder;
+  | ArrayValue
+  | StringValue
+  | NumberValue
+  | IntegerValue
+  | BooleanValue
+  | ObjectValue<ValueBuilders>
+  | ImageValue;
 
 export type BuildersSchema = Record<string, ValueBuilders>;
 
@@ -53,86 +58,77 @@ export default class SchemaBuilder {
 
   /**
    * Adds a array value to the schema.
-   * @param callback The callback to build the array value.
+   * @param options The options of the array value.
    * @returns The schema builder.
    */
-  public addArray(callback: (value: ArrayValueBuilder) => void): this {
-    const value = new ArrayValueBuilder();
-    callback(value);
+  public addArray(options: ArrayValueOptions): this {
+    const value = new ArrayValue(options);
     this.schema[value.name] = value;
     return this;
   }
 
   /**
    * Adds a string value to the schema.
-   * @param callback The callback to build the string value.
+   * @param options The options of the string value.
    * @returns The schema builder.
    */
-  public addString(callback: (value: StringValueBuilder) => void): this {
-    const value = new StringValueBuilder();
-    callback(value);
+  public addString(options: StringValueOptions): this {
+    const value = new StringValue(options);
     this.schema[value.name] = value;
     return this;
   }
 
   /**
    * Adds a number value to the schema.
-   * @param callback The callback to build the number value.
+   * @param options The options of the number value.
    * @returns The schema builder.
    */
-  public addNumber(callback: (value: NumberValueBuilder) => void): this {
-    const value = new NumberValueBuilder();
-    callback(value);
+  public addNumber(options: NumberValueOptions): this {
+    const value = new NumberValue(options);
     this.schema[value.name] = value;
     return this;
   }
 
   /**
    * Adds a integer value to the schema.
-   * @param callback The callback to build the integer value.
+   * @param options The options of the integer value.
    * @returns The schema builder.
    */
-  public addInteger(callback: (value: IntegerValueBuilder) => void): this {
-    const value = new IntegerValueBuilder();
-    callback(value);
+  public addInteger(options: IntegerValueOptions): this {
+    const value = new IntegerValue(options);
     this.schema[value.name] = value;
     return this;
   }
 
   /**
    * Adds a boolean value to the schema.
-   * @param callback The callback to build the boolean value.
+   * @param options The options of the boolean value.
    * @returns The schema builder.
    */
-  public addBoolean(callback: (value: BooleanValueBuilder) => void): this {
-    const value = new BooleanValueBuilder();
-    callback(value);
+  public addBoolean(options: BooleanValueOptions): this {
+    const value = new BooleanValue(options);
     this.schema[value.name] = value;
     return this;
   }
 
   /**
    * Adds a object value to the schema.
-   * @param callback The callback to build the object value.
+   * @param options The options of the object value.
    * @returns The schema builder.
    */
-  public addObject(
-    callback: (value: ObjectValueBuilder<ValueBuilders>) => void
-  ): this {
-    const value = new ObjectValueBuilder<ValueBuilders>();
-    callback(value);
+  public addObject(options: ObjectValueOptions): this {
+    const value = new ObjectValue<ValueBuilders>(options);
     this.schema[value.name] = value;
     return this;
   }
 
   /**
    * Adds a image value to the schema.
-   * @param callback The callback to build the image value.
+   * @param options The options of the image value.
    * @returns The schema builder.
    */
-  public addImage(callback: (value: ImageValueBuilder) => void): this {
-    const value = new ImageValueBuilder();
-    callback(value);
+  public addImage(options: ImageValueOptions): this {
+    const value = new ImageValue(options);
     this.schema[value.name] = value;
     return this;
   }
@@ -313,8 +309,8 @@ export default class SchemaBuilder {
       // Check if the schema value passes all checks
       if (value.checks)
         for (const check of value.checks) {
-          const passedCheck = await check.run(key);
-          if (!passedCheck) return `${check.response}.`;
+          const passedCheck = await check[0](key);
+          if (!passedCheck) return `${check[1]}.`;
         }
 
       // Boolean validation

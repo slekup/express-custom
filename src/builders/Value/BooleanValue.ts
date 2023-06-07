@@ -1,30 +1,23 @@
-import BaseValueBuilder from '@builders/Base/BaseValueBuilder';
+import BaseValue, { BaseValueOptions } from '@builders/Base/BaseValue';
 import { BooleanValue } from '@typings/schema';
+
+export type BooleanValueOptions = BaseValueOptions;
 
 /**
  * The boolean value builder class.
  */
 export default class BooleanValueBuilder
-  extends BaseValueBuilder
+  extends BaseValue
   implements BooleanValue
 {
   public type = 'boolean' as const;
 
   /**
    * Creates an instance of the boolean value builder class.
+   * @param options The options of the boolean value.
    */
-  public constructor() {
-    super();
-  }
-
-  /**
-   * Sets the default value of the value.
-   * @param defaultValue The default value of the value.
-   * @returns The boolean value builder.
-   */
-  public setDefault(defaultValue: boolean): this {
-    this.defaultValue = defaultValue;
-    return this;
+  public constructor(options: BooleanValueOptions) {
+    super(options);
   }
 
   /**
