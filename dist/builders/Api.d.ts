@@ -12,7 +12,7 @@ export default class Api extends BaseApp<'app'> {
     private port;
     private versions;
     private groups;
-    private baseUrl;
+    private url;
     private structures;
     private config?;
     /**
@@ -65,3 +65,4 @@ export default class Api extends BaseApp<'app'> {
      */
     export(): Promise<Readonly<ExportedApi>>;
 }
+//# sourceMappingURL=Api.d.ts.map

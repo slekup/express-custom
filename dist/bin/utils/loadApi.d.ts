@@ -1,4 +1,4 @@
-import { ExportedApi } from '@typings/exports';
+import { ExportedApi } from '../../typings/exports';
 /**
  * Load the API file.
  * @param fileName The file name.
@@ -6,3 +6,4 @@ import { ExportedApi } from '@typings/exports';
  */
 declare const _default: (fileName: string) => Promise<Readonly<ExportedApi>>;
 export default _default;
+//# sourceMappingURL=loadApi.d.ts.map

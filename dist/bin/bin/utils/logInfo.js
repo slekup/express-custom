@@ -41,7 +41,7 @@ exports.default = (apiData, fileTimeStart, text) => {
     const info = `
 ${colors_1.default.magenta('Name:')} ${apiData.name}  
 ${colors_1.default.magenta('Description:')} ${apiData.description}
-${colors_1.default.magenta('Base URL:')} ${apiData.baseUrl}
+${colors_1.default.magenta('Base URL:')} ${apiData.url}
 
 ${colors_1.default.cyan('Versions:')} ${apiData.versions
         .map((version) => version.version)

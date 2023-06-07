@@ -1,3 +1,3 @@
 export { default as errorMiddleware } from './error.middleware';
-export { withErrorHandling } from './wrapper.middleware';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvdXRpbHMvbWlkZGxld2FyZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsT0FBTyxJQUFJLGVBQWUsRUFBRSxNQUFNLG9CQUFvQixDQUFDO0FBQ2hFLE9BQU8sRUFBRSxpQkFBaUIsRUFBRSxNQUFNLHNCQUFzQixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IHsgZGVmYXVsdCBhcyBlcnJvck1pZGRsZXdhcmUgfSBmcm9tICcuL2Vycm9yLm1pZGRsZXdhcmUnO1xuZXhwb3J0IHsgd2l0aEVycm9ySGFuZGxpbmcgfSBmcm9tICcuL3dyYXBwZXIubWlkZGxld2FyZSc7XG4iXX0=
+export { initController as withErrorHandling } from './wrapper.middleware';
+//# sourceMappingURL=index.js.map

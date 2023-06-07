@@ -8,3 +8,4 @@ export { default as Structure } from './builders/Structure';
 export { default as Version } from './builders/Version';
 export { Config } from './typings/exports';
 export default express;
+//# sourceMappingURL=index.d.ts.map

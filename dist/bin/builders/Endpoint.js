@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("@utils/index");
-const middleware_1 = require("@utils/middleware");
+const wrapper_middleware_1 = require("@utils/middleware/wrapper.middleware");
 const Schema_1 = __importDefault(require("./Schema"));
 /**
  * The endpoint builder class.
@@ -40,10 +40,7 @@ class EndpointBuilder {
         this.description = options.description;
         this.path = options.path;
         this.method = options.method;
-        if (options.controller)
-            this.controller = (0, middleware_1.withErrorHandling)(options.controller);
-        else
-            this.controller = undefined;
+        this.controller = (0, wrapper_middleware_1.initController)(options.controller);
         this.notes = options.notes ?? [];
         this.responses = options.responses ?? [];
         const constructorSchema = new Schema_1.default()
@@ -140,7 +137,7 @@ class EndpointBuilder {
      * @returns The endpoint builder.
      */
     setController(controller) {
-        this.controller = (0, middleware_1.withErrorHandling)(controller);
+        this.controller = (0, wrapper_middleware_1.initController)(controller);
         return this;
     }
     /**
@@ -150,7 +147,6 @@ class EndpointBuilder {
      * @param next The next function.
      */
     execute = (req, res, next) => {
-        index_1.logger.info('[T] running controller');
         (async () => {
             try {
                 // Validate the request
@@ -165,33 +161,14 @@ class EndpointBuilder {
                         res,
                     })))
                     return;
-                index_1.logger.info('[T] running controller #2');
-                // Return the execution of the controller
-                if (this.controller) {
-                    index_1.logger.info('[T] running controller #3');
-                    this.controller(req, res, next);
-                }
-                else {
-                    index_1.logger.info('[T] running controller #4');
-                    index_1.logger.error(`Endpoint (${this.name || this.path}): Controller not set`);
-                    res.status(500).json({
-                        status: 500,
-                        message: 'Controller not set for endpoint.',
-                    });
-                }
+                // Run the controller
+                this.controller(req, res, next);
             }
             catch (error) {
                 index_1.logger.error(error);
             }
         })();
     };
-    /**
-     * Validates the endpoint.
-     */
-    validate() {
-        if (!this.controller)
-            throw new index_1.PackageError('Controller not set');
-    }
     /**
      * Exports the endpoint.
      * @returns The exported endpoint.

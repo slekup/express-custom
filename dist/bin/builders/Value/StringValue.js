@@ -21,7 +21,7 @@ class StringValueBuilder extends BaseValue_1.default {
         super(options);
         this.min = options.min;
         this.max = options.max;
-        this.options = options.options ?? [];
+        this.options = options.options;
         this.test = options.test;
     }
     /**

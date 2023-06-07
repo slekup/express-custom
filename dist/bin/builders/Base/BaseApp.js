@@ -28,7 +28,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importStar(require("express"));
 const express_rate_limit_1 = require("express-rate-limit");
-const PackageError_1 = __importDefault(require("@utils/PackageError"));
+const ExpressCustomError_1 = __importDefault(require("@utils/ExpressCustomError"));
 /**
  * The BaseApp class, used to build on top of an express app or router.
  */
@@ -57,7 +57,7 @@ class BaseApp {
      */
     setRateLimit(options) {
         if (this.ratelimit)
-            throw new PackageError_1.default('Rate limit already set.');
+            throw new ExpressCustomError_1.default('Rate limit already set.');
         this.ratelimit = {
             statusCode: options.statusCode ?? 429,
             ...(typeof options.windowMs === 'number'

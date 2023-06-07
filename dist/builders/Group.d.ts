@@ -32,7 +32,7 @@ export default class GroupBuilder extends BaseApp<'router'> {
      */
     values(): Readonly<{
         raw: Router;
-        ratelimit?: Partial<RateLimit>;
+        ratelimit?: Partial<RateLimit> | undefined;
         path: PathString;
         defaultCategory: string;
         routes: RouteBuilder[];
@@ -48,3 +48,4 @@ export default class GroupBuilder extends BaseApp<'router'> {
      */
     export(): Readonly<ExportedGroup>;
 }
+//# sourceMappingURL=Group.d.ts.map
