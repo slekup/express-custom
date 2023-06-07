@@ -8,8 +8,8 @@ import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 
-import { ExportedApi } from '@typings/exports';
-import { PackageError } from '@utils/index';
+import { ExportedApi } from '../typings/exports';
+import { PackageError } from '../utils/index';
 import getRawConfig from './utils/getRawConfig';
 import loadApi from './utils/loadApi';
 import logInfo from './utils/logInfo';

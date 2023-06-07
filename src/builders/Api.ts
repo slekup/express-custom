@@ -3,7 +3,7 @@ import { Server } from 'http';
 import path from 'path';
 
 import { Config, ExportedApi } from '@typings/exports';
-import PackageError from '@utils/PackageError';
+import ExpressCustomError from '@utils/ExpressCustomError';
 import { errorMiddleware } from '@utils/middleware';
 import logger, { cli } from '../bin/utils/logger';
 import BaseApp from './Base/BaseApp';
@@ -19,7 +19,7 @@ export default class Api extends BaseApp<'app'> {
   private port: number;
   private versions: VersionBuilder[];
   private groups: GroupBuilder[];
-  private baseUrl: string;
+  private url: string;
   private structures: StructureBuilder[];
   private config?: Config;
 
@@ -52,15 +52,15 @@ export default class Api extends BaseApp<'app'> {
       });
 
     constructorSchema.validate(options).then((result) => {
-      if (typeof result === 'string') throw new PackageError(result);
+      if (typeof result === 'string')
+        throw new ExpressCustomError(`Api: ${result}`);
     });
 
     this.versions = [];
     this.groups = [];
-    this.baseUrl = options.url;
+    this.url = options.url;
     this.port = options.port;
     this.structures = options.structures ?? [];
-    this.config = undefined;
   }
 
   /**
@@ -100,7 +100,7 @@ export default class Api extends BaseApp<'app'> {
         message: `Welcome to ${this.config?.name ?? 'the API'}`,
         versions: this.versions.map((version) => ({
           version: `v${version.values().version}`,
-          url: `${this.baseUrl}/v${version.values().version}`,
+          url: `${this.url}/v${version.values().version}`,
         })),
       })
     );
@@ -129,7 +129,7 @@ export default class Api extends BaseApp<'app'> {
         logger.error(
           `${cli.err} Failed to parse config.json file (invalid JSON).`
         );
-        throw new PackageError(error as string);
+        throw new ExpressCustomError(error as string);
       }
     } catch (error) {
       logger.error(
@@ -154,7 +154,7 @@ export default class Api extends BaseApp<'app'> {
             logger.error(
               `${cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`
             );
-            throw new PackageError('Invalid JSON');
+            throw new ExpressCustomError('Invalid JSON');
           }
 
           config = configFile;
@@ -162,14 +162,14 @@ export default class Api extends BaseApp<'app'> {
           logger.error(
             `${cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`
           );
-          throw new PackageError(error as string);
+          throw new ExpressCustomError(error as string);
         }
       } catch (error) {
         // Failed to read package.json
         logger.error(
           `${cli.err} Failed to load express-custom config from package.json`
         );
-        throw new PackageError(error as string);
+        throw new ExpressCustomError(error as string);
       }
     }
 
@@ -279,7 +279,7 @@ export default class Api extends BaseApp<'app'> {
    */
   private validate(): void {
     if (this.versions.length === 0 && this.groups.length === 0)
-      throw new PackageError('No versions or groups provided to the API');
+      throw new ExpressCustomError('No versions or groups provided to the API');
 
     this.versions.forEach((version) => version.validate());
     this.groups.forEach((group) => group.validate());
@@ -290,15 +290,16 @@ export default class Api extends BaseApp<'app'> {
    * @returns The API data.
    */
   public async export(): Promise<Readonly<ExportedApi>> {
-    if (!this.baseUrl)
-      throw new PackageError('The base URL of the API is not set.');
-    if (!this.port) throw new PackageError('The port of the API is not set.');
+    if (!this.url)
+      throw new ExpressCustomError('The base URL of the API is not set.');
+    if (!this.port)
+      throw new ExpressCustomError('The port of the API is not set.');
 
     const config = await this.loadConfig();
 
     return {
       ...config,
-      baseUrl: this.baseUrl,
+      url: this.url,
       port: this.port,
       structures: this.structures.map((structure) => structure.export()),
       rateLimit: this.ratelimit,

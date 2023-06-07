@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { ClientSession } from 'mongoose';
 
 import {
   ControllerType,
@@ -11,7 +10,7 @@ import {
 } from '@typings/core';
 import { ExportedEndpoint } from '@typings/exports';
 import { PackageError, logger } from '@utils/index';
-import { withErrorHandling } from '@utils/middleware';
+import { initController } from '@utils/middleware/wrapper.middleware';
 import SchemaBuilder from './Schema';
 
 /**
@@ -28,7 +27,7 @@ export default class EndpointBuilder {
   public querySchema?: SchemaBuilder;
   public bodySchema?: SchemaBuilder;
   public responses: EndpointResponse[];
-  public controller?: (req: Request, res: Response, next: NextFunction) => void;
+  public controller: (req: Request, res: Response, next: NextFunction) => void;
   public ratelimit?: Partial<RateLimit>;
 
   /**
@@ -48,7 +47,7 @@ export default class EndpointBuilder {
     description: string;
     path: PathString;
     method: RequestMethod;
-    controller?: ControllerType;
+    controller: ControllerType;
     notes?: EndpointNote[];
     responses?: EndpointResponse[];
     disabled?: boolean;
@@ -58,9 +57,7 @@ export default class EndpointBuilder {
     this.description = options.description;
     this.path = options.path;
     this.method = options.method;
-    if (options.controller)
-      this.controller = withErrorHandling(options.controller);
-    else this.controller = undefined;
+    this.controller = initController(options.controller);
     this.notes = options.notes ?? [];
     this.responses = options.responses ?? [];
 
@@ -167,13 +164,9 @@ export default class EndpointBuilder {
    * @returns The endpoint builder.
    */
   public setController(
-    controller: (
-      req: Request,
-      res: Response,
-      session: ClientSession
-    ) => Promise<unknown> | unknown
+    controller: (req: Request, res: Response) => Promise<unknown> | unknown
   ): this {
-    this.controller = withErrorHandling(controller);
+    this.controller = initController(controller);
     return this;
   }
 
@@ -184,8 +177,6 @@ export default class EndpointBuilder {
    * @param next The next function.
    */
   public execute = (req: Request, res: Response, next: NextFunction): void => {
-    logger.info('[T] running controller');
-
     (async () => {
       try {
         // Validate the request
@@ -207,34 +198,13 @@ export default class EndpointBuilder {
         )
           return;
 
-        logger.info('[T] running controller #2');
-
-        // Return the execution of the controller
-        if (this.controller) {
-          logger.info('[T] running controller #3');
-          this.controller(req, res, next);
-        } else {
-          logger.info('[T] running controller #4');
-          logger.error(
-            `Endpoint (${this.name || this.path}): Controller not set`
-          );
-          res.status(500).json({
-            status: 500,
-            message: 'Controller not set for endpoint.',
-          });
-        }
+        // Run the controller
+        this.controller(req, res, next);
       } catch (error) {
         logger.error(error);
       }
     })();
   };
-
-  /**
-   * Validates the endpoint.
-   */
-  public validate(): void {
-    if (!this.controller) throw new PackageError('Controller not set');
-  }
 
   /**
    * Exports the endpoint.

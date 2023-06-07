@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import { PackageError } from '@utils/index';
 import { Config } from '../../typings/exports';
+import { PackageError } from '../../utils/index';
 import logger, { cli } from './logger';
 
 export type RawConfig = Partial<Pick<Config, 'file'>> &
