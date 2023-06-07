@@ -28,10 +28,10 @@ export type ValueTypes =
   | 'array'
   | 'image';
 
-export interface ValueCheck {
-  run: ((value: string) => boolean) | ((value: string) => Promise<boolean>);
-  response: string;
-}
+export type ValueCheck = [
+  ((value: string) => boolean) | ((value: string) => Promise<boolean>),
+  string
+];
 
 export type StructureType = `{${string}}` | `[${string}]`;
 
