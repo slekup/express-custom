@@ -13,7 +13,7 @@ export default class StringValueBuilder extends BaseValue implements StringValue
     type: "string";
     min?: number;
     max?: number;
-    options: string[];
+    options?: string[];
     test?: StringTest;
     /**
      * Creates an instance of the string value builder class.
@@ -26,3 +26,4 @@ export default class StringValueBuilder extends BaseValue implements StringValue
      */
     export(): unknown;
 }
+//# sourceMappingURL=StringValue.d.ts.map

@@ -6,8 +6,8 @@ import * as tsNode from 'ts-node';
 import * as tsconfigPaths from 'tsconfig-paths';
 import { CompilerOptions } from 'typescript';
 
-import { ExportedApi } from '@typings/exports';
 import Api from '../../builders/Api';
+import { ExportedApi } from '../../typings/exports';
 import logger, { cli } from './logger';
 
 interface TsConfig {

@@ -1,24 +1,51 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    // Modules
     "module": "ESNext",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "declaration": true,
-    "strict": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    // Type Checking
     "alwaysStrict": true,
-    "skipLibCheck": true,
-    "noUncheckedIndexedAccess": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "inlineSourceMap": true,
-    "inlineSources": true,
+    "noUncheckedIndexedAccess": true,
+    "strict": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
+    "useUnknownInCatchVariables": true,
+    "useDefineForClassFields": true,
+    // Emit
     "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "importHelpers": true,
+    "inlineSources": true,
+    "newLine": "lf",
+    "noEmitHelpers": true,
     "outDir": "dist",
+    "removeComments": false,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    // Language and Environment
+    "experimentalDecorators": true,
+    "lib": [
+      "ESNext"
+    ],
+    "target": "ESNext",
+    // Other
+    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
       "@builders/*": [
@@ -31,9 +58,6 @@
         "src/utils/*"
       ]
     },
-    "lib": [
-      "ESNext"
-    ],
   },
   "include": [
     "src/**/*",

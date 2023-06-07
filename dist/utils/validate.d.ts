@@ -70,3 +70,4 @@ export declare const validatePath: (path: string) => boolean;
  * @returns True if the image is valid, false otherwise.
  */
 export declare const validateImage: (image: string) => boolean;
+//# sourceMappingURL=validate.d.ts.map

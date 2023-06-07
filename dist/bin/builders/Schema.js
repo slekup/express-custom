@@ -176,7 +176,9 @@ class SchemaBuilder {
                 const req = value;
                 const testVal = data[key];
                 // Check if the schema value is included in the schema options
-                if (value.options && !value.options.includes(data[key]))
+                if (value.options &&
+                    value.options.length > 0 &&
+                    !value.options.includes(data[key]))
                     return `The field "${key}" is not a valid option.`;
                 // If both min and max are provided, check if the schema value is within the range
                 if (value.min &&

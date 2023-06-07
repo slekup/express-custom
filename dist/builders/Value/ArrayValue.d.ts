@@ -14,7 +14,7 @@ export default class ArrayValueBuilder extends BaseValue implements ArrayValue<V
     type: "array";
     min?: number;
     max?: number;
-    unique: boolean;
+    unique?: boolean;
     contains?: ArrayContains;
     items?: ValueSchema | ValueSchema[];
     /**
@@ -33,3 +33,4 @@ export default class ArrayValueBuilder extends BaseValue implements ArrayValue<V
      */
     export(): unknown;
 }
+//# sourceMappingURL=ArrayValue.d.ts.map

@@ -57,7 +57,7 @@ export interface ExportedGroup {
 }
 export interface ExportedVersion {
     version: number;
-    rateLimit?: Partial<RateLimit>;
+    rateLimit?: Partial<RateLimit> | undefined;
     groups: ExportedGroup[];
 }
 export interface ExportedStructure {
@@ -66,11 +66,12 @@ export interface ExportedStructure {
     fields: StructureField[];
 }
 export type ExportedApi = Config & {
-    baseUrl: string;
+    url: string;
     port: number;
     structures: ExportedStructure[];
-    rateLimit?: Partial<RateLimit>;
+    rateLimit?: Partial<RateLimit> | undefined;
     versions: ExportedVersion[];
     groups: ExportedGroup[];
 };
 export {};
+//# sourceMappingURL=exports.d.ts.map

@@ -22,3 +22,4 @@ export default class IntegerValueBuilder extends BaseValue implements IntegerVal
      */
     export(): unknown;
 }
+//# sourceMappingURL=IntegerValue.d.ts.map

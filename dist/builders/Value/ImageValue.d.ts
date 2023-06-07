@@ -17,3 +17,4 @@ export default class ImageValueBuilder extends BaseValue implements ImageValue {
      */
     export(): unknown;
 }
+//# sourceMappingURL=ImageValue.d.ts.map

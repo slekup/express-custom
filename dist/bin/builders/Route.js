@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
 const index_1 = require("@utils/index");
 const BaseApp_1 = __importDefault(require("./Base/BaseApp"));
 const Schema_1 = __importDefault(require("./Schema"));
@@ -11,7 +10,6 @@ const Schema_1 = __importDefault(require("./Schema"));
  * The route builder class.
  */
 class RouteBuilder extends BaseApp_1.default {
-    raw = (0, express_1.Router)();
     path;
     name;
     description;
@@ -104,7 +102,6 @@ class RouteBuilder extends BaseApp_1.default {
     validate() {
         if (this.endpoints.length === 0)
             throw new index_1.PackageError(`Route ${this.name} has no endpoints`);
-        this.endpoints.forEach((endpoint) => endpoint.validate());
     }
     /**
      * Exports the route.

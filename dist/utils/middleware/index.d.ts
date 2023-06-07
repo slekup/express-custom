@@ -1,2 +1,3 @@
 export { default as errorMiddleware } from './error.middleware';
-export { withErrorHandling } from './wrapper.middleware';
+export { initController as withErrorHandling } from './wrapper.middleware';
+//# sourceMappingURL=index.d.ts.map

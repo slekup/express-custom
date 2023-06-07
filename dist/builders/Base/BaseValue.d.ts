@@ -31,3 +31,4 @@ export default class BaseValue implements BaseValueSchema {
      */
     validate(): void;
 }
+//# sourceMappingURL=BaseValue.d.ts.map

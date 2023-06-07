@@ -20,10 +20,9 @@ export default class VersionBuilder extends BaseApp<'app'> {
     /**
      * Sets the global rate limit for the version.
      * @param options The options of the rate limit.
-     * @param showInDocs Whether to show the rate limit in the docs.
      * @returns The API builder.
      */
-    setRateLimit(options: Partial<Options>, showInDocs?: boolean): this;
+    setRateLimit(options: Partial<Options>): this;
     /**
      * Adds a group to the API.
      * @param group The group to add.
@@ -49,3 +48,4 @@ export default class VersionBuilder extends BaseApp<'app'> {
      */
     validate(): void;
 }
+//# sourceMappingURL=Version.d.ts.map

@@ -58,3 +58,4 @@ export interface StringValue extends BaseValueSchema {
 }
 export type ValueSchema = ArrayValue<ValueSchema> | BooleanValue | ImageValue | NumberValue | IntegerValue | ObjectValue<Record<string, ValueSchema>> | StringValue;
 export type Schema = Record<string, ValueSchema>;
+//# sourceMappingURL=schema.d.ts.map
