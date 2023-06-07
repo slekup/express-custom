@@ -1,25 +1,33 @@
 {
   "name": "express-custom",
   "version": "1.0.2",
-  "description": "Easily define and document custom express routes and endpoints.",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "type": "commonjs",
+  "description": "Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "bin": {
     "gensite": "./dist/bin/bin/gensite.js",
     "export-api": "./dist/bin/bin/export-api.js"
   },
   "scripts": {
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
     "lint": "eslint src/**/*.ts --ext .ts && tsc",
     "lint:fix": "eslint --fix src/**/*.ts --ext .ts && tsc",
     "copy:site": "copyfiles -u 1 --exclude site/node_modules/** --exclude site/out/** --exclude site/.next/** site/**/* dist/site",
     "copy": "npm run copy:site",
     "build:bin": "rimraf dist/bin && tsc --build tsconfig.bin.json",
-    "build": "rimraf dist && tsup src/index.ts --format cjs,esm --dts --minify --clean --sourcemap && npm run copy && npm run build:bin",
+    "build:nocheck": "rimraf dist && tsup && npm run copy && npm run build:bin",
+    "build": "npm run lint:fix && npm run format && npm run build:nocheck",
     "docs": "rimraf docs && typedoc",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\""
+    "precommit": "npm run lint:fix && npm run format"
   },
   "repository": {
     "type": "git",
