@@ -2,7 +2,7 @@ import express, { Express, Router } from 'express';
 import { Options, rateLimit } from 'express-rate-limit';
 
 import { Middleware, RateLimit } from '@typings/core';
-import PackageError from '@utils/PackageError';
+import ExpressCustomError from '@utils/ExpressCustomError';
 
 /**
  * The BaseApp class, used to build on top of an express app or router.
@@ -34,7 +34,7 @@ export default class BaseApp<T extends 'router' | 'app'> {
    * @returns The BaseApp class.
    */
   public setRateLimit(options: Partial<Options>): this {
-    if (this.ratelimit) throw new PackageError('Rate limit already set.');
+    if (this.ratelimit) throw new ExpressCustomError('Rate limit already set.');
 
     this.ratelimit = {
       statusCode: options.statusCode ?? 429,

@@ -1,5 +1,6 @@
-import { ExportedApi } from '@typings/exports';
 import colors from 'colors';
+
+import { ExportedApi } from '../../typings/exports';
 import logger, { cli } from './logger';
 
 /**
@@ -21,7 +22,7 @@ export default (
   const info = `
 ${colors.magenta('Name:')} ${apiData.name}  
 ${colors.magenta('Description:')} ${apiData.description}
-${colors.magenta('Base URL:')} ${apiData.baseUrl}
+${colors.magenta('Base URL:')} ${apiData.url}
 
 ${colors.cyan('Versions:')} ${apiData.versions
     .map((version: { version: number }) => version.version)
