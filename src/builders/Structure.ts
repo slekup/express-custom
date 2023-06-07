@@ -1,13 +1,5 @@
-type StructureType = 'schema' | 'option';
-
-interface StructureField {
-  name: string;
-  description: string;
-  type?: 'string' | 'number' | 'boolean' | 'object' | 'array';
-  required?: boolean;
-  structure?: string;
-  option?: string;
-}
+import { StructureField, StructureType } from '@typings/core';
+import { ExportedStructure } from '@typings/exports';
 
 /**
  * The StructureBuilder class is used to build a example structures for object schemas and value options.
@@ -42,11 +34,7 @@ export default class StructureBuilder {
    * Exports the structure.
    * @returns The exported structure.
    */
-  public export(): {
-    name: string;
-    type: StructureType;
-    fields: StructureField[];
-  } {
+  public export(): ExportedStructure {
     return {
       name: this.name,
       type: this.type,

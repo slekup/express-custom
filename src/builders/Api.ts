@@ -2,32 +2,23 @@ import fs from 'fs';
 import { Server } from 'http';
 import path from 'path';
 
-import Config from '@typings/config';
-import { RateLimit } from '@typings/core';
+import { Config, ExportedApi } from '@typings/exports';
+import PackageError from '@utils/PackageError';
 import { errorMiddleware } from '@utils/middleware';
 import logger, { cli } from '../bin/utils/logger';
-import BaseAppBuilder from './Base/BaseAppBuilder';
-import RouterBuilder, { ExportedRouter } from './RouterBuilder';
-import SchemaBuilder from './SchemaBuilder';
-import StructureBuilder from './StructureBuilder';
-import VersionBuilder, { ExportedVersion } from './VersionBuilder';
-
-export type ExportedApi = Config & {
-  baseUrl: string;
-  port: number;
-  structures: StructureBuilder[];
-  rateLimit?: Partial<RateLimit>;
-  versions: ExportedVersion[];
-  routers: ExportedRouter[];
-};
+import BaseApp from './Base/BaseApp';
+import GroupBuilder from './Group';
+import SchemaBuilder from './Schema';
+import StructureBuilder from './Structure';
+import VersionBuilder from './Version';
 
 /**
  * The ApiBuilder class is used to build the API.
  */
-export default class ApiBuilder extends BaseAppBuilder<'app'> {
+export default class Api extends BaseApp<'app'> {
   private port: number;
   private versions: VersionBuilder[];
-  private routers: RouterBuilder[];
+  private groups: GroupBuilder[];
   private baseUrl: string;
   private structures: StructureBuilder[];
   private config?: Config;
@@ -35,38 +26,40 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
   /**
    * The constructor of the ApiBuilder class.
    * @param options The configuration of the API.
-   * @param options.baseUrl The base URL of the API.
+   * @param options.url The base URL of the API.
    * @param options.port The port of the API.
    * @param options.structures The structures of the API.
    */
-  public constructor({
-    baseUrl,
-    port,
-    structures,
-  }: {
-    baseUrl: string;
+  public constructor(options: {
+    url: string;
     port: number;
     structures?: StructureBuilder[];
   }) {
     super('app');
 
     const constructorSchema = new SchemaBuilder()
-      .addString((option) =>
-        option.setName('baseUrl').setRequired(true).setMin(1).setMax(100)
-      )
-      .addNumber((option) =>
-        option.setName('port').setMin(0).setMax(65536).setRequired(true)
-      );
+      .addString({
+        name: 'url',
+        required: true,
+        min: 1,
+        max: 100,
+      })
+      .addNumber({
+        name: 'port',
+        required: true,
+        min: 0,
+        max: 65536,
+      });
 
-    constructorSchema.validate({ baseUrl, port }).then((result) => {
-      if (typeof result === 'string') throw new Error(result);
+    constructorSchema.validate(options).then((result) => {
+      if (typeof result === 'string') throw new PackageError(result);
     });
 
     this.versions = [];
-    this.routers = [];
-    this.baseUrl = baseUrl;
-    this.port = port;
-    this.structures = structures ?? [];
+    this.groups = [];
+    this.baseUrl = options.url;
+    this.port = options.port;
+    this.structures = options.structures ?? [];
     this.config = undefined;
   }
 
@@ -83,14 +76,14 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
   }
 
   /**
-   * Adds a router directly to the API.
-   * @param router An instance of the RouterBuilder class.
+   * Adds a group directly to the API without a version.
+   * @param group An instance of the GroupBuilder class.
    * @returns The API builder.
    */
-  public addRouter(router: RouterBuilder): this {
-    this.routers.push(router);
-    const routerValues = router.values();
-    this.raw.use(routerValues.path, routerValues.raw);
+  public addGroup(group: GroupBuilder): this {
+    this.groups.push(group);
+    const groupValues = group.values();
+    this.raw.use(groupValues.path, groupValues.raw);
     return this;
   }
 
@@ -99,12 +92,12 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
    * @param callback The callback to run when the API is initialized.
    * @returns The server.
    */
-  public startServer(callback?: () => void): Server {
+  public start(callback?: (() => void) | (() => Promise<void>)): Server {
     this.validate();
 
-    this.raw.get('/', (req, res) =>
+    this.raw.get('/', (__, res) =>
       res.json({
-        message: 'Welcome to Slekup API',
+        message: `Welcome to ${this.config?.name ?? 'the API'}`,
         versions: this.versions.map((version) => ({
           version: `v${version.values().version}`,
           url: `${this.baseUrl}/v${version.values().version}`,
@@ -136,7 +129,7 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
         logger.error(
           `${cli.err} Failed to parse config.json file (invalid JSON).`
         );
-        throw new Error(error as string);
+        throw new PackageError(error as string);
       }
     } catch (error) {
       logger.error(
@@ -161,7 +154,7 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
             logger.error(
               `${cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`
             );
-            throw new Error('Invalid JSON');
+            throw new PackageError('Invalid JSON');
           }
 
           config = configFile;
@@ -169,78 +162,90 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
           logger.error(
             `${cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`
           );
-          throw new Error(error as string);
+          throw new PackageError(error as string);
         }
       } catch (error) {
         // Failed to read package.json
         logger.error(
           `${cli.err} Failed to load express-custom config from package.json`
         );
-        throw new Error(error as string);
+        throw new PackageError(error as string);
       }
     }
 
     const fileExtRegex = /\.ts$|\.js$/;
 
     const configSchema = new SchemaBuilder()
-      .addString((option) =>
-        option
-          .setName('file')
-          .setRequired(true)
-          .setMax(256)
-          .addCheck({
-            /**
-             * Checks if the value ends with .ts or .js.
-             * @param value The value to check.
-             * @returns Whether the value passes the check.
-             */
-            run: (value) => fileExtRegex.test(value),
-            response:
-              'The file must be a JavaScript or TypeScript file (.js or .ts).',
-          })
-      )
-      .addString((value) =>
-        value.setName('output').setDefault('docs').setMax(256)
-      )
-      .addString((option) => option.setName('name').setDefault('My API'))
-      .addString((option) =>
-        option.setName('description').setDefault('Made with Express Custom')
-      )
-      .addString((option) => option.setName('logo').setDefault('/logo.png'))
-      .addString((option) => option.setName('customDir').setMax(256))
-      .addString((option) => option.setName('theme').setDefault('default'))
-      .addString((option) => option.setName('codeTheme').setDefault('framer'))
-      .addObject((option) =>
-        option
-          .setName('socials')
-          .setDefault({})
-          .setProperties({
-            discord: {
-              type: 'string',
-            },
-            github: {
-              type: 'string',
-            },
-            instagram: {
-              type: 'string',
-            },
-            facebook: {
-              type: 'string',
-            },
-            linkedin: {
-              type: 'string',
-            },
-            youtube: {
-              type: 'string',
-            },
-            twitter: {
-              type: 'string',
-            },
-            email: {
-              type: 'string',
-            },
-          })
-      );
+      .addString({
+        name: 'file',
+        required: true,
+        max: 256,
+        checks: [
+          [
+            (value) => fileExtRegex.test(value),
+            'The file must be a JavaScript or TypeScript file (.js or .ts).',
+          ],
+        ],
+      })
+      .addString({
+        name: 'output',
+        max: 256,
+        defaultValue: 'docs',
+      })
+      .addString({
+        name: 'name',
+        defaultValue: 'My API',
+      })
+      .addString({
+        name: 'description',
+        defaultValue: 'Made with Express Custom',
+      })
+      .addString({
+        name: 'logo',
+        defaultValue: '/logo.png',
+      })
+      .addString({
+        name: 'customDir',
+        max: 256,
+      })
+      .addString({
+        name: 'theme',
+        defaultValue: 'default',
+      })
+      .addString({
+        name: 'codeTheme',
+        defaultValue: 'framer',
+      })
+      .addObject({
+        name: 'socials',
+        defaultValue: {},
+        properties: {
+          discord: {
+            type: 'string',
+          },
+          github: {
+            type: 'string',
+          },
+          instagram: {
+            type: 'string',
+          },
+          facebook: {
+            type: 'string',
+          },
+          linkedin: {
+            type: 'string',
+          },
+          youtube: {
+            type: 'string',
+          },
+          twitter: {
+            type: 'string',
+          },
+          email: {
+            type: 'string',
+          },
+        },
+      });
 
     const result = await configSchema.validate(config);
 
@@ -272,20 +277,22 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
   /**
    * Validates the API instance.
    */
-  private async validate(): Promise<void> {
-    if (this.versions.length === 0 || this.routers.length === 0)
-      throw new Error('No versions or routers provided to the API');
+  private validate(): void {
+    if (this.versions.length === 0 && this.groups.length === 0)
+      throw new PackageError('No versions or groups provided to the API');
 
-    await this.loadConfig();
+    this.versions.forEach((version) => version.validate());
+    this.groups.forEach((group) => group.validate());
   }
 
   /**
-   * Adds a router to the API.
+   * Adds a group to the API.
    * @returns The API data.
    */
   public async export(): Promise<Readonly<ExportedApi>> {
-    if (!this.baseUrl) throw new Error('The base URL of the API is not set.');
-    if (!this.port) throw new Error('The port of the API is not set.');
+    if (!this.baseUrl)
+      throw new PackageError('The base URL of the API is not set.');
+    if (!this.port) throw new PackageError('The port of the API is not set.');
 
     const config = await this.loadConfig();
 
@@ -293,10 +300,10 @@ export default class ApiBuilder extends BaseAppBuilder<'app'> {
       ...config,
       baseUrl: this.baseUrl,
       port: this.port,
-      structures: this.structures,
+      structures: this.structures.map((structure) => structure.export()),
       rateLimit: this.ratelimit,
       versions: this.versions.map((version) => version.export()),
-      routers: this.routers.map((router) => router.export()),
+      groups: this.groups.map((group) => group.export()),
     };
   }
 }
