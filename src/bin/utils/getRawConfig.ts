@@ -13,7 +13,7 @@ export type RawConfig = Partial<Pick<Config, 'file'>> &
  * @returns The express-custom config.
  */
 export default async (): Promise<RawConfig> => {
-  logger.info(`${cli.inf} Loading express-custom config`);
+  logger.info(`${cli.info} Loading express-custom config`);
 
   let config: RawConfig;
 
@@ -28,13 +28,13 @@ export default async (): Promise<RawConfig> => {
       config = JSON.parse(configJSON.toString()) as RawConfig;
     } catch (error) {
       logger.error(
-        `${cli.err} Failed to parse express-custom.json (invalid JSON)`
+        `${cli.error} Failed to parse express-custom.json (invalid JSON)`
       );
       throw new PackageError(error as string);
     }
   } catch (error) {
     logger.error(
-      `${cli.err} No express-custom.json found, trying package.json`
+      `${cli.error} No express-custom.json found, trying package.json`
     );
 
     try {
@@ -51,7 +51,7 @@ export default async (): Promise<RawConfig> => {
 
         if (!configFile) {
           logger.error(
-            `${cli.err} Failed to load express-custom config from package.json`
+            `${cli.error} Failed to load express-custom config from package.json`
           );
           process.exit(1);
         }
@@ -59,14 +59,14 @@ export default async (): Promise<RawConfig> => {
         config = configFile;
       } catch (error) {
         logger.error(
-          `${cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`
+          `${cli.error} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`
         );
         throw new PackageError(error as string);
       }
     } catch (error) {
       // Failed to read package.json
       logger.error(
-        `${cli.err} Failed to load express-custom config from package.json`
+        `${cli.error} Failed to load express-custom config from package.json`
       );
       throw new PackageError(error as string);
     }
@@ -74,13 +74,13 @@ export default async (): Promise<RawConfig> => {
 
   // Check if the file is a .js or .ts file
   if (!['.js', '.ts'].includes(config.file.slice(-3))) {
-    logger.error(`${cli.err} Specified "file" must be a .js or .ts file`);
+    logger.error(`${cli.error} Specified "file" must be a .js or .ts file`);
     process.exit(1);
   }
 
   // Check if the file exists
   if (!fs.existsSync(path.resolve(process.cwd(), config.file))) {
-    logger.error(`${cli.err} The specified API file does not exist`);
+    logger.error(`${cli.error} The specified API file does not exist`);
     process.exit(1);
   }
 

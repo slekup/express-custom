@@ -2,20 +2,20 @@ import { PathString } from '@typings/core';
 import { ExportedRoute } from '@typings/exports';
 import { PackageError } from '@utils/index';
 import BaseApp from './Base/BaseApp';
-import EndpointBuilder from './Endpoint';
-import SchemaBuilder from './Schema';
+import Endpoint from './Endpoint';
+import Schema from './Schema';
 
 /**
- * The route builder class.
+ * The Route class, used to create a route with endpoints.
  */
-export default class RouteBuilder extends BaseApp<'router'> {
+export default class Route extends BaseApp<'router'> {
   private path: PathString;
   private name: string;
   private description: string;
-  private endpoints: EndpointBuilder[] = [];
+  private endpoints: Endpoint[] = [];
 
   /**
-   * Creates a new route.
+   * Creates a new instance of the Route class.
    * @param options The options for the route.
    * @param options.path The path of the route.
    * @param options.name The name of the route.
@@ -32,7 +32,8 @@ export default class RouteBuilder extends BaseApp<'router'> {
   }) {
     super();
 
-    const constructorSchema = new SchemaBuilder()
+    // Create the schema for the constructor options.
+    const constructorSchema = new Schema()
       .addString({
         name: 'path',
         required: true,
@@ -53,11 +54,13 @@ export default class RouteBuilder extends BaseApp<'router'> {
         max: 1000,
       });
 
+    // Test the the constructor against the schema.
     constructorSchema.validate({ name, description, path }).then((result) => {
       if (typeof result === 'string')
         throw new PackageError(`Route (${name || path}): ${result}`);
     });
 
+    // Assign the options to the instance.
     this.path = path;
     this.name = name;
     this.description = description;
@@ -65,20 +68,23 @@ export default class RouteBuilder extends BaseApp<'router'> {
 
   /**
    * Adds an endpoint to the route.
-   * @param endpoint The endpoint to add to the route.
-   * @returns The route builder.
+   * @param endpoint An instance of the Endpoint class.
+   * @returns The current Route instance.
    */
-  public addEndpoint(endpoint: EndpointBuilder): this {
+  public addEndpoint(endpoint: Endpoint): this {
+    // Add the endpoint to the route.
     this.endpoints.push(endpoint);
 
     // Replace multiple slashes with a single slash.
     const doubleSlashRegex = /\/+/g;
 
+    // Create the url for the endpoint.
     const url: string = `${this.path}${endpoint.path}`.replaceAll(
       doubleSlashRegex,
       '/'
     );
 
+    // Add the endpoint to the router.
     switch (endpoint.method) {
       case 'GET':
         this.raw.get(url, endpoint.execute);
@@ -108,9 +114,9 @@ export default class RouteBuilder extends BaseApp<'router'> {
   /**
    * Adds all endpoints from an endpoint file to the route.
    * @param endpointFile The endpoint file to add endpoints from.
-   * @returns The route builder.
+   * @returns The current Route instance.
    */
-  public addEndpointFile(endpointFile: Record<string, EndpointBuilder>): this {
+  public addEndpointFile(endpointFile: Record<string, Endpoint>): this {
     for (const value of Object.values(endpointFile)) {
       this.addEndpoint(value);
     }
@@ -119,16 +125,18 @@ export default class RouteBuilder extends BaseApp<'router'> {
   }
 
   /**
-   * Validates the route.
+   * Validates the current Route instance.
+   * @throws Throws an error if the route is invalid.
    */
   public validate(): void {
+    // If the route has no endpoints
     if (this.endpoints.length === 0)
       throw new PackageError(`Route ${this.name} has no endpoints`);
   }
 
   /**
-   * Exports the route.
-   * @returns The exported route.
+   * Exports the route to a JSON object.
+   * @returns The exported route as a JSON object.
    */
   public export(): Readonly<ExportedRoute> {
     return {
