@@ -25,11 +25,15 @@ class ArrayValueBuilder extends BaseValue_1.default {
      */
     constructor({ min, max, unique, contains, items, ...options }) {
         super(options);
-        this.min = min;
-        this.max = max;
+        if (min)
+            this.min = min;
+        if (max)
+            this.max = max;
         this.unique = unique ?? false;
-        this.contains = contains;
-        this.items = items;
+        if (contains)
+            this.contains = contains;
+        if (items)
+            this.items = items;
     }
     /**
      * Exports the array value.

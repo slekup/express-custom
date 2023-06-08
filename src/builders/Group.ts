@@ -4,27 +4,28 @@ import { Middleware, PathString, RateLimit } from '@typings/core';
 import { ExportedGroup } from '@typings/exports';
 import { PackageError } from '@utils/index';
 import BaseApp from './Base/BaseApp';
-import RouteBuilder from './Route';
-import SchemaBuilder from './Schema';
+import Route from './Route';
+import Schema from './Schema';
 
 /**
- * The group builder class, used to build a group of routes.
+ * The Group class, used to create a group of routes.
  */
-export default class GroupBuilder extends BaseApp<'router'> {
+export default class Group extends BaseApp<'router'> {
   private path: PathString;
   private name: string;
-  private routes: RouteBuilder[];
+  private routes: Route[];
 
   /**
-   * Creates a new group builder.
-   * @param params The group parameters.
-   * @param params.path The path of the group.
-   * @param params.name The name of the group.
+   * Creates a new instance of the Group class.
+   * @param options Options for the Group instance.
+   * @param options.path The path of the group.
+   * @param options.name The name of the group.
    */
   public constructor({ path, name }: { path: PathString; name: string }) {
     super();
 
-    const constructorSchema = new SchemaBuilder()
+    // Create the schema for the constructor options.
+    const constructorSchema = new Schema()
       .addString({
         name: 'path',
         required: true,
@@ -39,37 +40,39 @@ export default class GroupBuilder extends BaseApp<'router'> {
         max: 50,
       });
 
+    // Test the the constructor against the schema.
     constructorSchema.validate({ path, name }).then((result) => {
       if (typeof result === 'string')
         throw new PackageError(`Group (${name || path}): ${result}`);
     });
 
+    // Assign the options to the instance.
     this.path = path;
     this.name = name;
     this.routes = [];
   }
 
   /**
-   * Uses a group.
-   * @param route The group to use.
-   * @returns The group builder.
+   * Adds a route to the group.
+   * @param route An instance of the Route class.
+   * @returns The current Group instance.
    */
-  public addRoute(route: RouteBuilder): this {
+  public addRoute(route: Route): this {
     this.routes.push(route);
     this.raw.use(this.path, route.raw);
     return this;
   }
 
   /**
-   * Returns the group values.
-   * @returns The group values.
+   * Returns the current group instance values.
+   * @returns The current group instance values.
    */
   public values(): Readonly<{
     raw: Router;
     ratelimit?: Partial<RateLimit> | undefined;
     path: PathString;
     defaultCategory: string;
-    routes: RouteBuilder[];
+    routes: Route[];
     middlewares: Middleware[];
   }> {
     return {
@@ -83,7 +86,8 @@ export default class GroupBuilder extends BaseApp<'router'> {
   }
 
   /**
-   * Validates the group.
+   * Validates the group instance and all of its routes.
+   * @throws Throws an error if the group instance is invalid.
    */
   public validate(): void {
     if (!this.routes.length) throw new PackageError('No routes provided');

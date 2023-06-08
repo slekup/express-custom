@@ -19,10 +19,14 @@ class StringValueBuilder extends BaseValue_1.default {
      */
     constructor(options) {
         super(options);
-        this.min = options.min;
-        this.max = options.max;
-        this.options = options.options;
-        this.test = options.test;
+        if (options.min)
+            this.min = options.min;
+        if (options.max)
+            this.max = options.max;
+        if (options.options)
+            this.options = options.options;
+        if (options.test)
+            this.test = options.test;
     }
     /**
      * Exports the value.

@@ -4,7 +4,7 @@
 import { Response } from 'express';
 
 import { ExportedSchema, ExportedValue } from '@typings/exports';
-import { Schema } from '@typings/schema';
+import { ISchema } from '@typings/schema';
 import {
   validateEmail,
   validateImage,
@@ -44,13 +44,13 @@ type ValueBuilders =
 export type BuildersSchema = Record<string, ValueBuilders>;
 
 /**
- * The Schema Builder class.
+ * The Schema class, used to create schemas, which are used to validate data.
  */
-export default class SchemaBuilder {
+export default class Schema {
   public schema: BuildersSchema;
 
   /**
-   * Creates a new schema.
+   * Creates a new instance of the Schema class.
    */
   public constructor() {
     this.schema = {};
@@ -59,7 +59,7 @@ export default class SchemaBuilder {
   /**
    * Adds a array value to the schema.
    * @param options The options of the array value.
-   * @returns The schema builder.
+   * @returns The current Schema instance.
    */
   public addArray(options: ArrayValueOptions): this {
     const value = new ArrayValue(options);
@@ -70,7 +70,7 @@ export default class SchemaBuilder {
   /**
    * Adds a string value to the schema.
    * @param options The options of the string value.
-   * @returns The schema builder.
+   * @returns The current Schema instance.
    */
   public addString(options: StringValueOptions): this {
     const value = new StringValue(options);
@@ -81,7 +81,7 @@ export default class SchemaBuilder {
   /**
    * Adds a number value to the schema.
    * @param options The options of the number value.
-   * @returns The schema builder.
+   * @returns The current Schema instance.
    */
   public addNumber(options: NumberValueOptions): this {
     const value = new NumberValue(options);
@@ -92,7 +92,7 @@ export default class SchemaBuilder {
   /**
    * Adds a integer value to the schema.
    * @param options The options of the integer value.
-   * @returns The schema builder.
+   * @returns The current Schema instance.
    */
   public addInteger(options: IntegerValueOptions): this {
     const value = new IntegerValue(options);
@@ -103,7 +103,7 @@ export default class SchemaBuilder {
   /**
    * Adds a boolean value to the schema.
    * @param options The options of the boolean value.
-   * @returns The schema builder.
+   * @returns The current Schema instance.
    */
   public addBoolean(options: BooleanValueOptions): this {
     const value = new BooleanValue(options);
@@ -114,7 +114,7 @@ export default class SchemaBuilder {
   /**
    * Adds a object value to the schema.
    * @param options The options of the object value.
-   * @returns The schema builder.
+   * @returns The current Schema instance.
    */
   public addObject(options: ObjectValueOptions): this {
     const value = new ObjectValue<ValueBuilders>(options);
@@ -125,7 +125,7 @@ export default class SchemaBuilder {
   /**
    * Adds a image value to the schema.
    * @param options The options of the image value.
-   * @returns The schema builder.
+   * @returns The current Schema instance.
    */
   public addImage(options: ImageValueOptions): this {
     const value = new ImageValue(options);
@@ -144,14 +144,14 @@ export default class SchemaBuilder {
     data: Record<string, unknown>,
     schema:
       | (T extends 'schema' ? BuildersSchema : never)
-      | (T extends 'properties' ? Schema : never),
+      | (T extends 'properties' ? ISchema : never),
     properties?: boolean
   ): Promise<string | boolean> {
     // Check if the data is an object
     if (typeof data !== 'object') return 'The data provided must be an object.';
 
     const schemaFields = properties
-      ? Object.entries(schema as Schema)
+      ? Object.entries(schema as ISchema)
       : Object.entries(schema as BuildersSchema);
 
     for (const [key, value] of schemaFields) {
@@ -336,7 +336,7 @@ export default class SchemaBuilder {
         if (value.properties && Object.keys(value.properties).length > 0) {
           const result = await this.validateBase<'properties'>(
             data[key] as Record<string, unknown>,
-            value.properties as Schema,
+            value.properties as ISchema,
             true
           );
           if (result) return result;
@@ -396,8 +396,8 @@ export default class SchemaBuilder {
   }
 
   /**
-   * Export the schema.
-   * @returns The exported schema.
+   * Export the schema as a JSON object.
+   * @returns The exported schema as a JSON object.
    */
   public export(): ExportedSchema {
     const exportSchema: Record<string, ExportedValue<ExportedSchema>> = {};

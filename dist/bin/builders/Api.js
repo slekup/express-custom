@@ -74,7 +74,6 @@ class Api extends BaseApp_1.default {
         this.url = options.url;
         this.port = options.port;
         this.structures = options.structures ?? [];
-        this.config = undefined;
     }
     /**
      * Adds a version to the API.

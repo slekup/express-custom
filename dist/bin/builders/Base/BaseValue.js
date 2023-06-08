@@ -20,10 +20,12 @@ class BaseValue {
      */
     constructor(options) {
         this.name = options.name;
-        this.description = options.description;
+        if (options.description)
+            this.description = options.description;
         this.required = options.required ?? false; // Default to false
         this.checks = options.checks ?? [];
-        this.structure = options.structure;
+        if (options.structure)
+            this.structure = options.structure;
         this.defaultValue = options.defaultValue;
         this.validate();
     }
