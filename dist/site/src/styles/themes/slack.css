@@ -1,0 +1,63 @@
+[data-theme='slack'] {
+  /* Primary */
+  --primary: 105, 48, 112;
+  --primary-hover: 126, 57, 134;
+  --primary-active: 148, 67, 156;
+  --default: 231, 234, 237;
+  --default-hover: 217, 221, 225;
+  --default-active: 193, 199, 206;
+
+  /* Text */
+  --text: 0, 0, 0;
+  --text-primary: 55, 65, 81;
+  --text-secondary: 75, 85, 107;
+  --text-faint: 135, 141, 156;
+  --text-button: 255, 255, 255;
+
+  /* Elements */
+  --background: 255, 255, 255;
+  --shade: 255, 255, 255;
+  --shade-2: 255, 255, 255;
+  --tooltip: 29, 32, 43;
+  --tooltip-text: 255, 255, 255;
+
+  /* Header */
+  --header: 63, 14, 64;
+  --header-border: var(--header);
+  --header-text: 127, 94, 127;
+  --header-text-gradient-from: 255, 255, 255;
+  --header-text-gradient-to: 255, 255, 255;
+  --header-search: 85, 39, 90;
+  --header-search-focus: 105, 48, 112;
+  --header-search-text: 255, 255, 255;
+  --header-search-border: var(--primary);
+  --header-search-focus-border: 127, 94, 127;
+  --header-search-button: 105, 48, 112;
+  --header-search-button-hover: 126, 57, 134;
+  --header-search-button-text: 255, 255, 255;
+  --header-search-focus-button: 126, 57, 134;
+  --header-search-focus-button-hover: 148, 67, 156;
+  --header-search-focus-button-active: 173, 87, 183;
+  --header-search-focus-button-text: 255, 255, 255;
+  --header-burger: 255, 255, 255;
+  --header-burger-hover: 255, 255, 255;
+  --header-burger-active: 255, 255, 255;
+  --header-burger-background: 63, 14, 64;
+  --header-burger-background-hover: 81, 18, 82;
+  --header-burger-background-active: 96, 21, 98;
+  --header-button: 255, 255, 255;
+  --header-button-hover: 255, 255, 255;
+  --header-button-active: 255, 255, 255;
+  --header-button-text: 0, 0, 0;
+
+  /* System */
+  --link: 46, 182, 125;
+
+  /* Menu */
+  --menu: var(--background);
+
+  /* Components */
+  --input: 229, 231, 235;
+  --input-focus: 255, 255, 255;
+  --border: 219, 222, 227;
+}
