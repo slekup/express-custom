@@ -17,8 +17,10 @@ class IntegerValueBuilder extends BaseValue_1.default {
      */
     constructor(options) {
         super(options);
-        this.min = options.min;
-        this.max = options.max;
+        if (options.min)
+            this.min = options.min;
+        if (options.max)
+            this.max = options.max;
     }
     /**
      * Exports the value.
