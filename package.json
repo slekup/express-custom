@@ -1,6 +1,6 @@
 {
   "name": "express-custom",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -18,15 +18,15 @@
     "create-api": "./dist/bin/bin/create-api.js"
   },
   "scripts": {
-    "format": "prettier --ignore-path .gitignore --ignore-unknown --write \"src/**/*.ts\"",
-    "format:check": "prettier --ignore-path .gitignore --ignore-unknown --check \"src/**/*.ts\"",
-    "lint": "eslint src/**/*.ts --ext .ts && tsc",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "lint": "eslint src/**/* --ext .ts && tsc",
     "lint:fix": "eslint --fix src/**/*.ts --ext .ts && tsc",
     "copy:site": "copyfiles -u 1 --exclude site/node_modules/** --exclude site/out/** --exclude site/.next/** site/**/* dist/site",
     "copy": "npm run copy:site",
     "build:bin": "rimraf dist/bin && tsc --build tsconfig.bin.json",
     "build:nocheck": "rimraf dist && tsup && npm run copy && npm run build:bin",
-    "build": "npm run lint:fix && npm run build:nocheck && npm run format",
+    "build": "npm run lint:fix && npm run format && npm run build:nocheck",
     "docs": "rimraf docs && typedoc",
     "precommit": "npm run lint:fix && npm run format"
   },
