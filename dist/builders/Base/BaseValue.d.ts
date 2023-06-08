@@ -19,15 +19,15 @@ export default class BaseValue implements BaseValueSchema {
     defaultValue?: SchemaTypes;
     /**
      * Creates a new instance of the BaseValue class.
-     * @param options The options of the value.
+     * @param options The options for the BaseValue class.
      * @param options.name The name of the value.
      * @param options.description The description of the value.
-     * @param options.required Whether the value is required.
-     * @param options.checks The checks of the value.
+     * @param options.required Whether the value is required or not.
+     * @param options.checks The value checks. Functions that return a boolean based on the value.
      */
     constructor(options: BaseValueOptions);
     /**
-     * Validates the value.
+     * Validates the BaseValue instances properties.
      */
     validate(): void;
 }

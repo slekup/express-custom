@@ -40,7 +40,7 @@ const logger_1 = __importStar(require("./utils/logger"));
  */
 const exportApi = async (apiData) => {
     const timeStart = Date.now();
-    logger_1.default.info(`${logger_1.cli.inf} Exporting API data to JSON file`);
+    logger_1.default.info(`${logger_1.cli.info} Exporting API data to JSON file`);
     const targetPath = path_1.default.join(process.cwd(), apiData.output);
     try {
         // Make ouput directory if it doesn't exist
@@ -52,10 +52,10 @@ const exportApi = async (apiData) => {
         await fs_1.default.promises.writeFile(path_1.default.join(targetPath, `./api.json`), JSON.stringify(apiData, null, 2));
         // fs.promises.unlink(path.join(__dirname, `./api.json`));
         const time = `${Date.now() - timeStart}ms`;
-        logger_1.default.info(`${logger_1.cli.suc} ⚡ Exported API data in ${time}`);
+        logger_1.default.info(`${logger_1.cli.success} ⚡ Exported API data in ${time}`);
     }
     catch (error) {
-        logger_1.default.error(`${logger_1.cli.err} Failed to export API data to JSON file`);
+        logger_1.default.error(`${logger_1.cli.error} Failed to export API data to JSON file`);
         logger_1.default.info(error);
     }
 };

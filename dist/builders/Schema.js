@@ -3,12 +3,12 @@
 import { validateEmail, validateImage, validateIpv4Address, validatePath, validatePhoneNumber, validateUrl, validateUsername, valiedatePassword, } from '@utils/validate';
 import { ArrayValue, BooleanValue, ImageValue, IntegerValue, NumberValue, ObjectValue, StringValue, } from './Value';
 /**
- * The Schema Builder class.
+ * The Schema class, used to create schemas, which are used to validate data.
  */
-export default class SchemaBuilder {
+export default class Schema {
     schema;
     /**
-     * Creates a new schema.
+     * Creates a new instance of the Schema class.
      */
     constructor() {
         this.schema = {};
@@ -16,7 +16,7 @@ export default class SchemaBuilder {
     /**
      * Adds a array value to the schema.
      * @param options The options of the array value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addArray(options) {
         const value = new ArrayValue(options);
@@ -26,7 +26,7 @@ export default class SchemaBuilder {
     /**
      * Adds a string value to the schema.
      * @param options The options of the string value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addString(options) {
         const value = new StringValue(options);
@@ -36,7 +36,7 @@ export default class SchemaBuilder {
     /**
      * Adds a number value to the schema.
      * @param options The options of the number value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addNumber(options) {
         const value = new NumberValue(options);
@@ -46,7 +46,7 @@ export default class SchemaBuilder {
     /**
      * Adds a integer value to the schema.
      * @param options The options of the integer value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addInteger(options) {
         const value = new IntegerValue(options);
@@ -56,7 +56,7 @@ export default class SchemaBuilder {
     /**
      * Adds a boolean value to the schema.
      * @param options The options of the boolean value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addBoolean(options) {
         const value = new BooleanValue(options);
@@ -66,7 +66,7 @@ export default class SchemaBuilder {
     /**
      * Adds a object value to the schema.
      * @param options The options of the object value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addObject(options) {
         const value = new ObjectValue(options);
@@ -76,7 +76,7 @@ export default class SchemaBuilder {
     /**
      * Adds a image value to the schema.
      * @param options The options of the image value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addImage(options) {
         const value = new ImageValue(options);
@@ -286,8 +286,8 @@ export default class SchemaBuilder {
         return result;
     }
     /**
-     * Export the schema.
-     * @returns The exported schema.
+     * Export the schema as a JSON object.
+     * @returns The exported schema as a JSON object.
      */
     export() {
         const exportSchema = {};

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 
 import { logger } from '..';
 
@@ -6,14 +6,12 @@ import { logger } from '..';
  * Middleware to handle 404 errors.
  * @param __ The response object.
  * @param res The response object.
- * @param next The next function.
  */
-function notFound(__: Request, res: Response, next: NextFunction): void {
+function notFound(__: Request, res: Response): void {
   res.status(404).json({
     status: 404,
     message: 'The server cannot find the requested resource',
   });
-  next();
 }
 
 interface HttpError extends Error {

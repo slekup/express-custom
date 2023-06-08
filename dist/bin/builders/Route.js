@@ -7,15 +7,15 @@ const index_1 = require("@utils/index");
 const BaseApp_1 = __importDefault(require("./Base/BaseApp"));
 const Schema_1 = __importDefault(require("./Schema"));
 /**
- * The route builder class.
+ * The Route class, used to create a route with endpoints.
  */
-class RouteBuilder extends BaseApp_1.default {
+class Route extends BaseApp_1.default {
     path;
     name;
     description;
     endpoints = [];
     /**
-     * Creates a new route.
+     * Creates a new instance of the Route class.
      * @param options The options for the route.
      * @param options.path The path of the route.
      * @param options.name The name of the route.
@@ -23,6 +23,7 @@ class RouteBuilder extends BaseApp_1.default {
      */
     constructor({ path, name, description, }) {
         super();
+        // Create the schema for the constructor options.
         const constructorSchema = new Schema_1.default()
             .addString({
             name: 'path',
@@ -43,24 +44,29 @@ class RouteBuilder extends BaseApp_1.default {
             min: 1,
             max: 1000,
         });
+        // Test the the constructor against the schema.
         constructorSchema.validate({ name, description, path }).then((result) => {
             if (typeof result === 'string')
-                throw new index_1.PackageError(`Route (${name || path}): ${result}`);
+                throw new index_1.ExpressCustomError(`Route (${name || path}): ${result}`);
         });
+        // Assign the options to the instance.
         this.path = path;
         this.name = name;
         this.description = description;
     }
     /**
      * Adds an endpoint to the route.
-     * @param endpoint The endpoint to add to the route.
-     * @returns The route builder.
+     * @param endpoint An instance of the Endpoint class.
+     * @returns The current Route instance.
      */
     addEndpoint(endpoint) {
+        // Add the endpoint to the route.
         this.endpoints.push(endpoint);
         // Replace multiple slashes with a single slash.
         const doubleSlashRegex = /\/+/g;
+        // Create the url for the endpoint.
         const url = `${this.path}${endpoint.path}`.replaceAll(doubleSlashRegex, '/');
+        // Add the endpoint to the router.
         switch (endpoint.method) {
             case 'GET':
                 this.raw.get(url, endpoint.execute);
@@ -81,14 +87,14 @@ class RouteBuilder extends BaseApp_1.default {
                 this.raw.options(url, endpoint.execute);
                 break;
             default:
-                throw new index_1.PackageError(`Invalid method ${String(endpoint.method)}`);
+                throw new index_1.ExpressCustomError(`Invalid method ${String(endpoint.method)}`);
         }
         return this;
     }
     /**
      * Adds all endpoints from an endpoint file to the route.
      * @param endpointFile The endpoint file to add endpoints from.
-     * @returns The route builder.
+     * @returns The current Route instance.
      */
     addEndpointFile(endpointFile) {
         for (const value of Object.values(endpointFile)) {
@@ -97,15 +103,17 @@ class RouteBuilder extends BaseApp_1.default {
         return this;
     }
     /**
-     * Validates the route.
+     * Validates the current Route instance.
+     * @throws Throws an error if the route is invalid.
      */
     validate() {
+        // If the route has no endpoints
         if (this.endpoints.length === 0)
-            throw new index_1.PackageError(`Route ${this.name} has no endpoints`);
+            throw new index_1.ExpressCustomError(`Route ${this.name} has no endpoints`);
     }
     /**
-     * Exports the route.
-     * @returns The exported route.
+     * Exports the route to a JSON object.
+     * @returns The exported route as a JSON object.
      */
     export() {
         return {
@@ -116,4 +124,4 @@ class RouteBuilder extends BaseApp_1.default {
         };
     }
 }
-exports.default = RouteBuilder;
+exports.default = Route;

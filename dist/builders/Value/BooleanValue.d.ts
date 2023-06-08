@@ -1,19 +1,19 @@
 import BaseValue, { BaseValueOptions } from '@builders/Base/BaseValue';
-import { BooleanValue } from '@typings/schema';
+import { IBooleanValue } from '@typings/schema';
 export type BooleanValueOptions = BaseValueOptions;
 /**
- * The boolean value builder class.
+ * The BooleanValue class, used to create boolean values.
  */
-export default class BooleanValueBuilder extends BaseValue implements BooleanValue {
+export default class BooleanValue extends BaseValue implements IBooleanValue {
     type: "boolean";
     /**
-     * Creates an instance of the boolean value builder class.
-     * @param options The options of the boolean value.
+     * Creates an instance of the BooleanValue class.
+     * @param options The options for the BooleanValue class.
      */
     constructor(options: BooleanValueOptions);
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the BooleanValue class properties.
+     * @returns The BooleanValue class properties.
      */
     export(): unknown;
 }

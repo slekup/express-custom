@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { logger } from '@utils/index';
+import { logger } from '..';
 
 type ControllerType = (
   req: Request,

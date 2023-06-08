@@ -1,8 +1,9 @@
 import * as winston from 'winston';
 export declare const cli: {
-    inf: string;
-    suc: string;
-    err: string;
+    info: string;
+    success: string;
+    warning: string;
+    error: string;
 };
 export declare const site: {
     inf: string;

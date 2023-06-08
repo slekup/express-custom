@@ -3,14 +3,12 @@ import { logger } from '..';
  * Middleware to handle 404 errors.
  * @param __ The response object.
  * @param res The response object.
- * @param next The next function.
  */
-function notFound(__, res, next) {
+function notFound(__, res) {
     res.status(404).json({
         status: 404,
         message: 'The server cannot find the requested resource',
     });
-    next();
 }
 /**
  * Middleware to handle errors.

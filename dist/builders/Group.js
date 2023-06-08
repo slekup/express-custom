@@ -1,22 +1,23 @@
-import { PackageError } from '@utils/index';
+import { ExpressCustomError } from '@utils/index';
 import BaseApp from './Base/BaseApp';
-import SchemaBuilder from './Schema';
+import Schema from './Schema';
 /**
- * The group builder class, used to build a group of routes.
+ * The Group class, used to create a group of routes.
  */
-export default class GroupBuilder extends BaseApp {
+export default class Group extends BaseApp {
     path;
     name;
     routes;
     /**
-     * Creates a new group builder.
-     * @param params The group parameters.
-     * @param params.path The path of the group.
-     * @param params.name The name of the group.
+     * Creates a new instance of the Group class.
+     * @param options Options for the Group instance.
+     * @param options.path The path of the group.
+     * @param options.name The name of the group.
      */
     constructor({ path, name }) {
         super();
-        const constructorSchema = new SchemaBuilder()
+        // Create the schema for the constructor options.
+        const constructorSchema = new Schema()
             .addString({
             name: 'path',
             required: true,
@@ -30,18 +31,20 @@ export default class GroupBuilder extends BaseApp {
             min: 1,
             max: 50,
         });
+        // Test the the constructor against the schema.
         constructorSchema.validate({ path, name }).then((result) => {
             if (typeof result === 'string')
-                throw new PackageError(`Group (${name || path}): ${result}`);
+                throw new ExpressCustomError(`Group (${name || path}): ${result}`);
         });
+        // Assign the options to the instance.
         this.path = path;
         this.name = name;
         this.routes = [];
     }
     /**
-     * Uses a group.
-     * @param route The group to use.
-     * @returns The group builder.
+     * Adds a route to the group.
+     * @param route An instance of the Route class.
+     * @returns The current Group instance.
      */
     addRoute(route) {
         this.routes.push(route);
@@ -49,8 +52,8 @@ export default class GroupBuilder extends BaseApp {
         return this;
     }
     /**
-     * Returns the group values.
-     * @returns The group values.
+     * Returns the current group instance values.
+     * @returns The current group instance values.
      */
     values() {
         return {
@@ -63,11 +66,12 @@ export default class GroupBuilder extends BaseApp {
         };
     }
     /**
-     * Validates the group.
+     * Validates the group instance and all of its routes.
+     * @throws Throws an error if the group instance is invalid.
      */
     validate() {
         if (!this.routes.length)
-            throw new PackageError('No routes provided');
+            throw new ExpressCustomError('No routes provided');
         this.routes.forEach((route) => route.validate());
     }
     /**

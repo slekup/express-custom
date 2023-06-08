@@ -1,5 +1,5 @@
 import BaseValue, { BaseValueOptions } from '@builders/Base/BaseValue';
-import { StringTest, StringValue } from '@typings/schema';
+import { IStringValue, StringTest } from '@typings/schema';
 export type StringValueOptions = BaseValueOptions & {
     min?: number;
     max?: number;
@@ -7,22 +7,22 @@ export type StringValueOptions = BaseValueOptions & {
     test?: StringTest;
 };
 /**
- * The string value builder class.
+ * The StringValue class, used to create string values.
  */
-export default class StringValueBuilder extends BaseValue implements StringValue {
+export default class StringValue extends BaseValue implements IStringValue {
     type: "string";
     min?: number;
     max?: number;
     options?: string[];
     test?: StringTest;
     /**
-     * Creates an instance of the string value builder class.
-     * @param options The options of the string value.
+     * Creates an instance of the StringValue class.
+     * @param options The options for the StringValue class.
      */
     constructor(options: StringValueOptions);
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the StringValue class properties.
+     * @returns The StringValue class properties.
      */
     export(): unknown;
 }

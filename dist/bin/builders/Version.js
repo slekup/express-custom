@@ -8,35 +8,38 @@ const ExpressCustomError_1 = __importDefault(require("@utils/ExpressCustomError"
 const BaseApp_1 = __importDefault(require("./Base/BaseApp"));
 const Schema_1 = __importDefault(require("./Schema"));
 /**
- * The version builder class.
+ * The Version class, used to create a version of the API.
  */
-class VersionBuilder extends BaseApp_1.default {
+class Version extends BaseApp_1.default {
     version;
     groups;
     /**
-     * Creates a new version builder.
-     * @param config The configuration of the API.
-     * @param config.version The version of the API.
+     * Creates a new instance of the Version class.
+     * @param options The options for the Version class.
+     * @param options.version The version number of the API.
      */
     constructor({ version }) {
         super('app');
+        // The constructor schema.
         const constructorSchema = new Schema_1.default().addNumber({
             name: 'version',
             required: true,
             min: 1,
             max: 10_000,
         });
+        // Test the the constructor against the schema.
         constructorSchema.validate({ version }).then((result) => {
             if (typeof result === 'string')
                 throw new ExpressCustomError_1.default(result);
         });
+        // Assign the options to the instance.
         this.groups = [];
         this.version = version;
     }
     /**
      * Sets the global rate limit for the version.
      * @param options The options of the rate limit.
-     * @returns The API builder.
+     * @returns The current Version instance.
      */
     setRateLimit(options) {
         this.ratelimit = {
@@ -51,19 +54,19 @@ class VersionBuilder extends BaseApp_1.default {
         return this;
     }
     /**
-     * Adds a group to the API.
-     * @param group The group to add.
-     * @returns The API builder.
+     * Adds a group to the version.
+     * @param group An instance of the Group class.
+     * @returns The current Version instance.
      */
     addGroup(group) {
         this.groups.push(group);
         const groupValues = group.values();
-        this.raw.use(`v${this.version}`, groupValues.raw);
+        this.raw.use(groupValues.raw);
         return this;
     }
     /**
-     * Adds a group to the API.
-     * @returns The API data.
+     * Exports the version as a JSON object.
+     * @returns The Version instance properties as a JSON object.
      */
     export() {
         return {
@@ -74,7 +77,7 @@ class VersionBuilder extends BaseApp_1.default {
     }
     /**
      * Gets the version values.
-     * @returns The API data.
+     * @returns The Version instance values.
      */
     values() {
         return {
@@ -84,7 +87,8 @@ class VersionBuilder extends BaseApp_1.default {
         };
     }
     /**
-     * Validates the version builder.
+     * Validates the current instance of the Version class.
+     * @throws Throws an error if the validation fails.
      */
     validate() {
         if (!this.groups.length)
@@ -92,4 +96,4 @@ class VersionBuilder extends BaseApp_1.default {
         this.groups.forEach((group) => group.validate());
     }
 }
-exports.default = VersionBuilder;
+exports.default = Version;

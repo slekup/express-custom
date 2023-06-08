@@ -1,19 +1,19 @@
 import BaseValue from '@builders/Base/BaseValue';
 /**
- * The boolean value builder class.
+ * The BooleanValue class, used to create boolean values.
  */
-export default class BooleanValueBuilder extends BaseValue {
+export default class BooleanValue extends BaseValue {
     type = 'boolean';
     /**
-     * Creates an instance of the boolean value builder class.
-     * @param options The options of the boolean value.
+     * Creates an instance of the BooleanValue class.
+     * @param options The options for the BooleanValue class.
      */
     constructor(options) {
         super(options);
     }
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the BooleanValue class properties.
+     * @returns The BooleanValue class properties.
      */
     export() {
         return {

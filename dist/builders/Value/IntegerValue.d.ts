@@ -1,24 +1,24 @@
 import BaseValue, { BaseValueOptions } from '@builders/Base/BaseValue';
-import { IntegerValue } from '@typings/schema';
+import { IIntegerValue } from '@typings/schema';
 export type IntegerValueOptions = BaseValueOptions & {
     min?: number;
     max?: number;
 };
 /**
- * The integer value builder class.
+ * The InetgerValue class, used to create integer values.
  */
-export default class IntegerValueBuilder extends BaseValue implements IntegerValue {
+export default class IntegerValue extends BaseValue implements IIntegerValue {
     type: "integer";
     min?: number;
     max?: number;
     /**
-     * Creates an instance of the integer value builder class.
-     * @param options The options of the integer value.
+     * Creates an instance of the IntegerValue class.
+     * @param options The options for the IntegerValue class.
      */
     constructor(options: IntegerValueOptions);
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the IntegerValue class properties.
+     * @returns The IntegerValue class properties.
      */
     export(): unknown;
 }

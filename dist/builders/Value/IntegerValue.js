@@ -1,14 +1,14 @@
 import BaseValue from '@builders/Base/BaseValue';
 /**
- * The integer value builder class.
+ * The InetgerValue class, used to create integer values.
  */
-export default class IntegerValueBuilder extends BaseValue {
+export default class IntegerValue extends BaseValue {
     type = 'integer';
     min;
     max;
     /**
-     * Creates an instance of the integer value builder class.
-     * @param options The options of the integer value.
+     * Creates an instance of the IntegerValue class.
+     * @param options The options for the IntegerValue class.
      */
     constructor(options) {
         super(options);
@@ -18,8 +18,8 @@ export default class IntegerValueBuilder extends BaseValue {
             this.max = options.max;
     }
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the IntegerValue class properties.
+     * @returns The IntegerValue class properties.
      */
     export() {
         return {

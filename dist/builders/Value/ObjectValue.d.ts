@@ -1,22 +1,22 @@
 import BaseValue, { BaseValueOptions } from '@builders/Base/BaseValue';
-import { ObjectValue, Schema } from '@typings/schema';
+import { IObjectValue, ISchema } from '@typings/schema';
 export type ObjectValueOptions = BaseValueOptions & {
-    properties: Schema;
+    properties: ISchema;
 };
 /**
- * The object value builder class.
+ * The ObjectValue class, used to create object values.
  */
-export default class ObjectValueBuilder<T> extends BaseValue implements ObjectValue<T> {
+export default class ObjectValue<T> extends BaseValue implements IObjectValue<T> {
     type: "object";
-    properties: Schema;
+    properties: ISchema;
     /**
-     * Creates an instance of the object value builder class.
-     * @param options The options of the object value builder class.
+     * Creates an instance of the ObjectValue class.
+     * @param options The options for the ObjectValue class.
      */
     constructor(options: ObjectValueOptions);
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the ObjectValue class properties.
+     * @returns The ObjectValue class properties.
      */
     export(): unknown;
 }

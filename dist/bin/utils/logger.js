@@ -1,9 +1,10 @@
 import colors from 'colors';
 import * as winston from 'winston';
 export const cli = {
-    inf: colors.blue('CLI'),
-    suc: colors.green('CLI'),
-    err: colors.red('CLI'),
+    info: colors.blue('CLI'),
+    success: colors.green('CLI'),
+    warning: colors.yellow('CLI'),
+    error: colors.red('CLI'),
 };
 export const site = {
     inf: colors.blue('SITE'),
