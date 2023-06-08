@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * PackageError class.
+ * ExpressCustomError class.
  */
 class ExpressCustomError extends Error {
     /**
-     * The constructor of the PackageError class.
+     * The constructor of the ExpressCustomError class.
      * @param message The message of the error.
      */
     constructor(message) {

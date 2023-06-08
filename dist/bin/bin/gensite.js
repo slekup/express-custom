@@ -40,22 +40,22 @@ const logInfo_1 = __importDefault(require("./utils/logInfo"));
 const logger_1 = __importStar(require("./utils/logger"));
 const debug = process.argv.includes('--debug');
 if (debug)
-    logger_1.default.info(`${logger_1.cli.inf} ${colors_1.default.magenta('Debug mode enabled')}`);
+    logger_1.default.info(`${logger_1.cli.info} ${colors_1.default.magenta('Debug mode enabled')}`);
 /**
  * Export the routes to a JSON file.
  * @param apiData The API data.
  */
 const exportRoutes = async (apiData) => {
     const timeStart = Date.now();
-    logger_1.default.info(`${logger_1.cli.inf} Exporting routes to JSON file`);
+    logger_1.default.info(`${logger_1.cli.info} Exporting routes to JSON file`);
     try {
         // Write the routes to a JSON file in the site directory
         await fs_1.default.promises.writeFile(path_1.default.join(__dirname, '../../site/api.json'), JSON.stringify(apiData, null, 2));
         const time = `${Date.now() - timeStart}ms`;
-        logger_1.default.info(`${logger_1.cli.suc} ⚡ Exported routes in ${time}`);
+        logger_1.default.info(`${logger_1.cli.success} ⚡ Exported routes in ${time}`);
     }
     catch (error) {
-        logger_1.default.error(`${logger_1.cli.err} Failed to export routes`);
+        logger_1.default.error(`${logger_1.cli.error} Failed to export routes`);
         logger_1.default.error(error);
     }
 };
@@ -64,9 +64,9 @@ const exportRoutes = async (apiData) => {
  */
 const installSiteDependencies = async () => {
     const timeStart = Date.now();
-    logger_1.default.info(`${logger_1.cli.inf} Installing site dependencies`);
+    logger_1.default.info(`${logger_1.cli.info} Installing site dependencies`);
     if (fs_1.default.existsSync('../../site/node_modules')) {
-        logger_1.default.info(`${logger_1.cli.inf} Copying node_modules ${colors_1.default.yellow('please wait')}}`);
+        logger_1.default.info(`${logger_1.cli.info} Copying node_modules ${colors_1.default.yellow('please wait')}}`);
         await fs_1.default.promises.cp(path_1.default.join(__dirname, '../../site/node_modules'), '../site/node_modules');
     }
     try {
@@ -94,7 +94,7 @@ const installSiteDependencies = async () => {
  */
 const buildSite = async () => {
     const timeStart = Date.now();
-    logger_1.default.info(`${logger_1.cli.inf} Building static site (${colors_1.default.yellow('please wait')})`);
+    logger_1.default.info(`${logger_1.cli.info} Building static site (${colors_1.default.yellow('please wait')})`);
     try {
         const { stdout, stderr } = await (0, util_1.promisify)(child_process_1.exec)('npx next build', {
             cwd: path_1.default.join(__dirname, '../site'),
@@ -121,7 +121,7 @@ const buildSite = async () => {
  */
 const copySite = async (apiData) => {
     const timeStart = Date.now();
-    logger_1.default.info(`${logger_1.cli.inf} Copying site to ${apiData.output}`);
+    logger_1.default.info(`${logger_1.cli.info} Copying site to ${apiData.output}`);
     const targetPath = path_1.default.join(process.cwd(), apiData.output);
     const targetPathOut = path_1.default.join(process.cwd(), `${apiData.output}/out`);
     // Make ouput directory if it doesn't exist
@@ -135,11 +135,11 @@ const copySite = async (apiData) => {
         // Copy the api.json file to the out directory
         await fs_1.default.promises.copyFile(path_1.default.join(__dirname, '../site/api.json'), path_1.default.join(__dirname, '../site/out/api.json'));
         const time = `${Date.now() - timeStart}ms`;
-        logger_1.default.info(`${logger_1.cli.suc} ⚡ Copied site in ${time}`);
+        logger_1.default.info(`${logger_1.cli.success} ⚡ Copied site in ${time}`);
     }
     catch (error) {
-        logger_1.default.error(`${logger_1.cli.err} Failed to copy site to ${apiData.output}`);
-        throw new index_1.PackageError(error);
+        logger_1.default.error(`${logger_1.cli.error} Failed to copy site to ${apiData.output}`);
+        throw new index_1.ExpressCustomError(error);
     }
 };
 /**

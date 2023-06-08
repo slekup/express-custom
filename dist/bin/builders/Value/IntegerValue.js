@@ -5,15 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const BaseValue_1 = __importDefault(require("@builders/Base/BaseValue"));
 /**
- * The integer value builder class.
+ * The InetgerValue class, used to create integer values.
  */
-class IntegerValueBuilder extends BaseValue_1.default {
+class IntegerValue extends BaseValue_1.default {
     type = 'integer';
     min;
     max;
     /**
-     * Creates an instance of the integer value builder class.
-     * @param options The options of the integer value.
+     * Creates an instance of the IntegerValue class.
+     * @param options The options for the IntegerValue class.
      */
     constructor(options) {
         super(options);
@@ -23,8 +23,8 @@ class IntegerValueBuilder extends BaseValue_1.default {
             this.max = options.max;
     }
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the IntegerValue class properties.
+     * @returns The IntegerValue class properties.
      */
     export() {
         return {
@@ -36,4 +36,4 @@ class IntegerValueBuilder extends BaseValue_1.default {
         };
     }
 }
-exports.default = IntegerValueBuilder;
+exports.default = IntegerValue;

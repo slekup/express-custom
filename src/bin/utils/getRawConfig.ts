@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { Config } from '../../typings/exports';
-import { PackageError } from '../../utils/index';
+import { ExpressCustomError } from '../../utils/index';
 import logger, { cli } from './logger';
 
 export type RawConfig = Partial<Pick<Config, 'file'>> &
@@ -30,7 +30,7 @@ export default async (): Promise<RawConfig> => {
       logger.error(
         `${cli.error} Failed to parse express-custom.json (invalid JSON)`
       );
-      throw new PackageError(error as string);
+      throw new ExpressCustomError(error as string);
     }
   } catch (error) {
     logger.error(
@@ -61,14 +61,14 @@ export default async (): Promise<RawConfig> => {
         logger.error(
           `${cli.error} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`
         );
-        throw new PackageError(error as string);
+        throw new ExpressCustomError(error as string);
       }
     } catch (error) {
       // Failed to read package.json
       logger.error(
         `${cli.error} Failed to load express-custom config from package.json`
       );
-      throw new PackageError(error as string);
+      throw new ExpressCustomError(error as string);
     }
   }
 

@@ -7,9 +7,9 @@ const index_1 = require("@utils/index");
 const wrapper_middleware_1 = require("@utils/middleware/wrapper.middleware");
 const Schema_1 = __importDefault(require("./Schema"));
 /**
- * The endpoint builder class.
+ * The Endpoint class, used to build an endpoint.
  */
-class EndpointBuilder {
+class Endpoint {
     disabled;
     name;
     description;
@@ -23,7 +23,7 @@ class EndpointBuilder {
     controller;
     ratelimit;
     /**
-     * Creates a new endpoint.
+     * Creates a new instance of the Endpoint class.
      * @param options The options for the endpoint.
      * @param options.name The name of the endpoint.
      * @param options.description The description of the endpoint.
@@ -31,18 +31,11 @@ class EndpointBuilder {
      * @param options.method The method of the endpoint.
      * @param options.controller The controller of the endpoint.
      * @param options.notes The notes of the endpoint.
-     * @param options.responses The responses of the endpoint.
-     * @param options.disabled The disabled state of the endpoint.
+     * @param options.responses An array of responses for the endpoint.
+     * @param options.disabled Whether the endpoint is temporarily disabled or not.
      */
     constructor(options) {
-        this.disabled = options.disabled ?? false;
-        this.name = options.name;
-        this.description = options.description;
-        this.path = options.path;
-        this.method = options.method;
-        this.controller = (0, wrapper_middleware_1.initController)(options.controller);
-        this.notes = options.notes ?? [];
-        this.responses = options.responses ?? [];
+        // Create the schema for the constructor options.
         const constructorSchema = new Schema_1.default()
             .addBoolean({
             name: 'disabled',
@@ -75,24 +68,34 @@ class EndpointBuilder {
             max: 100,
             options: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
         });
+        // Test the options against the schema.
         constructorSchema.validate(options).then((result) => {
             if (typeof result === 'string')
-                throw new index_1.PackageError(`Endpoint (${options.name || options.path}): ${result}`);
+                throw new index_1.ExpressCustomError(`Endpoint (${options.name || options.path}): ${result}`);
         });
+        // Assign the options to the endpoint.
+        this.disabled = options.disabled ?? false;
+        this.name = options.name;
+        this.description = options.description;
+        this.path = options.path;
+        this.method = options.method;
+        this.controller = (0, wrapper_middleware_1.initController)(options.controller);
+        this.notes = options.notes ?? [];
+        this.responses = options.responses ?? [];
     }
     /**
-     * Sets the notes of the endpoint.
-     * @param notes The notes of the endpoint.
-     * @returns The endpoint builder.
+     * Sets the notes of the endpoint, for the documentation.
+     * @param notes An array of note objects.
+     * @returns The current Endpoint instance.
      */
     setNotes(notes) {
         this.notes = notes;
         return this;
     }
     /**
-     * Sets the schema to validate the provided request parameters against.
-     * @param callback The callback to build the schema.
-     * @returns The endpoint builder.
+     * Sets the schema to validate the client's request parameters against.
+     * @param callback The callback function to build the schema.
+     * @returns The current Endpont instance.
      */
     setParamSchema(callback) {
         const schema = new Schema_1.default();
@@ -101,9 +104,9 @@ class EndpointBuilder {
         return this;
     }
     /**
-     * Sets the schema to validate the provided request queries against.
-     * @param callback The callback to build the schema.
-     * @returns The endpoint builder.
+     * Sets the schema to validate the client's request queries against.
+     * @param callback The callback function to build the schema.
+     * @returns The current Endpoint instance.
      */
     setQuerySchema(callback) {
         const schema = new Schema_1.default();
@@ -112,9 +115,9 @@ class EndpointBuilder {
         return this;
     }
     /**
-     * Sets the schema to validate the provided request body against.
-     * @param callback The callback to build the schema.
-     * @returns The endpoint builder.
+     * Sets the schema to validate the client's request body against.
+     * @param callback The callback function to build the schema.
+     * @returns The current Endpoint instance.
      */
     setBodySchema(callback) {
         const schema = new Schema_1.default();
@@ -123,33 +126,35 @@ class EndpointBuilder {
         return this;
     }
     /**
-     * Sets the responses of the endpoint.
-     * @param responses The responses of the endpoint.
-     * @returns The endpoint builder.
+     * Sets the example responses of the endpoint, for the documentation.
+     * @param responses An array of response objects.
+     * @returns The current Endpoint instance.
      */
     setResponses(responses) {
         this.responses = responses;
         return this;
     }
     /**
-     * Sets the controler to run.
-     * @param controller The controlller function to run.
-     * @returns The endpoint builder.
+     * Sets the controler for the endpoint.
+     * @param controller The controlller function to run when the endpoint is called.
+     * @returns The current Endpoint instance.
      */
     setController(controller) {
         this.controller = (0, wrapper_middleware_1.initController)(controller);
         return this;
     }
     /**
-     * Executes the endpoint function.
-     * @param req The request.
-     * @param res The response.
-     * @param next The next function.
+     * Executes the endpoint controller function with error handling and validation.
+     * @param req The express request object.
+     * @param res The express response object.
+     * @param next The express next function.
      */
     execute = (req, res, next) => {
+        // Don't return, but run a self-executing async function to allow for async/await controller functions.
         (async () => {
             try {
-                // Validate the request
+                // Validate the request against the schemas.
+                // If any of them fail, return because the response is handled by the validation function.
                 if (this.paramSchema &&
                     (await this.paramSchema.validate(req.params, { res })))
                     return;
@@ -161,7 +166,7 @@ class EndpointBuilder {
                         res,
                     })))
                     return;
-                // Run the controller
+                // Run the controller function
                 this.controller(req, res, next);
             }
             catch (error) {
@@ -170,8 +175,8 @@ class EndpointBuilder {
         })();
     };
     /**
-     * Exports the endpoint.
-     * @returns The exported endpoint.
+     * Exports the Endpoint instance properties to a JSON object.
+     * @returns The exported endpoint as a JSON object.
      */
     export() {
         return {
@@ -187,4 +192,4 @@ class EndpointBuilder {
         };
     }
 }
-exports.default = EndpointBuilder;
+exports.default = Endpoint;

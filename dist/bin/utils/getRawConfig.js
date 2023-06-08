@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { PackageError } from '../../utils/index';
+import { ExpressCustomError } from '../../utils/index';
 import logger, { cli } from './logger';
 /**
  * Get the express-custom.json config.
@@ -18,7 +18,7 @@ export default async () => {
         }
         catch (error) {
             logger.error(`${cli.error} Failed to parse express-custom.json (invalid JSON)`);
-            throw new PackageError(error);
+            throw new ExpressCustomError(error);
         }
     }
     catch (error) {
@@ -37,13 +37,13 @@ export default async () => {
             }
             catch (error) {
                 logger.error(`${cli.error} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`);
-                throw new PackageError(error);
+                throw new ExpressCustomError(error);
             }
         }
         catch (error) {
             // Failed to read package.json
             logger.error(`${cli.error} Failed to load express-custom config from package.json`);
-            throw new PackageError(error);
+            throw new ExpressCustomError(error);
         }
     }
     // Check if the file is a .js or .ts file

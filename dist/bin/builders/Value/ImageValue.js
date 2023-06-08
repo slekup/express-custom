@@ -5,20 +5,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const BaseValue_1 = __importDefault(require("@builders/Base/BaseValue"));
 /**
- * The image value builder class.
+ * The ImageValue class, used to create image values.
  */
-class ImageValueBuilder extends BaseValue_1.default {
+class ImageValue extends BaseValue_1.default {
     type = 'image';
     /**
-     * Creates an instance of the image value builder class.
-     * @param options The options of the image value.
+     * Creates an instance of the ImageValue class.
+     * @param options The options for the ImageValue class.
      */
     constructor(options) {
         super(options);
     }
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the ImageValue class properties.
+     * @returns The ImageValue class properties.
      */
     export() {
         return {
@@ -30,4 +30,4 @@ class ImageValueBuilder extends BaseValue_1.default {
         };
     }
 }
-exports.default = ImageValueBuilder;
+exports.default = ImageValue;

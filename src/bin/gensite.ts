@@ -9,7 +9,7 @@ import path from 'path';
 import { promisify } from 'util';
 
 import { ExportedApi } from '../typings/exports';
-import { PackageError } from '../utils/index';
+import { ExpressCustomError } from '../utils/index';
 import getRawConfig from './utils/getRawConfig';
 import loadApi from './utils/loadApi';
 import logInfo from './utils/logInfo';
@@ -141,7 +141,7 @@ const copySite = async (apiData: ExportedApi): Promise<void> => {
     logger.info(`${cli.success} ⚡ Copied site in ${time}`);
   } catch (error) {
     logger.error(`${cli.error} Failed to copy site to ${apiData.output}`);
-    throw new PackageError(error as string);
+    throw new ExpressCustomError(error as string);
   }
 };
 

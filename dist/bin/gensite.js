@@ -5,7 +5,7 @@ import colors from 'colors';
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
-import { PackageError } from '../utils/index';
+import { ExpressCustomError } from '../utils/index';
 import getRawConfig from './utils/getRawConfig';
 import loadApi from './utils/loadApi';
 import logInfo from './utils/logInfo';
@@ -111,7 +111,7 @@ const copySite = async (apiData) => {
     }
     catch (error) {
         logger.error(`${cli.error} Failed to copy site to ${apiData.output}`);
-        throw new PackageError(error);
+        throw new ExpressCustomError(error);
     }
 };
 /**

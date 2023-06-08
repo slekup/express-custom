@@ -30,9 +30,10 @@ exports.site = exports.cli = void 0;
 const colors_1 = __importDefault(require("colors"));
 const winston = __importStar(require("winston"));
 exports.cli = {
-    inf: colors_1.default.blue('CLI'),
-    suc: colors_1.default.green('CLI'),
-    err: colors_1.default.red('CLI'),
+    info: colors_1.default.blue('CLI'),
+    success: colors_1.default.green('CLI'),
+    warning: colors_1.default.yellow('CLI'),
+    error: colors_1.default.red('CLI'),
 };
 exports.site = {
     inf: colors_1.default.blue('SITE'),

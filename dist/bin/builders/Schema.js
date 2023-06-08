@@ -5,12 +5,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const validate_1 = require("@utils/validate");
 const Value_1 = require("./Value");
 /**
- * The Schema Builder class.
+ * The Schema class, used to create schemas, which are used to validate data.
  */
-class SchemaBuilder {
+class Schema {
     schema;
     /**
-     * Creates a new schema.
+     * Creates a new instance of the Schema class.
      */
     constructor() {
         this.schema = {};
@@ -18,7 +18,7 @@ class SchemaBuilder {
     /**
      * Adds a array value to the schema.
      * @param options The options of the array value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addArray(options) {
         const value = new Value_1.ArrayValue(options);
@@ -28,7 +28,7 @@ class SchemaBuilder {
     /**
      * Adds a string value to the schema.
      * @param options The options of the string value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addString(options) {
         const value = new Value_1.StringValue(options);
@@ -38,7 +38,7 @@ class SchemaBuilder {
     /**
      * Adds a number value to the schema.
      * @param options The options of the number value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addNumber(options) {
         const value = new Value_1.NumberValue(options);
@@ -48,7 +48,7 @@ class SchemaBuilder {
     /**
      * Adds a integer value to the schema.
      * @param options The options of the integer value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addInteger(options) {
         const value = new Value_1.IntegerValue(options);
@@ -58,7 +58,7 @@ class SchemaBuilder {
     /**
      * Adds a boolean value to the schema.
      * @param options The options of the boolean value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addBoolean(options) {
         const value = new Value_1.BooleanValue(options);
@@ -68,7 +68,7 @@ class SchemaBuilder {
     /**
      * Adds a object value to the schema.
      * @param options The options of the object value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addObject(options) {
         const value = new Value_1.ObjectValue(options);
@@ -78,7 +78,7 @@ class SchemaBuilder {
     /**
      * Adds a image value to the schema.
      * @param options The options of the image value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addImage(options) {
         const value = new Value_1.ImageValue(options);
@@ -288,8 +288,8 @@ class SchemaBuilder {
         return result;
     }
     /**
-     * Export the schema.
-     * @returns The exported schema.
+     * Export the schema as a JSON object.
+     * @returns The exported schema as a JSON object.
      */
     export() {
         const exportSchema = {};
@@ -300,4 +300,4 @@ class SchemaBuilder {
         return exportSchema;
     }
 }
-exports.default = SchemaBuilder;
+exports.default = Schema;

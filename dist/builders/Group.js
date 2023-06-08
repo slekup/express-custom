@@ -1,4 +1,4 @@
-import { PackageError } from '@utils/index';
+import { ExpressCustomError } from '@utils/index';
 import BaseApp from './Base/BaseApp';
 import Schema from './Schema';
 /**
@@ -34,7 +34,7 @@ export default class Group extends BaseApp {
         // Test the the constructor against the schema.
         constructorSchema.validate({ path, name }).then((result) => {
             if (typeof result === 'string')
-                throw new PackageError(`Group (${name || path}): ${result}`);
+                throw new ExpressCustomError(`Group (${name || path}): ${result}`);
         });
         // Assign the options to the instance.
         this.path = path;
@@ -71,7 +71,7 @@ export default class Group extends BaseApp {
      */
     validate() {
         if (!this.routes.length)
-            throw new PackageError('No routes provided');
+            throw new ExpressCustomError('No routes provided');
         this.routes.forEach((route) => route.validate());
     }
     /**

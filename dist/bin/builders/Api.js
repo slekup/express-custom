@@ -28,13 +28,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const ExpressCustomError_1 = __importDefault(require("@utils/ExpressCustomError"));
+const index_1 = require("@utils/index");
 const middleware_1 = require("@utils/middleware");
 const logger_1 = __importStar(require("../bin/utils/logger"));
 const BaseApp_1 = __importDefault(require("./Base/BaseApp"));
 const Schema_1 = __importDefault(require("./Schema"));
 /**
- * The ApiBuilder class is used to build the API.
+ * The ApiBuilder class, used to build an API.
  */
 class Api extends BaseApp_1.default {
     port;
@@ -44,14 +44,15 @@ class Api extends BaseApp_1.default {
     structures;
     config;
     /**
-     * The constructor of the ApiBuilder class.
-     * @param options The configuration of the API.
-     * @param options.url The base URL of the API.
-     * @param options.port The port of the API.
-     * @param options.structures The structures of the API.
+     * Creates a new instance of the ApiBuilder class.
+     * @param options The ApiBuilder class options.
+     * @param options.url The Base URL of the API to as the root (reference) for the API.
+     * @param options.port The port the API will listen on when running the start() method.
+     * @param options.structures The structures used in the API endpoint schemas.
      */
     constructor(options) {
         super('app');
+        // The constructor schema.
         const constructorSchema = new Schema_1.default()
             .addString({
             name: 'url',
@@ -65,10 +66,12 @@ class Api extends BaseApp_1.default {
             min: 0,
             max: 65536,
         });
+        // Validate the constructor against the schema.
         constructorSchema.validate(options).then((result) => {
             if (typeof result === 'string')
-                throw new ExpressCustomError_1.default(`Api: ${result}`);
+                throw new index_1.ExpressCustomError(`Api: ${result}`);
         });
+        // Assign the options to the class.
         this.versions = [];
         this.groups = [];
         this.url = options.url;
@@ -77,8 +80,8 @@ class Api extends BaseApp_1.default {
     }
     /**
      * Adds a version to the API.
-     * @param version The version to add.
-     * @returns The API builder.
+     * @param version An instance of the Version class.
+     * @returns The current Api instance.
      */
     addVersion(version) {
         this.versions.push(version);
@@ -88,8 +91,8 @@ class Api extends BaseApp_1.default {
     }
     /**
      * Adds a group directly to the API without a version.
-     * @param group An instance of the GroupBuilder class.
-     * @returns The API builder.
+     * @param group An instance of the Group class.
+     * @returns The current Api instance.
      */
     addGroup(group) {
         this.groups.push(group);
@@ -98,67 +101,83 @@ class Api extends BaseApp_1.default {
         return this;
     }
     /**
-     * Initializes the API.
-     * @param callback The callback to run when the API is initialized.
-     * @returns The server.
+     * Starts the API server.
+     * @param callback The callback function to run when the API is initialized. Can be async.
+     * @returns The HTTP server (http.Server).
      */
     start(callback) {
+        // Validate the API and all of its children before starting the server.
         this.validate();
+        // Set the root route to display basic API information.
         this.raw.get('/', (__, res) => res.json({
-            message: `Welcome to ${this.config?.name ?? 'the API'}`,
-            versions: this.versions.map((version) => ({
-                version: `v${version.values().version}`,
-                url: `${this.url}/v${version.values().version}`,
-            })),
+            message: `API Root`,
+            versions: this.versions.map((version) => {
+                const versionValues = version.values();
+                return {
+                    version: `v${versionValues.version}`,
+                    url: `${this.url}/v${versionValues.version}`,
+                };
+            }),
         }));
+        // Set the 404 and error handler middleware.
         this.raw.use(middleware_1.errorMiddleware.notFound);
         this.raw.use(middleware_1.errorMiddleware.errorHandler);
+        // Start the API server.
         const server = this.raw.listen(this.port, callback);
         return server;
     }
     /**
-     * Loads the configuration of the API.
+     * Loads the configuration of the API from express-custom.json or package.json > "express-custom".
      * @returns The configuration of the API.
      */
     async loadConfig() {
         let config = {};
+        // Get the path to the config file.
         const configPath = path_1.default.join(process.cwd(), 'express-custom.json');
         try {
+            // Read the config file.
             const configFile = await fs_1.default.promises.readFile(configPath, 'utf-8');
             try {
+                // Parse the JSON
                 config = JSON.parse(configFile.toString());
             }
             catch (error) {
-                logger_1.default.error(`${logger_1.cli.err} Failed to parse config.json file (invalid JSON).`);
-                throw new ExpressCustomError_1.default(error);
+                logger_1.default.error(`${logger_1.cli.error} Failed to parse config.json file (invalid JSON).`);
+                throw new index_1.ExpressCustomError(error);
             }
         }
         catch (error) {
-            logger_1.default.error(`${logger_1.cli.err} No express-custom.json found, trying package.json`);
+            // Log an warning if the config file doesn't exist.
+            logger_1.default.warn(`${logger_1.cli.warning} No express-custom.json found, trying package.json`);
             try {
-                // Read package.json
+                // Read the package.json file.
                 const packageJSON = await fs_1.default.promises.readFile(path_1.default.join(process.cwd(), 'package.json'));
-                // Parse the JSON
                 try {
+                    // Parse the JSON and get the "express-custom" block.
                     const configFile = JSON.parse(packageJSON.toString())['express-custom'];
+                    // Check if the "express-custom" block exists and is an object.
                     if (typeof configFile !== 'object') {
-                        logger_1.default.error(`${logger_1.cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`);
-                        throw new ExpressCustomError_1.default('Invalid JSON');
+                        logger_1.default.error(`${logger_1.cli.error} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`);
+                        throw new index_1.ExpressCustomError('Invalid JSON');
                     }
+                    // Set the config to the "express-custom" block.
                     config = configFile;
                 }
                 catch (error) {
-                    logger_1.default.error(`${logger_1.cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`);
-                    throw new ExpressCustomError_1.default(error);
+                    // Throw an error if the "express-custom" block doesn't exist.
+                    logger_1.default.error(`${logger_1.cli.error} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`);
+                    throw new index_1.ExpressCustomError(error);
                 }
             }
             catch (error) {
-                // Failed to read package.json
-                logger_1.default.error(`${logger_1.cli.err} Failed to load express-custom config from package.json`);
-                throw new ExpressCustomError_1.default(error);
+                // Throw an error if the package.json file doesn't exist.
+                logger_1.default.error(`${logger_1.cli.error} Failed to load express-custom config from package.json`);
+                throw new index_1.ExpressCustomError(error);
             }
         }
+        // Regex to check if the file is a JavaScript or TypeScript file.
         const fileExtRegex = /\.ts$|\.js$/;
+        // Create the config schema.
         const configSchema = new Schema_1.default()
             .addString({
             name: 'file',
@@ -230,12 +249,15 @@ class Api extends BaseApp_1.default {
                 },
             },
         });
+        // Test the config against the schema.
         const result = await configSchema.validate(config);
+        // If the result is a string, the config is invalid, log the error and exit the process.
         if (typeof result === 'string') {
-            logger_1.default.error(`${logger_1.cli.err} Validation error while processing express-config.json`);
-            logger_1.default.error(`${logger_1.cli.err} Error: ${result}`);
+            logger_1.default.error(`${logger_1.cli.error} Validation error while processing express-config.json`);
+            logger_1.default.error(`${logger_1.cli.error} Error: ${result}`);
             process.exit(1);
         }
+        // Get the validated config and assign it to the API instance.
         const validatedConfig = config;
         this.config = validatedConfig;
         return validatedConfig;
@@ -245,30 +267,30 @@ class Api extends BaseApp_1.default {
      * @returns The configuration of the API.
      */
     async getConfig() {
+        // If the config is already loaded, return it.
         if (this.config)
             return this.config;
+        // Otherwise, load the config and return it.
         const config = await this.loadConfig();
         return config;
     }
     /**
-     * Validates the API instance.
+     * Validates the API instance and all of it's children instances.
+     * @throws An error if the API instance or any of it's children instances are invalid.
      */
     validate() {
         if (this.versions.length === 0 && this.groups.length === 0)
-            throw new ExpressCustomError_1.default('No versions or groups provided to the API');
+            throw new index_1.ExpressCustomError('No versions or groups provided to the API');
         this.versions.forEach((version) => version.validate());
         this.groups.forEach((group) => group.validate());
     }
     /**
-     * Adds a group to the API.
-     * @returns The API data.
+     * Exports the Api class properties to a JSON object.
+     * @returns The exported API as a JSON object.
      */
     async export() {
-        if (!this.url)
-            throw new ExpressCustomError_1.default('The base URL of the API is not set.');
-        if (!this.port)
-            throw new ExpressCustomError_1.default('The port of the API is not set.');
-        const config = await this.loadConfig();
+        // Get the config.
+        const config = await this.getConfig();
         return {
             ...config,
             url: this.url,
