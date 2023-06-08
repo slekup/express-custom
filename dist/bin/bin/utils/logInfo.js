@@ -37,7 +37,7 @@ const logger_1 = __importStar(require("./logger"));
 exports.default = (apiData, fileTimeStart, text) => {
     const fileTimeEnd = Date.now();
     const fileTime = `${fileTimeEnd - fileTimeStart}ms`;
-    logger_1.default.info(`${logger_1.cli.suc} ⚡ ${text} in ${fileTime}`);
+    logger_1.default.info(`${logger_1.cli.success} ⚡ ${text} in ${fileTime}`);
     const info = `
 ${colors_1.default.magenta('Name:')} ${apiData.name}  
 ${colors_1.default.magenta('Description:')} ${apiData.description}

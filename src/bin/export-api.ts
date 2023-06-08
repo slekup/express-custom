@@ -17,7 +17,7 @@ import logger, { cli } from './utils/logger';
  */
 const exportApi = async (apiData: ExportedApi): Promise<void> => {
   const timeStart = Date.now();
-  logger.info(`${cli.inf} Exporting API data to JSON file`);
+  logger.info(`${cli.info} Exporting API data to JSON file`);
 
   const targetPath = path.join(process.cwd(), apiData.output);
 
@@ -37,9 +37,9 @@ const exportApi = async (apiData: ExportedApi): Promise<void> => {
     // fs.promises.unlink(path.join(__dirname, `./api.json`));
 
     const time = `${Date.now() - timeStart}ms`;
-    logger.info(`${cli.suc} ⚡ Exported API data in ${time}`);
+    logger.info(`${cli.success} ⚡ Exported API data in ${time}`);
   } catch (error) {
-    logger.error(`${cli.err} Failed to export API data to JSON file`);
+    logger.error(`${cli.error} Failed to export API data to JSON file`);
     logger.info(error);
   }
 };

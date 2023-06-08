@@ -1,11 +1,10 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 /**
  * Middleware to handle 404 errors.
  * @param __ The response object.
  * @param res The response object.
- * @param next The next function.
  */
-declare function notFound(__: Request, res: Response, next: NextFunction): void;
+declare function notFound(__: Request, res: Response): void;
 interface HttpError extends Error {
     status: number;
     field?: string;

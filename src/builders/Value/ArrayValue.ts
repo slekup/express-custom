@@ -1,5 +1,5 @@
 import BaseValue, { BaseValueOptions } from '@builders/Base/BaseValue';
-import { ArrayContains, ArrayValue, ValueSchema } from '@typings/schema';
+import { ArrayContains, IArrayValue, ValueSchema } from '@typings/schema';
 
 export type ArrayValueOptions = BaseValueOptions & {
   min?: number;
@@ -10,11 +10,11 @@ export type ArrayValueOptions = BaseValueOptions & {
 };
 
 /**
- * The array value builder class.
+ * The ArrayValue class, used to create array values.
  */
-export default class ArrayValueBuilder
+export default class ArrayValue
   extends BaseValue
-  implements ArrayValue<ValueSchema>
+  implements IArrayValue<ValueSchema>
 {
   public type = 'array' as const;
   public min?: number;
@@ -24,13 +24,13 @@ export default class ArrayValueBuilder
   public items?: ValueSchema | ValueSchema[];
 
   /**
-   * Creates an instance of the array value builder class.
-   * @param options The options of the array value.
-   * @param options.min The minimum amount of items in the array value.
-   * @param options.max The maximum amount of items in the array value.
-   * @param options.unique Whether the array value is unique.
-   * @param options.contains The type that the array value needs to contain.
-   * @param options.items The items of the array value.
+   * Creates an instance of the ArrayValue class.
+   * @param options The options for the ArrayValue class.
+   * @param options.min The minimum amount of items in the array.
+   * @param options.max The maximum amount of items in the array.
+   * @param options.unique Whether the array is unique.
+   * @param options.contains The type that the array needs to contain.
+   * @param options.items The items of the array to be matched.
    */
   public constructor({
     min,
@@ -49,8 +49,8 @@ export default class ArrayValueBuilder
   }
 
   /**
-   * Exports the array value.
-   * @returns The array value.
+   * Exports the ArrayValue class properties.
+   * @returns The ArrayValue class properties.
    */
   public export(): unknown {
     return {

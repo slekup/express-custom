@@ -1,17 +1,17 @@
 import { PathString } from '@typings/core';
 import { ExportedRoute } from '@typings/exports';
 import BaseApp from './Base/BaseApp';
-import EndpointBuilder from './Endpoint';
+import Endpoint from './Endpoint';
 /**
- * The route builder class.
+ * The Route class, used to create a route with endpoints.
  */
-export default class RouteBuilder extends BaseApp<'router'> {
+export default class Route extends BaseApp<'router'> {
     private path;
     private name;
     private description;
     private endpoints;
     /**
-     * Creates a new route.
+     * Creates a new instance of the Route class.
      * @param options The options for the route.
      * @param options.path The path of the route.
      * @param options.name The name of the route.
@@ -24,23 +24,24 @@ export default class RouteBuilder extends BaseApp<'router'> {
     });
     /**
      * Adds an endpoint to the route.
-     * @param endpoint The endpoint to add to the route.
-     * @returns The route builder.
+     * @param endpoint An instance of the Endpoint class.
+     * @returns The current Route instance.
      */
-    addEndpoint(endpoint: EndpointBuilder): this;
+    addEndpoint(endpoint: Endpoint): this;
     /**
      * Adds all endpoints from an endpoint file to the route.
      * @param endpointFile The endpoint file to add endpoints from.
-     * @returns The route builder.
+     * @returns The current Route instance.
      */
-    addEndpointFile(endpointFile: Record<string, EndpointBuilder>): this;
+    addEndpointFile(endpointFile: Record<string, Endpoint>): this;
     /**
-     * Validates the route.
+     * Validates the current Route instance.
+     * @throws Throws an error if the route is invalid.
      */
     validate(): void;
     /**
-     * Exports the route.
-     * @returns The exported route.
+     * Exports the route to a JSON object.
+     * @returns The exported route as a JSON object.
      */
     export(): Readonly<ExportedRoute>;
 }

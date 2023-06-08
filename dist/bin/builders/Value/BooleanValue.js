@@ -5,20 +5,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const BaseValue_1 = __importDefault(require("@builders/Base/BaseValue"));
 /**
- * The boolean value builder class.
+ * The BooleanValue class, used to create boolean values.
  */
-class BooleanValueBuilder extends BaseValue_1.default {
+class BooleanValue extends BaseValue_1.default {
     type = 'boolean';
     /**
-     * Creates an instance of the boolean value builder class.
-     * @param options The options of the boolean value.
+     * Creates an instance of the BooleanValue class.
+     * @param options The options for the BooleanValue class.
      */
     constructor(options) {
         super(options);
     }
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the BooleanValue class properties.
+     * @returns The BooleanValue class properties.
      */
     export() {
         return {
@@ -30,4 +30,4 @@ class BooleanValueBuilder extends BaseValue_1.default {
         };
     }
 }
-exports.default = BooleanValueBuilder;
+exports.default = BooleanValue;

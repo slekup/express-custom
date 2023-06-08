@@ -2,44 +2,45 @@ import { Router } from 'express';
 import { Middleware, PathString, RateLimit } from '@typings/core';
 import { ExportedGroup } from '@typings/exports';
 import BaseApp from './Base/BaseApp';
-import RouteBuilder from './Route';
+import Route from './Route';
 /**
- * The group builder class, used to build a group of routes.
+ * The Group class, used to create a group of routes.
  */
-export default class GroupBuilder extends BaseApp<'router'> {
+export default class Group extends BaseApp<'router'> {
     private path;
     private name;
     private routes;
     /**
-     * Creates a new group builder.
-     * @param params The group parameters.
-     * @param params.path The path of the group.
-     * @param params.name The name of the group.
+     * Creates a new instance of the Group class.
+     * @param options Options for the Group instance.
+     * @param options.path The path of the group.
+     * @param options.name The name of the group.
      */
     constructor({ path, name }: {
         path: PathString;
         name: string;
     });
     /**
-     * Uses a group.
-     * @param route The group to use.
-     * @returns The group builder.
+     * Adds a route to the group.
+     * @param route An instance of the Route class.
+     * @returns The current Group instance.
      */
-    addRoute(route: RouteBuilder): this;
+    addRoute(route: Route): this;
     /**
-     * Returns the group values.
-     * @returns The group values.
+     * Returns the current group instance values.
+     * @returns The current group instance values.
      */
     values(): Readonly<{
         raw: Router;
         ratelimit?: Partial<RateLimit> | undefined;
         path: PathString;
         defaultCategory: string;
-        routes: RouteBuilder[];
+        routes: Route[];
         middlewares: Middleware[];
     }>;
     /**
-     * Validates the group.
+     * Validates the group instance and all of its routes.
+     * @throws Throws an error if the group instance is invalid.
      */
     validate(): void;
     /**

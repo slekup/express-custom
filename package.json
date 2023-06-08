@@ -14,7 +14,8 @@
   },
   "bin": {
     "gensite": "./dist/bin/bin/gensite.js",
-    "export-api": "./dist/bin/bin/export-api.js"
+    "export-api": "./dist/bin/bin/export-api.js",
+    "create-api": "./dist/bin/bin/create-api.js"
   },
   "scripts": {
     "format": "prettier --ignore-path .gitignore --ignore-unknown --write \"src/**/*.ts\"",
@@ -25,7 +26,7 @@
     "copy": "npm run copy:site",
     "build:bin": "rimraf dist/bin && tsc --build tsconfig.bin.json",
     "build:nocheck": "rimraf dist && tsup && npm run copy && npm run build:bin",
-    "build": "npm run lint:fix && npm run format && npm run build:nocheck",
+    "build": "npm run lint:fix && npm run build:nocheck && npm run format",
     "docs": "rimraf docs && typedoc",
     "precommit": "npm run lint:fix && npm run format"
   },
@@ -49,7 +50,9 @@
   "homepage": "https://github.com/slekup/express-custom#readme",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "package.json"
   ],
   "dependencies": {
     "colors": "^1.4.0",

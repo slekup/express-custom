@@ -1,19 +1,19 @@
 import BaseValue, { BaseValueOptions } from '@builders/Base/BaseValue';
-import { ImageValue } from '@typings/schema';
+import { IImageValue } from '@typings/schema';
 export type ImageValueOptions = BaseValueOptions;
 /**
- * The image value builder class.
+ * The ImageValue class, used to create image values.
  */
-export default class ImageValueBuilder extends BaseValue implements ImageValue {
+export default class ImageValue extends BaseValue implements IImageValue {
     type: "image";
     /**
-     * Creates an instance of the image value builder class.
-     * @param options The options of the image value.
+     * Creates an instance of the ImageValue class.
+     * @param options The options for the ImageValue class.
      */
     constructor(options: ImageValueOptions);
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the ImageValue class properties.
+     * @returns The ImageValue class properties.
      */
     export(): unknown;
 }

@@ -11,54 +11,54 @@ import { StringValueOptions } from './Value/StringValue';
 type ValueBuilders = ArrayValue | StringValue | NumberValue | IntegerValue | BooleanValue | ObjectValue<ValueBuilders> | ImageValue;
 export type BuildersSchema = Record<string, ValueBuilders>;
 /**
- * The Schema Builder class.
+ * The Schema class, used to create schemas, which are used to validate data.
  */
-export default class SchemaBuilder {
+export default class Schema {
     schema: BuildersSchema;
     /**
-     * Creates a new schema.
+     * Creates a new instance of the Schema class.
      */
     constructor();
     /**
      * Adds a array value to the schema.
      * @param options The options of the array value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addArray(options: ArrayValueOptions): this;
     /**
      * Adds a string value to the schema.
      * @param options The options of the string value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addString(options: StringValueOptions): this;
     /**
      * Adds a number value to the schema.
      * @param options The options of the number value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addNumber(options: NumberValueOptions): this;
     /**
      * Adds a integer value to the schema.
      * @param options The options of the integer value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addInteger(options: IntegerValueOptions): this;
     /**
      * Adds a boolean value to the schema.
      * @param options The options of the boolean value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addBoolean(options: BooleanValueOptions): this;
     /**
      * Adds a object value to the schema.
      * @param options The options of the object value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addObject(options: ObjectValueOptions): this;
     /**
      * Adds a image value to the schema.
      * @param options The options of the image value.
-     * @returns The schema builder.
+     * @returns The current Schema instance.
      */
     addImage(options: ImageValueOptions): this;
     /**
@@ -80,8 +80,8 @@ export default class SchemaBuilder {
         res?: Response;
     }): Promise<Response | null | string>;
     /**
-     * Export the schema.
-     * @returns The exported schema.
+     * Export the schema as a JSON object.
+     * @returns The exported schema as a JSON object.
      */
     export(): ExportedSchema;
 }

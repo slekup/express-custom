@@ -1,21 +1,21 @@
 import BaseValue from '@builders/Base/BaseValue';
 /**
- * The object value builder class.
+ * The ObjectValue class, used to create object values.
  */
-export default class ObjectValueBuilder extends BaseValue {
+export default class ObjectValue extends BaseValue {
     type = 'object';
     properties;
     /**
-     * Creates an instance of the object value builder class.
-     * @param options The options of the object value builder class.
+     * Creates an instance of the ObjectValue class.
+     * @param options The options for the ObjectValue class.
      */
     constructor(options) {
         super(options);
         this.properties = {};
     }
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the ObjectValue class properties.
+     * @returns The ObjectValue class properties.
      */
     export() {
         return {

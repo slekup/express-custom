@@ -5,24 +5,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const BaseValue_1 = __importDefault(require("@builders/Base/BaseValue"));
 /**
- * The number value builder class.
+ * The NumberValue class, used to create number values.
  */
-class NumberValueBuilder extends BaseValue_1.default {
+class NumberValue extends BaseValue_1.default {
     type = 'number';
     min;
     max;
     /**
-     * Creates an instance of the number value builder class.
-     * @param options The options of the number value.
+     * Creates an instance of the NumberValue class.
+     * @param options The options for the NumberValue class.
      */
     constructor(options) {
         super(options);
-        this.min = options.min;
-        this.max = options.max;
+        if (options.min)
+            this.min = options.min;
+        if (options.max)
+            this.max = options.max;
     }
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the NumberValue class properties.
+     * @returns The NumberValue class properties.
      */
     export() {
         return {
@@ -34,4 +36,4 @@ class NumberValueBuilder extends BaseValue_1.default {
         };
     }
 }
-exports.default = NumberValueBuilder;
+exports.default = NumberValue;

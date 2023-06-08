@@ -5,22 +5,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const BaseValue_1 = __importDefault(require("@builders/Base/BaseValue"));
 /**
- * The object value builder class.
+ * The ObjectValue class, used to create object values.
  */
-class ObjectValueBuilder extends BaseValue_1.default {
+class ObjectValue extends BaseValue_1.default {
     type = 'object';
     properties;
     /**
-     * Creates an instance of the object value builder class.
-     * @param options The options of the object value builder class.
+     * Creates an instance of the ObjectValue class.
+     * @param options The options for the ObjectValue class.
      */
     constructor(options) {
         super(options);
         this.properties = {};
     }
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the ObjectValue class properties.
+     * @returns The ObjectValue class properties.
      */
     export() {
         return {
@@ -32,4 +32,4 @@ class ObjectValueBuilder extends BaseValue_1.default {
         };
     }
 }
-exports.default = ObjectValueBuilder;
+exports.default = ObjectValue;

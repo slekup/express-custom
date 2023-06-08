@@ -17,7 +17,7 @@ export default (
   const fileTimeEnd = Date.now();
   const fileTime = `${fileTimeEnd - fileTimeStart}ms`;
 
-  logger.info(`${cli.suc} ⚡ ${text} in ${fileTime}`);
+  logger.info(`${cli.success} ⚡ ${text} in ${fileTime}`);
 
   const info = `
 ${colors.magenta('Name:')} ${apiData.name}  
