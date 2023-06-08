@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import ExpressCustomError from '@utils/ExpressCustomError';
+import { ExpressCustomError } from '@utils/index';
 import { errorMiddleware } from '@utils/middleware';
 import logger, { cli } from '../bin/utils/logger';
 import BaseApp from './Base/BaseApp';
@@ -82,11 +82,14 @@ export default class Api extends BaseApp {
         this.validate();
         // Set the root route to display basic API information.
         this.raw.get('/', (__, res) => res.json({
-            message: `Welcome to ${this.config?.name ?? 'the API'}`,
-            versions: this.versions.map((version) => ({
-                version: `v${version.values().version}`,
-                url: `${this.url}/v${version.values().version}`,
-            })),
+            message: `API Root`,
+            versions: this.versions.map((version) => {
+                const versionValues = version.values();
+                return {
+                    version: `v${versionValues.version}`,
+                    url: `${this.url}/v${versionValues.version}`,
+                };
+            }),
         }));
         // Set the 404 and error handler middleware.
         this.raw.use(errorMiddleware.notFound);

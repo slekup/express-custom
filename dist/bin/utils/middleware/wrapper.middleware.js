@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initController = void 0;
-const index_1 = require("@utils/index");
+const __1 = require("..");
 /**
  * Wraps a handler function in error handling.
  * @param controller The handler function.
@@ -14,7 +14,7 @@ function initController(controller) {
                 await controller(req, res);
             }
             catch (error) {
-                index_1.logger.error(error);
+                __1.logger.error(error);
                 res.status(500).json({ status: 500, message: 'Internal Server Error' });
             }
         })();

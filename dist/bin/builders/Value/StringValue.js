@@ -5,17 +5,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const BaseValue_1 = __importDefault(require("@builders/Base/BaseValue"));
 /**
- * The string value builder class.
+ * The StringValue class, used to create string values.
  */
-class StringValueBuilder extends BaseValue_1.default {
+class StringValue extends BaseValue_1.default {
     type = 'string';
     min;
     max;
     options;
     test;
     /**
-     * Creates an instance of the string value builder class.
-     * @param options The options of the string value.
+     * Creates an instance of the StringValue class.
+     * @param options The options for the StringValue class.
      */
     constructor(options) {
         super(options);
@@ -29,8 +29,8 @@ class StringValueBuilder extends BaseValue_1.default {
             this.test = options.test;
     }
     /**
-     * Exports the value.
-     * @returns The exported value.
+     * Exports the StringValue class properties.
+     * @returns The StringValue class properties.
      */
     export() {
         return {
@@ -42,4 +42,4 @@ class StringValueBuilder extends BaseValue_1.default {
         };
     }
 }
-exports.default = StringValueBuilder;
+exports.default = StringValue;

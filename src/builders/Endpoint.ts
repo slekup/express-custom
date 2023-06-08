@@ -9,7 +9,7 @@ import {
   RequestMethod,
 } from '@typings/core';
 import { ExportedEndpoint } from '@typings/exports';
-import { PackageError, logger } from '@utils/index';
+import { ExpressCustomError, logger } from '@utils/index';
 import { initController } from '@utils/middleware/wrapper.middleware';
 import Schema from './Schema';
 
@@ -89,7 +89,7 @@ export default class Endpoint {
     // Test the options against the schema.
     constructorSchema.validate(options).then((result) => {
       if (typeof result === 'string')
-        throw new PackageError(
+        throw new ExpressCustomError(
           `Endpoint (${options.name || options.path}): ${result}`
         );
     });

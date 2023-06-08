@@ -68,7 +68,7 @@ export default class Version extends BaseApp<'app'> {
   public addGroup(group: Group): this {
     this.groups.push(group);
     const groupValues = group.values();
-    this.raw.use(`v${this.version}`, groupValues.raw);
+    this.raw.use(groupValues.raw);
     return this;
   }
 

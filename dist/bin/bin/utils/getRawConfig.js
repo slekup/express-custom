@@ -35,7 +35,7 @@ const logger_1 = __importStar(require("./logger"));
  * @returns The express-custom config.
  */
 exports.default = async () => {
-    logger_1.default.info(`${logger_1.cli.inf} Loading express-custom config`);
+    logger_1.default.info(`${logger_1.cli.info} Loading express-custom config`);
     let config;
     try {
         // Read express-custom.json
@@ -45,12 +45,12 @@ exports.default = async () => {
             config = JSON.parse(configJSON.toString());
         }
         catch (error) {
-            logger_1.default.error(`${logger_1.cli.err} Failed to parse express-custom.json (invalid JSON)`);
-            throw new index_1.PackageError(error);
+            logger_1.default.error(`${logger_1.cli.error} Failed to parse express-custom.json (invalid JSON)`);
+            throw new index_1.ExpressCustomError(error);
         }
     }
     catch (error) {
-        logger_1.default.error(`${logger_1.cli.err} No express-custom.json found, trying package.json`);
+        logger_1.default.error(`${logger_1.cli.error} No express-custom.json found, trying package.json`);
         try {
             // Read package.json
             const packageJSON = await fs_1.default.promises.readFile(path_1.default.join(process.cwd(), 'package.json'));
@@ -58,30 +58,30 @@ exports.default = async () => {
             try {
                 const configFile = JSON.parse(packageJSON.toString())['express-custom'];
                 if (!configFile) {
-                    logger_1.default.error(`${logger_1.cli.err} Failed to load express-custom config from package.json`);
+                    logger_1.default.error(`${logger_1.cli.error} Failed to load express-custom config from package.json`);
                     process.exit(1);
                 }
                 config = configFile;
             }
             catch (error) {
-                logger_1.default.error(`${logger_1.cli.err} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`);
-                throw new index_1.PackageError(error);
+                logger_1.default.error(`${logger_1.cli.error} Failed to parse express-custom.json (invalid JSON or no "express-custom" block)`);
+                throw new index_1.ExpressCustomError(error);
             }
         }
         catch (error) {
             // Failed to read package.json
-            logger_1.default.error(`${logger_1.cli.err} Failed to load express-custom config from package.json`);
-            throw new index_1.PackageError(error);
+            logger_1.default.error(`${logger_1.cli.error} Failed to load express-custom config from package.json`);
+            throw new index_1.ExpressCustomError(error);
         }
     }
     // Check if the file is a .js or .ts file
     if (!['.js', '.ts'].includes(config.file.slice(-3))) {
-        logger_1.default.error(`${logger_1.cli.err} Specified "file" must be a .js or .ts file`);
+        logger_1.default.error(`${logger_1.cli.error} Specified "file" must be a .js or .ts file`);
         process.exit(1);
     }
     // Check if the file exists
     if (!fs_1.default.existsSync(path_1.default.resolve(process.cwd(), config.file))) {
-        logger_1.default.error(`${logger_1.cli.err} The specified API file does not exist`);
+        logger_1.default.error(`${logger_1.cli.error} The specified API file does not exist`);
         process.exit(1);
     }
     return config;

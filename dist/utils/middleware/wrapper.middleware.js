@@ -1,4 +1,4 @@
-import { logger } from '@utils/index';
+import { logger } from '..';
 /**
  * Wraps a handler function in error handling.
  * @param controller The handler function.

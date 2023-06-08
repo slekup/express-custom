@@ -1,4 +1,4 @@
-import { PackageError } from '@utils/index';
+import { ExpressCustomError } from '@utils/index';
 import BaseApp from './Base/BaseApp';
 import Schema from './Schema';
 /**
@@ -42,7 +42,7 @@ export default class Route extends BaseApp {
         // Test the the constructor against the schema.
         constructorSchema.validate({ name, description, path }).then((result) => {
             if (typeof result === 'string')
-                throw new PackageError(`Route (${name || path}): ${result}`);
+                throw new ExpressCustomError(`Route (${name || path}): ${result}`);
         });
         // Assign the options to the instance.
         this.path = path;
@@ -82,7 +82,7 @@ export default class Route extends BaseApp {
                 this.raw.options(url, endpoint.execute);
                 break;
             default:
-                throw new PackageError(`Invalid method ${String(endpoint.method)}`);
+                throw new ExpressCustomError(`Invalid method ${String(endpoint.method)}`);
         }
         return this;
     }
@@ -104,7 +104,7 @@ export default class Route extends BaseApp {
     validate() {
         // If the route has no endpoints
         if (this.endpoints.length === 0)
-            throw new PackageError(`Route ${this.name} has no endpoints`);
+            throw new ExpressCustomError(`Route ${this.name} has no endpoints`);
     }
     /**
      * Exports the route to a JSON object.

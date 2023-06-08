@@ -14,16 +14,16 @@
     "noUncheckedIndexedAccess": true,
     "noEmit": false,
     "outDir": "./dist/bin",
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "paths": {
       "@builders/*": [
-        "src/builders/*"
+        "builders/*"
       ],
       "@typings/*": [
-        "src/typings/*"
+        "typings/*"
       ],
       "@utils/*": [
-        "src/utils/*"
+        "utils/*"
       ]
     },
   },
