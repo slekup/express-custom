@@ -51,7 +51,7 @@ export interface ArrayContains {
   max?: number;
 }
 
-export interface ArrayValue<T> extends BaseValueSchema {
+export interface IArrayValue<T> extends BaseValueSchema {
   type: 'array';
   min?: number;
   max?: number;
@@ -60,32 +60,32 @@ export interface ArrayValue<T> extends BaseValueSchema {
   items?: T | T[];
 }
 
-export interface BooleanValue extends BaseValueSchema {
+export interface IBooleanValue extends BaseValueSchema {
   type: 'boolean';
 }
 
-export interface ImageValue extends BaseValueSchema {
+export interface IImageValue extends BaseValueSchema {
   type: 'image';
 }
 
-export interface NumberValue extends BaseValueSchema {
+export interface INumberValue extends BaseValueSchema {
   type: 'number';
   min?: number;
   max?: number;
 }
 
-export interface IntegerValue extends BaseValueSchema {
+export interface IIntegerValue extends BaseValueSchema {
   type: 'integer';
   min?: number;
   max?: number;
 }
 
-export interface ObjectValue<T> extends BaseValueSchema {
+export interface IObjectValue<T> extends BaseValueSchema {
   type: 'object';
   properties?: T | unknown;
 }
 
-export interface StringValue extends BaseValueSchema {
+export interface IStringValue extends BaseValueSchema {
   type: 'string';
   min?: number;
   max?: number;
@@ -94,12 +94,12 @@ export interface StringValue extends BaseValueSchema {
 }
 
 export type ValueSchema =
-  | ArrayValue<ValueSchema>
-  | BooleanValue
-  | ImageValue
-  | NumberValue
-  | IntegerValue
-  | ObjectValue<Record<string, ValueSchema>>
-  | StringValue;
+  | IArrayValue<ValueSchema>
+  | IBooleanValue
+  | IImageValue
+  | INumberValue
+  | IIntegerValue
+  | IObjectValue<Record<string, ValueSchema>>
+  | IStringValue;
 
-export type Schema = Record<string, ValueSchema>;
+export type ISchema = Record<string, ValueSchema>;

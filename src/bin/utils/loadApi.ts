@@ -33,7 +33,7 @@ export default async (fileName: string): Promise<Readonly<ExportedApi>> => {
     const tsconfigPath = path.resolve(process.cwd(), 'tsconfig.json');
     const tsconfigDir = path.dirname(tsconfigPath);
 
-    logger.info(`${cli.inf} Loading tsconfig.json`);
+    logger.info(`${cli.info} Loading tsconfig.json`);
 
     // Load the tsconfig.json file
     let tsconfigJson: TsConfig;
@@ -44,7 +44,7 @@ export default async (fileName: string): Promise<Readonly<ExportedApi>> => {
     } catch (error) {
       logger.error(
         `${
-          cli.err
+          cli.error
         } Failed to load tsconfig.json file. If it exists, make sure it is valid JSON: ${colors.cyan(
           'https://jsonlint.com/'
         )}.`
@@ -54,7 +54,7 @@ export default async (fileName: string): Promise<Readonly<ExportedApi>> => {
 
     if (!tsconfigJson.compilerOptions) {
       logger.error(
-        `${cli.err} Failed to load tsconfig.json file, no compilerOptions.`
+        `${cli.error} Failed to load tsconfig.json file, no compilerOptions.`
       );
       process.exit(1);
     }
@@ -62,7 +62,7 @@ export default async (fileName: string): Promise<Readonly<ExportedApi>> => {
     const baseUrl = tsconfigJson.compilerOptions.baseUrl ?? '.';
     const paths = tsconfigJson.compilerOptions.paths ?? {};
 
-    logger.info(`${cli.inf} Compiling TypeScript`);
+    logger.info(`${cli.info} Compiling TypeScript`);
 
     // Compile TypeScript code to JavaScript using ts-node
     tsNode
@@ -84,7 +84,7 @@ export default async (fileName: string): Promise<Readonly<ExportedApi>> => {
         filePath
       );
 
-    logger.info(`${cli.inf} Registering tsconfig paths`);
+    logger.info(`${cli.info} Registering tsconfig paths`);
 
     tsconfigPaths.register({
       baseUrl: path.resolve(tsconfigDir, baseUrl),
@@ -94,18 +94,18 @@ export default async (fileName: string): Promise<Readonly<ExportedApi>> => {
       },
     });
 
-    logger.info(`${cli.inf} Loading API file`);
+    logger.info(`${cli.info} Loading API file`);
 
     const requireModule = createRequire(path.resolve(__dirname, __filename));
     const module = requireModule(filePath) as { default?: Api };
 
     const time = `${Date.now() - timeStart}ms`;
-    logger.info(`${cli.suc} ⚡ Loaded API file in ${time}`);
+    logger.info(`${cli.success} ⚡ Loaded API file in ${time}`);
 
     // Access the exported API
     if (!module.default) {
       logger.error(
-        `${cli.err} Failed to load the API file, no default export.`
+        `${cli.error} Failed to load the API file, no default export.`
       );
       process.exit(1);
     }
@@ -116,7 +116,7 @@ export default async (fileName: string): Promise<Readonly<ExportedApi>> => {
     apiData = await api.export();
   } catch (error) {
     logger.error(
-      `${cli.err} Failed to load the API file, you have errors in your code!`
+      `${cli.error} Failed to load the API file, you have errors in your code!`
     );
     logger.error((error as { stack: string }).stack);
     process.exit(1);
