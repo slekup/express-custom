@@ -90,7 +90,10 @@ export default class Group extends BaseApp<'router'> {
    * @throws Throws an error if the group instance is invalid.
    */
   public validate(): void {
-    if (!this.routes.length) throw new ExpressCustomError('No routes provided');
+    if (!this.routes.length)
+      throw new ExpressCustomError(
+        `Group (${this.name || this.path}): No routes provided`
+      );
 
     this.routes.forEach((route) => route.validate());
   }
