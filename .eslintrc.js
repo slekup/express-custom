@@ -31,6 +31,7 @@ module.exports = {
     'import/first': 0, // Reports any imports that come after non-import statements
     'import/extensions': 0, // Ensures consistent use of file extension within the import path
     'import/prefer-default-export': 0, // Prefer a default export if module exports a single name
+    'import/no-mutable-exports': 0, // Disallows the use of mutable exports with TypeScript
 
     // JSDoc (documentation) rules
     'jsdoc/require-jsdoc': [
@@ -69,6 +70,7 @@ module.exports = {
     ], // Enforces return type declaration of functions.
     '@typescript-eslint/no-empty-interface': 0, // Disallows the declaration of empty interfaces.
     '@typescript-eslint/consistent-type-assertions': 0, // Enforces consistent usage of type assertions.
+    '@typescript-eslint/non-nullable-type-assertion-style': 0, // Enforces non-nullable type assertions using the ! postfix operator.
 
     // Normal ESLint rules
     'object-curly-spacing': 2, // Enforces consistent spacing inside braces
