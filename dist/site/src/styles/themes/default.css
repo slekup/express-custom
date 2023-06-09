@@ -1,0 +1,78 @@
+:root {
+  /* Primary */
+  --primary: 52, 101, 254;
+  --primary-hover: 82, 125, 254;
+  --primary-active: 133, 164, 254;
+  --default: 231, 234, 237;
+  --default-hover: 217, 221, 225;
+  --default-active: 193, 199, 206;
+
+  /* Text */
+  --text: 0, 0, 0;
+  --text-primary: 55, 65, 81;
+  --text-secondary: 75, 85, 107;
+  --text-faint: 135, 141, 156;
+  --text-button: 255, 255, 255;
+
+  /* Elements */
+  --background: 255, 255, 255;
+  --shade: 255, 255, 255;
+  --shade-2: 255, 255, 255;
+  --tooltip: 29, 32, 43;
+  --tooltip-text: 255, 255, 255;
+
+  /* Header */
+  --header: 255, 255, 255;
+  --header-border: var(--border);
+  --header-text: var(--text);
+  --header-text-gradient-from: 226, 88, 151;
+  --header-text-gradient-to: 88, 116, 245;
+  --header-search: var(--input);
+  --header-search-focus: var(--input-focus);
+  --header-search-text: var(--text);
+  --header-search-border: var(--border);
+  --header-search-focus-border: var(--primary);
+  --header-search-button: var(--default-active);
+  --header-search-button-hover: var(--default-active);
+  --header-search-button-text: var(--text-secondary);
+  --header-search-focus-button: var(--primary);
+  --header-search-focus-button-hover: var(--primary-hover);
+  --header-search-focus-button-active: var(--primary-active);
+  --header-search-focus-button-text: var(--text-button);
+  --header-burger: var(--text-secondary);
+  --header-burger-hover: var(--text-primary);
+  --header-burger-active: var(--text-text);
+  --header-burger-background: var(--background);
+  --header-burger-background-hover: var(--default);
+  --header-burger-background-active: var(--default-hover);
+  --header-button: var(--primary);
+  --header-button-hover: var(--primary);
+  --header-button-active: var(--primary);
+  --header-button-text: var(--text);
+
+  /* Menu */
+  /* 245, 245, 245 */
+  --menu: var(--background);
+
+  /* System */
+  --link: var(--primary);
+  --warning: 253, 182, 34;
+  --warning-hover: 254, 207, 112;
+  --warning-active: 251, 170, 2;
+  --success: 34, 197, 94;
+  --success-hover: 31, 180, 87;
+  --success-active: 29, 165, 80;
+  --danger: 227, 43, 61;
+  --danger-hover: 213, 28, 46;
+  --danger-active: 189, 26, 41;
+
+  /* Components */
+  --input: 229, 231, 235;
+  --input-focus: 255, 255, 255;
+  --border: 219, 222, 227;
+
+  /* Not to change */
+  --discord: 88, 101, 242;
+  --discord-hover: 71, 82, 196;
+  --discord-active: 60, 69, 165;
+}
