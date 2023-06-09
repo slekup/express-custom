@@ -199,19 +199,22 @@ export default class Endpoint {
         // If any of them fail, return because the response is handled by the validation function.
         if (
           this.paramSchema &&
-          (await this.paramSchema.validate(req.params, { res }))
+          (await this.paramSchema.validateData(req.params, { res }))
         )
           return;
         if (
           this.querySchema &&
-          (await this.querySchema.validate(req.query, { res }))
+          (await this.querySchema.validateData(req.query, { res }))
         )
           return;
         if (
           this.bodySchema &&
-          (await this.bodySchema.validate(req.body as Record<string, unknown>, {
-            res,
-          }))
+          (await this.bodySchema.validateData(
+            req.body as Record<string, unknown>,
+            {
+              res,
+            }
+          ))
         )
           return;
 

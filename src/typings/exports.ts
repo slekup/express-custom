@@ -1,3 +1,5 @@
+import { ExportedSchema } from 'builder-validation';
+
 import {
   EndpointNote,
   EndpointResponse,
@@ -44,18 +46,6 @@ export interface Config {
   theme: Themes;
   socials: Socials;
 }
-
-export interface ExportedValue<T> {
-  type: string;
-  min?: number;
-  max?: number;
-  options?: string[];
-  test?: string;
-  items?: T;
-  properties?: T;
-}
-
-export type ExportedSchema = Record<string, ExportedValue<ExportedSchema>>;
 
 export interface ExportedEndpoint {
   name: string;

@@ -2,13 +2,13 @@ import fs from 'fs';
 import { Server } from 'http';
 import path from 'path';
 
+import Schema from '@builders/Schema';
 import { Config, ExportedApi } from '@typings/exports';
 import { ExpressCustomError } from '@utils/index';
 import { errorMiddleware } from '@utils/middleware';
 import logger, { cli } from '../bin/utils/logger';
 import BaseApp from './Base/BaseApp';
 import Group from './Group';
-import Schema from './Schema';
 import Structure from './Structure';
 import Version from './Version';
 
