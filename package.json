@@ -1,39 +1,7 @@
 {
   "name": "express-custom",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
-    }
-  },
-  "bin": {
-    "gensite": "./dist/bin/bin/gensite.js",
-    "export-api": "./dist/bin/bin/export-api.js",
-    "create-api": "./dist/bin/bin/create-api.js"
-  },
-  "scripts": {
-    "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\"",
-    "lint": "eslint src/**/* --ext .ts && tsc --noEmit",
-    "lint:fix": "eslint --fix src/**/* --ext .ts && tsc --noEmit",
-    "copy:site": "copyfiles -u 1 --exclude site/node_modules/** --exclude site/out/** --exclude site/.next/** site/**/* dist/site",
-    "copy": "npm run copy:site",
-    "build:bin": "rimraf dist/bin && tsc --build tsconfig.bin.json",
-    "build:nocheck": "rimraf dist && tsup && npm run copy && npm run build:bin",
-    "build": "npm run lint:fix && npm run format && npm run build:nocheck",
-    "docs": "rimraf docs && typedoc",
-    "precommit": "npm run lint:fix && npm run format"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/slekup/express-custom"
-  },
   "keywords": [
     "express",
     "custom",
@@ -42,19 +10,62 @@
     "api",
     "nodejs"
   ],
-  "author": "Slekup",
-  "license": "ISC",
+  "homepage": "https://github.com/slekup/express-custom#readme",
   "bugs": {
     "url": "https://github.com/slekup/express-custom/issues"
   },
-  "homepage": "https://github.com/slekup/express-custom#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slekup/express-custom"
+  },
+  "license": "ISC",
+  "author": "Slekup",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "create-api": "./dist/bin/bin/create-api.js",
+    "export-api": "./dist/bin/bin/export-api.js",
+    "gensite": "./dist/bin/bin/gensite.js"
+  },
   "files": [
     "dist",
     "README.md",
     "LICENSE",
     "package.json"
   ],
+  "scripts": {
+    "build": "npm run lint:fix && npm run format && npm run build:nocheck",
+    "build:bin": "rimraf dist/bin && tsc --build tsconfig.bin.json",
+    "build:nocheck": "rimraf dist && tsup && npm run copy && npm run build:bin",
+    "copy": "npm run copy:site",
+    "copy:site": "copyfiles -u 1 --exclude site/node_modules/** --exclude site/out/** --exclude site/.next/** site/**/* dist/site",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "lint": "eslint src/**/* --ext .ts && tsc --noEmit",
+    "lint:fix": "eslint --fix src/**/* --ext .ts && tsc --noEmit",
+    "precommit": "npm run lint:fix && npm run format"
+  },
+  "prettier": {
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "printWidth": 80,
+    "quoteProps": "consistent",
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  },
   "dependencies": {
+    "builder-validation": "^0.0.1",
     "colors": "^1.4.0",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
@@ -88,16 +99,5 @@
     "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
     "tsup": "^6.7.0"
-  },
-  "prettier": {
-    "printWidth": 80,
-    "tabWidth": 2,
-    "useTabs": false,
-    "semi": true,
-    "singleQuote": true,
-    "quoteProps": "consistent",
-    "trailingComma": "es5",
-    "bracketSpacing": true,
-    "arrowParens": "always"
   }
 }
