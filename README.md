@@ -30,6 +30,8 @@ Some additional features include schema validation, rate-limiting, and error han
 > **Warning**
 > This library is currently in beta. It is not recommended to use this library in production yet. There may be breaking changes in the future.
 
+For more information, feel free to join the [discord server](https://discord.gg/p5rxxQN7DT) and ask questions!
+
 ## Installation
 
 ```bash
@@ -159,6 +161,14 @@ This will export the API to a `api.json` file in the specified output folder in 
 > npx export-api
 ```
 
+## Create a basic express-custom project
+
+This will create a basic express-custom project in the current directory, much like `npx create-next-app` would for a next.js app.
+
+```bash
+> npx create-api
+```
+
 ## MDX Documentation
 
 You can create MDX files to document further details about your API. These files will be rendered and displayed on the next.js documentation site.
@@ -286,6 +296,12 @@ Defaults to `base16/framer`.
 Social links for the next.js documentation site.
 
 Available socials: `discord`, `github`, `instagram`, `facebook`, `linkedin`, `youtube`, `twitter`, `email`.
+
+### `extends`
+
+> `string`
+
+The path to a JSON file to extend the configuration from. This can be used to create multiple versions of your API.
 
 ## Issues and Contributing
 

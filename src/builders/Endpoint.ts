@@ -27,7 +27,7 @@ export default class Endpoint {
   public querySchema?: Schema;
   public bodySchema?: Schema;
   public responses: EndpointResponse[];
-  public controller: (req: Request, res: Response, next: NextFunction) => void;
+  public controller?: (req: Request, res: Response, next: NextFunction) => void;
   public ratelimit?: Partial<RateLimit>;
 
   /**
@@ -47,7 +47,7 @@ export default class Endpoint {
     description: string;
     path: PathString;
     method: RequestMethod;
-    controller: ControllerType;
+    controller?: ControllerType;
     notes?: EndpointNote[];
     responses?: EndpointResponse[];
     disabled?: boolean;
@@ -100,7 +100,8 @@ export default class Endpoint {
     this.description = options.description;
     this.path = options.path;
     this.method = options.method;
-    this.controller = initController(options.controller);
+    if (options.controller)
+      this.controller = initController(options.controller);
     this.notes = options.notes ?? [];
     this.responses = options.responses ?? [];
   }
@@ -174,6 +175,17 @@ export default class Endpoint {
   }
 
   /**
+   * Validates the endpoint.
+   * @throws An error if the endpoint is invalid.
+   */
+  public validate(): void {
+    if (!this.controller)
+      throw new ExpressCustomError(
+        `Endpoint (${this.name || this.path}): Controller is not defined.`
+      );
+  }
+
+  /**
    * Executes the endpoint controller function with error handling and validation.
    * @param req The express request object.
    * @param res The express response object.
@@ -204,6 +216,13 @@ export default class Endpoint {
           return;
 
         // Run the controller function
+        if (!this.controller)
+          throw new ExpressCustomError(
+            `Endpoint (${
+              this.name || this.path
+            }): no controller function was set.`
+          );
+
         this.controller(req, res, next);
       } catch (error) {
         logger.error(error);

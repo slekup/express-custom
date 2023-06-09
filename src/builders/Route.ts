@@ -134,6 +134,8 @@ export default class Route extends BaseApp<'router'> {
     // If the route has no endpoints
     if (this.endpoints.length === 0)
       throw new ExpressCustomError(`Route ${this.name} has no endpoints`);
+
+    this.endpoints.forEach((endpoint) => endpoint.validate());
   }
 
   /**
