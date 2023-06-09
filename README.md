@@ -30,8 +30,6 @@ Some additional features include schema validation, rate-limiting, and error han
 > **Warning**
 > This library is currently in beta. It is not recommended to use this library in production yet. There may be breaking changes in the future.
 
-For more information, feel free to join the [discord server](https://discord.gg/p5rxxQN7DT) and ask questions!
-
 ## Installation
 
 ```bash
