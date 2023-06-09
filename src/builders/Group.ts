@@ -14,14 +14,24 @@ export default class Group extends BaseApp<'router'> {
   private path: PathString;
   private name: string;
   private routes: Route[];
+  private noRoutes: boolean;
 
   /**
    * Creates a new instance of the Group class.
    * @param options Options for the Group instance.
    * @param options.path The path of the group.
    * @param options.name The name of the group.
+   * @param options.noRoutes Whether or not the group has routes.
    */
-  public constructor({ path, name }: { path: PathString; name: string }) {
+  public constructor({
+    path,
+    name,
+    noRoutes,
+  }: {
+    path: PathString;
+    name: string;
+    noRoutes?: boolean;
+  }) {
     super();
 
     // Create the schema for the constructor options.
@@ -50,6 +60,7 @@ export default class Group extends BaseApp<'router'> {
     this.path = path;
     this.name = name;
     this.routes = [];
+    this.noRoutes = noRoutes ?? false;
   }
 
   /**
@@ -90,7 +101,10 @@ export default class Group extends BaseApp<'router'> {
    * @throws Throws an error if the group instance is invalid.
    */
   public validate(): void {
-    if (!this.routes.length) throw new ExpressCustomError('No routes provided');
+    if (!this.noRoutes && !this.routes.length)
+      throw new ExpressCustomError(
+        `Group (${this.name || this.path}): No routes provided`
+      );
 
     this.routes.forEach((route) => route.validate());
   }
