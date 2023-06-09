@@ -1,0 +1,69 @@
+[data-theme='stack-overflow'] {
+  /* Primary */
+  --primary: 244, 130, 37;
+  --primary-hover: 245, 150, 71;
+  --primary-active: 223, 107, 13;
+  --default: 231, 234, 237;
+  --default-hover: 217, 221, 225;
+  --default-active: 193, 199, 206;
+
+  /* Text */
+  --text: 0, 0, 0;
+  --text-primary: 55, 65, 81;
+  --text-secondary: 75, 85, 107;
+  --text-faint: 135, 141, 156;
+  --text-button: 255, 255, 255;
+
+  /* Elements */
+  --background: 245, 245, 245;
+  --shade: 255, 255, 255;
+  --shade-2: 255, 255, 255;
+  --tooltip: 29, 32, 43;
+  --tooltip-text: 255, 255, 255;
+
+  /* Header */
+  --header: 255, 255, 255;
+  --header-border: var(--border);
+  --header-text: var(--text-faint);
+  --header-text-gradient-from: var(--primary);
+  --header-text-gradient-to: var(--primary);
+  --header-search: 236, 247, 255;
+  --header-search-focus: 227, 243, 255;
+  --header-search-text: var(--text);
+  --header-search-border: 173, 219, 255;
+  --header-search-focus-border: 10, 149, 255;
+  --header-search-button: 10, 149, 255;
+  --header-search-button-hover: 62, 173, 255;
+  --header-search-button-active: 0, 132, 230;
+  --header-search-button-text: 255, 255, 255;
+  --header-search-focus-button: 10, 149, 255;
+  --header-search-focus-button-hover: 62, 173, 255;
+  --header-search-focus-button-active: 0, 132, 230;
+  --header-search-focus-button-text: var(--text-button);
+  --header-burger: var(--text-secondary);
+  --header-burger-hover: var(--text-primary);
+  --header-burger-active: var(--text-text);
+  --header-burger-background: var(--background);
+  --header-burger-background-hover: var(--default);
+  --header-burger-background-active: var(--default-hover);
+  --header-button: var(--primary);
+  --header-button-hover: var(--primary);
+  --header-button-active: var(--primary);
+  --header-button-text: var(--text);
+
+  /* Menu */
+  --menu: 255, 255, 255;
+
+  /* System */
+  --link: 32, 148, 242;
+
+  /* Components */
+  --input: 229, 231, 235;
+  --input-focus: 255, 255, 255;
+  --border: 219, 222, 227;
+
+  /* Not to change */
+  --discord: 88, 101, 242;
+  --discord-hover: 71, 82, 196;
+  --discord-active: 60, 69, 165;
+}
