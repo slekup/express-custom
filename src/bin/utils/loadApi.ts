@@ -73,10 +73,7 @@ export default async (fileName: string): Promise<Readonly<ExportedApi>> => {
           ...tsconfigJson.compilerOptions,
           module: 'commonjs',
           esModuleInterop: true,
-        } /* 
-        loader: {
-          '.ts': 'ts-node/esm',
-        }, */,
+        },
         experimentalSpecifierResolution: 'node',
       })
       .compile(
