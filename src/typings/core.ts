@@ -52,11 +52,6 @@ export interface EndpointResponse {
   [key: string]: unknown;
 }
 
-export type ControllerType = (
-  req: Request,
-  res: Response
-) => Promise<unknown> | unknown;
-
 export type StructureType = 'schema' | 'option';
 
 export interface StructureField {
