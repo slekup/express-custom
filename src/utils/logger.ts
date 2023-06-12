@@ -1,5 +1,4 @@
 import colors from 'colors';
-import { TransformableInfo } from 'logform';
 import * as winston from 'winston';
 
 /**
@@ -40,7 +39,7 @@ const consoleFormat = winston.format.combine(
   winston.format.errors({ stack: true }),
   // winston.format.splat(),
   // winston.format.json(),
-  winston.format.printf(({ ms, level, message, stack }: TransformableInfo) => {
+  winston.format.printf(({ ms, level, message, stack }) => {
     let msg = message as string;
 
     // Append the stack trace to the message if it is present

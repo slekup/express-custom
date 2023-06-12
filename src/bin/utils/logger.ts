@@ -1,5 +1,4 @@
 import colors from 'colors';
-import { TransformableInfo } from 'logform';
 import * as winston from 'winston';
 
 export const cli = {
@@ -21,7 +20,7 @@ export const site = {
 const consoleFormat = winston.format.combine(
   winston.format.colorize(),
   winston.format.errors({ stack: true }),
-  winston.format.printf(({ message, stack }: TransformableInfo) => {
+  winston.format.printf(({ message, stack }) => {
     let msg = message as string;
     // Append the stack trace to the message if it is present
     if (stack) msg += `\n${stack as string}`;

@@ -7,6 +7,10 @@ import BaseApp from './Base/BaseApp';
 import Group from './Group';
 import Schema from './Schema';
 
+interface VersionOptions extends Record<string, unknown> {
+  version: number;
+}
+
 /**
  * The Version class, used to create a version of the API.
  */
@@ -19,7 +23,7 @@ export default class Version extends BaseApp<'app'> {
    * @param options The options for the Version class.
    * @param options.version The version number of the API.
    */
-  public constructor({ version }: { version: number }) {
+  public constructor(options: VersionOptions) {
     super('app');
 
     // The constructor schema.
@@ -31,13 +35,13 @@ export default class Version extends BaseApp<'app'> {
     });
 
     // Test the the constructor against the schema.
-    constructorSchema.validate({ version }).then((result) => {
+    constructorSchema.validate(options).then((result) => {
       if (typeof result === 'string') throw new ExpressCustomError(result);
     });
 
     // Assign the options to the instance.
     this.groups = [];
-    this.version = version;
+    this.version = options.version;
   }
 
   /**

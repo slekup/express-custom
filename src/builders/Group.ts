@@ -7,6 +7,12 @@ import BaseApp from './Base/BaseApp';
 import Route from './Route';
 import Schema from './Schema';
 
+interface GroupOptions extends Record<string, unknown> {
+  path: PathString;
+  name: string;
+  noRoutes?: boolean;
+}
+
 /**
  * The Group class, used to create a group of routes.
  */
@@ -23,15 +29,7 @@ export default class Group extends BaseApp<'router'> {
    * @param options.name The name of the group.
    * @param options.noRoutes Whether or not the group has routes.
    */
-  public constructor({
-    path,
-    name,
-    noRoutes,
-  }: {
-    path: PathString;
-    name: string;
-    noRoutes?: boolean;
-  }) {
+  public constructor(options: GroupOptions) {
     super();
 
     // Create the schema for the constructor options.
@@ -51,16 +49,18 @@ export default class Group extends BaseApp<'router'> {
       });
 
     // Test the the constructor against the schema.
-    constructorSchema.validate({ path, name }).then((result) => {
+    constructorSchema.validate(options).then((result) => {
       if (typeof result === 'string')
-        throw new ExpressCustomError(`Group (${name || path}): ${result}`);
+        throw new ExpressCustomError(
+          `Group (${options.name || options.path}): ${result}`
+        );
     });
 
     // Assign the options to the instance.
-    this.path = path;
-    this.name = name;
+    this.path = options.path;
+    this.name = options.name;
     this.routes = [];
-    this.noRoutes = noRoutes ?? false;
+    this.noRoutes = options.noRoutes ?? false;
   }
 
   /**
