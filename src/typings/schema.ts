@@ -33,7 +33,7 @@ export type ValueCheck = [
   string
 ];
 
-export type StructureType = `{${string}}` | `[${string}]`;
+export type StructureString = `{${string}}` | `[${string}]`;
 
 export interface BaseValueSchema {
   description?: string;
