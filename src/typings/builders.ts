@@ -1,7 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 
-export interface ControllerParams {
-  req: Request;
+interface CustomRequest<T> extends Omit<Request, 'params' | 'query' | 'body'> {
+  params?: T extends { params: unknown } ? T['params'] : Request['params'];
+  query?: T extends { query: unknown } ? T['query'] : Request['query'];
+  body?: T extends { body: unknown } ? T['body'] : Request['body'];
+}
+
+export interface ControllerParams<T = unknown> {
+  req: CustomRequest<T>;
   res: Response;
 }
 
@@ -11,7 +17,7 @@ export type InternalController = (
   next: NextFunction
 ) => void;
 
-export type UserController<T extends ControllerParams = ControllerParams> = (
-  req: T['req'],
-  res: T['res']
+export type UserController<T = unknown> = (
+  req: ControllerParams<T>['req'] & T,
+  res: Response
 ) => Promise<unknown> | unknown;
