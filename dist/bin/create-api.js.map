@@ -1,1 +1,0 @@
-{"version":3,"file":"create-api.js","sourceRoot":"","sources":["../../src/bin/create-api.ts"],"names":[],"mappings":"AAAA,OAAO,MAAM,MAAM,gBAAgB,CAAC;AAEpC,MAAM,CAAC,KAAK,CAAC,aAAa,CAAC,CAAC","sourcesContent":["import logger from './utils/logger';\n\nlogger.error('Coming soon');\n"]}

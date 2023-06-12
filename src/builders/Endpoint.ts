@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 
 import {
+  ControllerParams,
+  InternalController,
+  UserController,
+} from '@typings/builders';
+import {
   EndpointNote,
   EndpointResponse,
   PathString,
@@ -9,9 +14,20 @@ import {
 } from '@typings/core';
 import { ExportedEndpoint } from '@typings/exports';
 import { ExpressCustomError } from '@utils/index';
-import { initController } from '@utils/middleware/wrapper.middleware';
-import Controller, { IController, UserController } from './Controller';
+import { withErrorHandling } from '@utils/middleware';
+import Controller from './Controller';
 import Schema from './Schema';
+
+interface EndpointOptions extends Record<string, unknown> {
+  name: string;
+  description: string;
+  path: PathString;
+  method: RequestMethod;
+  controller?: UserController | Controller;
+  notes?: EndpointNote[];
+  responses?: EndpointResponse[];
+  disabled?: boolean;
+}
 
 /**
  * The Endpoint class, used to build an endpoint.
@@ -27,7 +43,7 @@ export default class Endpoint {
   public querySchema?: Schema;
   public bodySchema?: Schema;
   public responses: EndpointResponse[];
-  public controller?: IController;
+  public controller?: InternalController;
   public ratelimit?: Partial<RateLimit>;
 
   /**
@@ -42,16 +58,7 @@ export default class Endpoint {
    * @param options.responses An array of responses for the endpoint.
    * @param options.disabled Whether the endpoint is temporarily disabled or not.
    */
-  public constructor(options: {
-    name: string;
-    description: string;
-    path: PathString;
-    method: RequestMethod;
-    controller?: UserController | Controller;
-    notes?: EndpointNote[];
-    responses?: EndpointResponse[];
-    disabled?: boolean;
-  }) {
+  public constructor(options: EndpointOptions) {
     // Create the schema for the constructor options.
     const constructorSchema = new Schema()
       .addBoolean({
@@ -103,10 +110,10 @@ export default class Endpoint {
     if (options.controller) {
       // If the controller function is passed directly
       if (typeof options.controller === 'function')
-        this.controller = initController(options.controller);
+        this.controller = withErrorHandling(options.controller);
       // If an instance of the Controller class is passed
       else if (options.controller instanceof Controller)
-        this.controller = initController(options.controller.callback);
+        this.controller = withErrorHandling(options.controller.callback);
     }
     this.notes = options.notes ?? [];
     this.responses = options.responses ?? [];
@@ -173,13 +180,15 @@ export default class Endpoint {
    * @param controller The controlller function to run when the endpoint is called.
    * @returns The current Endpoint instance.
    */
-  public setController(controller: UserController | Controller): this {
+  public setController<T extends ControllerParams = ControllerParams>(
+    controller: UserController<T> | Controller
+  ): this {
     // If the controller function is passed directly
     if (typeof controller === 'function')
-      this.controller = initController(controller);
+      this.controller = withErrorHandling<T>(controller);
     // If an instance of the Controller class is passed
     else if (controller instanceof Controller)
-      this.controller = initController(controller.callback);
+      this.controller = withErrorHandling(controller.callback);
     return this;
   }
 

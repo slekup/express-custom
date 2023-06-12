@@ -1,5 +1,4 @@
-node_modules
-api.json
+node_modules/
 site/custom/
 dist/
-
+api.json
