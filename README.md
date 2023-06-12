@@ -1,6 +1,6 @@
 <div align="center">
 
-[![Express Custom Logo](https://i.imgur.com/TSBzoVB.png)](https://github.com/slekup/express-custom)
+[![Express Custom Logo](https://i.imgur.com/kaFfpSb.png)](https://github.com/slekup/express-custom)
 
 </div>
 

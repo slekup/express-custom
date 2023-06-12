@@ -1,11 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { ControllerParams, UserController } from '@typings/builders';
 import { logger } from '..';
-
-type ControllerType = (
-  req: Request,
-  res: Response
-) => Promise<unknown> | unknown;
 
 type ErrorHandlingReturnType = (
   req: Request,
@@ -18,9 +14,9 @@ type ErrorHandlingReturnType = (
  * @param controller The handler function.
  * @returns The handler function wrapped in error handling.
  */
-export function initController(
-  controller: ControllerType
-): ErrorHandlingReturnType {
+export default function withErrorHandling<
+  T extends ControllerParams = ControllerParams
+>(controller: UserController<T>): ErrorHandlingReturnType {
   return (req: Request, res: Response): void => {
     (async () => {
       try {

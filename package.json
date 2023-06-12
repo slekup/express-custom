@@ -1,6 +1,6 @@
 {
   "name": "express-custom",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.",
   "keywords": [
     "express",
@@ -67,11 +67,8 @@
   "dependencies": {
     "builder-validation": "^0.0.1",
     "colors": "^1.4.0",
-    "dotenv": "^16.1.4",
     "express": "^4.18.2",
     "express-rate-limit": "^6.7.0",
-    "highlight.js": "^11.8.0",
-    "logform": "^2.5.1",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3",

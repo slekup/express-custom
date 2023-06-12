@@ -5,6 +5,12 @@ import BaseApp from './Base/BaseApp';
 import Endpoint from './Endpoint';
 import Schema from './Schema';
 
+interface RouteOptions extends Record<string, unknown> {
+  path: PathString;
+  name: string;
+  description: string;
+}
+
 /**
  * The Route class, used to create a route with endpoints.
  */
@@ -21,15 +27,7 @@ export default class Route extends BaseApp<'router'> {
    * @param options.name The name of the route.
    * @param options.description The description of the route.
    */
-  public constructor({
-    path,
-    name,
-    description,
-  }: {
-    path: PathString;
-    name: string;
-    description: string;
-  }) {
+  public constructor(options: RouteOptions) {
     super();
 
     // Create the schema for the constructor options.
@@ -55,15 +53,17 @@ export default class Route extends BaseApp<'router'> {
       });
 
     // Test the the constructor against the schema.
-    constructorSchema.validate({ name, description, path }).then((result) => {
+    constructorSchema.validate(options).then((result) => {
       if (typeof result === 'string')
-        throw new ExpressCustomError(`Route (${name || path}): ${result}`);
+        throw new ExpressCustomError(
+          `Route (${options.name || options.path}): ${result}`
+        );
     });
 
     // Assign the options to the instance.
-    this.path = path;
-    this.name = name;
-    this.description = description;
+    this.path = options.path;
+    this.name = options.name;
+    this.description = options.description;
   }
 
   /**

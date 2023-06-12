@@ -12,6 +12,12 @@ import Group from './Group';
 import Structure from './Structure';
 import Version from './Version';
 
+interface ApiOptions extends Record<string, unknown> {
+  url: string;
+  port: number;
+  structures?: Structure[];
+}
+
 /**
  * The ApiBuilder class, used to build an API.
  */
@@ -30,11 +36,7 @@ export default class Api extends BaseApp<'app'> {
    * @param options.port The port the API will listen on when running the start() method.
    * @param options.structures The structures used in the API endpoint schemas.
    */
-  public constructor(options: {
-    url: string;
-    port: number;
-    structures?: Structure[];
-  }) {
+  public constructor(options: ApiOptions) {
     super('app');
 
     // The constructor schema.
