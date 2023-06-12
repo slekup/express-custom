@@ -2,17 +2,11 @@
 
 [![Express Custom Logo](https://i.imgur.com/kaFfpSb.png)](https://github.com/slekup/express-custom)
 
-</div>
-
-<div align="center">
-
-<a href="https://www.npmjs.com/package/express-rate-limit" target="_blank">Demo (soon)</a> • <a href="https://www.npmjs.com/package/express-rate-limit" target="_blank">Documentation (soon)</a> • <a href="https://github.com/slekup/express-custom-examples" target="_blank">Examples</a> • <a href="https://discord.gg/p5rxxQN7DT" target="_blank">Discord</a> • <a href="https://github.com/slekup/express-custom" target="_blank">GitHub</a>
-
-</div>
-
 ---
 
-<div align="center">
+<a href="https://www.npmjs.com/package/express-custom" target="_blank">Demo (soon)</a> • <a href="https://www.npmjs.com/package/express-custom" target="_blank">Documentation (soon)</a> • <a href="https://github.com/slekup/express-custom-examples" target="_blank">Examples</a> • <a href="https://discord.gg/p5rxxQN7DT" target="_blank">Discord</a> • <a href="https://github.com/slekup/express-custom" target="_blank">GitHub</a>
+
+---
 
 Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.
 
@@ -44,8 +38,6 @@ Some additional features include schema validation, rate-limiting, and error han
 ### Importing
 
 This library supports both typescript and javascript, with ES6 modules and CommonJS.
-
-**This package has only been tested for Node 18+**
 
 ```ts
 // ES6 modules
