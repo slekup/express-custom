@@ -1,10 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import {
-  ControllerParams,
-  InternalController,
-  UserController,
-} from '@typings/builders';
+import { InternalController, UserController } from '@typings/builders';
 import {
   EndpointNote,
   EndpointResponse,
@@ -180,12 +176,12 @@ export default class Endpoint {
    * @param controller The controlller function to run when the endpoint is called.
    * @returns The current Endpoint instance.
    */
-  public setController<T extends ControllerParams = ControllerParams>(
+  public setController<T = unknown>(
     controller: UserController<T> | Controller
   ): this {
     // If the controller function is passed directly
     if (typeof controller === 'function')
-      this.controller = withErrorHandling<T>(controller);
+      this.controller = withErrorHandling(controller);
     // If an instance of the Controller class is passed
     else if (controller instanceof Controller)
       this.controller = withErrorHandling(controller.callback);

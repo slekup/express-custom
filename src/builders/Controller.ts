@@ -1,9 +1,9 @@
-import { ControllerParams, UserController } from '@typings/builders';
+import { UserController } from '@typings/builders';
 
 /**
  * The Controller class, used to make a controller function for an endpoint.
  */
-export default class Controller<T extends ControllerParams = ControllerParams> {
+export default class Controller<T = unknown> {
   public callback: UserController<T>;
 
   /**

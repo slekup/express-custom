@@ -1,6 +1,6 @@
 {
   "name": "express-custom",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.",
   "keywords": [
     "express",
@@ -65,7 +65,7 @@
     "useTabs": false
   },
   "dependencies": {
-    "builder-validation": "^0.0.1",
+    "builder-validation": "^0.0.2",
     "colors": "^1.4.0",
     "express": "^4.18.2",
     "express-rate-limit": "^6.7.0",
@@ -78,7 +78,7 @@
     "@babel/eslint-parser": "^7.22.5",
     "@types/express": "^4.17.17",
     "@types/fs-extra": "^11.0.1",
-    "@types/node": "^20.2.5",
+    "@types/node": "^20.3.0",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
     "@typescript-eslint/parser": "^5.59.9",
     "copyfiles": "^2.4.1",
