@@ -5,7 +5,7 @@ import BaseApp from './Base/BaseApp';
 import Endpoint from './Endpoint';
 import Schema from './Schema';
 
-interface RouteOptions extends Record<string, unknown> {
+export interface RouteOptions extends Record<string, unknown> {
   path: PathString;
   name: string;
   description: string;

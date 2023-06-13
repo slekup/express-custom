@@ -12,7 +12,7 @@ import Group from './Group';
 import Structure from './Structure';
 import Version from './Version';
 
-interface ApiOptions extends Record<string, unknown> {
+export interface ApiOptions extends Record<string, unknown> {
   url: string;
   port: number;
   structures?: Structure[];
