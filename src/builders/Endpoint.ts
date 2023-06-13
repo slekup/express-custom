@@ -26,7 +26,7 @@ export interface EndpointOptions extends Record<string, unknown> {
   bodySchema?: Schema;
   responses?: EndpointResponse[];
   disabled?: boolean;
-  errorResponse: Record<string, unknown>;
+  errorResponse?: Record<string, unknown>;
 }
 
 /**
@@ -96,10 +96,10 @@ export default class Endpoint {
         max: 100,
         options: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
       })
-      .addString({
+      .addObject({
         name: 'errorResponse',
         required: false,
-        defaultValue: { status: 500, message: 'Internal Server Error' },
+        properties: {},
       });
 
     // Test the options against the schema.
@@ -110,6 +110,11 @@ export default class Endpoint {
         );
     });
 
+    const errorResponse = options.errorResponse ?? {
+      status: 500,
+      message: 'Internal Server Error',
+    };
+
     // Assign the options to the endpoint.
     this.disabled = options.disabled ?? false;
     this.name = options.name;
@@ -119,15 +124,12 @@ export default class Endpoint {
     if (options.controller) {
       // If the controller function is passed directly
       if (typeof options.controller === 'function')
-        this.controller = withErrorHandling(
-          options.controller,
-          options.errorResponse
-        );
+        this.controller = withErrorHandling(options.controller, errorResponse);
       // If an instance of the Controller class is passed
       else if (options.controller instanceof Controller)
         this.controller = withErrorHandling(
           options.controller.callback,
-          options.errorResponse
+          errorResponse
         );
     }
     this.notes = options.notes ?? [];
@@ -135,7 +137,7 @@ export default class Endpoint {
     if (options.querySchema) this.querySchema = options.querySchema;
     if (options.bodySchema) this.bodySchema = options.bodySchema;
     this.responses = options.responses ?? [];
-    this.errorResponse = options.errorResponse;
+    this.errorResponse = errorResponse;
   }
 
   /**
