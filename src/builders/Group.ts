@@ -7,7 +7,7 @@ import BaseApp from './Base/BaseApp';
 import Route from './Route';
 import Schema from './Schema';
 
-interface GroupOptions extends Record<string, unknown> {
+export interface GroupOptions extends Record<string, unknown> {
   path: PathString;
   name: string;
   noRoutes?: boolean;
