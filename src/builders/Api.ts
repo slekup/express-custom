@@ -12,9 +12,13 @@ import Group from './Group';
 import Structure from './Structure';
 import Version from './Version';
 
+// Replace multiple slashes with a single slash.
+const doubleSlashRegex = /\/+/g;
+
 export interface ApiOptions extends Record<string, unknown> {
   url: string;
   port: number;
+  path?: string;
   structures?: Structure[];
 }
 
@@ -26,6 +30,7 @@ export default class Api extends BaseApp<'app'> {
   private versions: Version[];
   private groups: Group[];
   private url: string;
+  private path = '/';
   private structures: Structure[];
   private config?: Config;
 
@@ -52,6 +57,11 @@ export default class Api extends BaseApp<'app'> {
         required: true,
         min: 0,
         max: 65536,
+      })
+      .addString({
+        name: 'path',
+        min: 1,
+        max: 50,
       });
 
     // Validate the constructor against the schema.
@@ -65,6 +75,7 @@ export default class Api extends BaseApp<'app'> {
     this.groups = [];
     this.url = options.url;
     this.port = options.port;
+    if (options.path) this.path = options.path;
     this.structures = options.structures ?? [];
   }
 
@@ -76,7 +87,11 @@ export default class Api extends BaseApp<'app'> {
   public addVersion(version: Version): this {
     this.versions.push(version);
     const versionValues = version.values();
-    this.raw.use(versionValues.path, versionValues.raw);
+
+    this.raw.use(
+      `${this.path}${versionValues.path}`.replaceAll(doubleSlashRegex, '/'),
+      versionValues.raw
+    );
     return this;
   }
 
@@ -88,7 +103,10 @@ export default class Api extends BaseApp<'app'> {
   public addGroup(group: Group): this {
     this.groups.push(group);
     const groupValues = group.values();
-    this.raw.use(groupValues.path, groupValues.raw);
+    this.raw.use(
+      `${this.path}${groupValues.path}`.replaceAll(doubleSlashRegex, '/'),
+      groupValues.raw
+    );
     return this;
   }
 
@@ -116,8 +134,14 @@ export default class Api extends BaseApp<'app'> {
     );
 
     // Set the 404 and error handler middleware.
-    this.raw.use(errorMiddleware.notFound);
-    this.raw.use(errorMiddleware.errorHandler);
+    this.raw.use(
+      this.path.replaceAll(doubleSlashRegex, '/'),
+      errorMiddleware.notFound
+    );
+    this.raw.use(
+      this.path.replaceAll(doubleSlashRegex, '/'),
+      errorMiddleware.errorHandler
+    );
 
     // Start the API server.
     const server = this.raw.listen(this.port, callback);
