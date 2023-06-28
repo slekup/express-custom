@@ -30,7 +30,7 @@ export default class Api extends BaseApp<'app'> {
   private versions: Version[];
   private groups: Group[];
   private url: string;
-  private path = '/';
+  private path: string;
   private structures: Structure[];
   private config?: Config;
 
@@ -76,6 +76,7 @@ export default class Api extends BaseApp<'app'> {
     this.url = options.url;
     this.port = options.port;
     if (options.path) this.path = options.path;
+    else this.path = '/';
     this.structures = options.structures ?? [];
   }
 
@@ -88,8 +89,13 @@ export default class Api extends BaseApp<'app'> {
     this.versions.push(version);
     const versionValues = version.values();
 
+    const path = `${this.path}${versionValues.path}`.replaceAll(
+      doubleSlashRegex,
+      '/'
+    );
+
     this.raw.use(
-      `${this.path}${versionValues.path}`.replaceAll(doubleSlashRegex, '/'),
+      path.endsWith('/') ? path.slice(0, -1) : path,
       versionValues.raw
     );
     return this;
@@ -103,8 +109,12 @@ export default class Api extends BaseApp<'app'> {
   public addGroup(group: Group): this {
     this.groups.push(group);
     const groupValues = group.values();
+    const path = `${this.path}${groupValues.path}`.replaceAll(
+      doubleSlashRegex,
+      '/'
+    );
     this.raw.use(
-      `${this.path}${groupValues.path}`.replaceAll(doubleSlashRegex, '/'),
+      path.endsWith('/') ? path.slice(0, -1) : path,
       groupValues.raw
     );
     return this;
@@ -120,26 +130,30 @@ export default class Api extends BaseApp<'app'> {
     this.validate();
 
     // Set the root route to display basic API information.
-    this.raw.get('/', (__, res) =>
-      res.json({
-        message: `API Root`,
-        versions: this.versions.map((version) => {
-          const versionValues = version.values();
-          return {
-            version: `v${versionValues.version}`,
-            url: `${this.url}/v${versionValues.version}`,
-          };
-        }),
-      })
+    this.raw.get(
+      this.path.endsWith('/') ? this.path.slice(0, -1) : this.path,
+      (__, res) =>
+        res.json({
+          message: `API Root`,
+          versions: this.versions.map((version) => {
+            const versionValues = version.values();
+            return {
+              version: `v${versionValues.version}`,
+              url: `${this.url}/v${versionValues.version}`,
+            };
+          }),
+        })
     );
+
+    const path = this.path.replaceAll(doubleSlashRegex, '/');
 
     // Set the 404 and error handler middleware.
     this.raw.use(
-      this.path.replaceAll(doubleSlashRegex, '/'),
+      path.endsWith('/') ? path.slice(0, -1) : path,
       errorMiddleware.notFound
     );
     this.raw.use(
-      this.path.replaceAll(doubleSlashRegex, '/'),
+      path.endsWith('/') ? path.slice(0, -1) : path,
       errorMiddleware.errorHandler
     );
 
