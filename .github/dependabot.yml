@@ -4,8 +4,16 @@ updates:
     directory: '/'
     schedule:
       interval: 'daily'
+    target-branch: 'development'
+    labels:
+      - 'dependencies'
+    open-pull-requests-limit: 20
 
   - package-ecosystem: 'npm'
     directory: '/site'
     schedule:
       interval: 'daily'
+    target-branch: 'development'
+    labels:
+      - 'dependencies'
+    open-pull-requests-limit: 20
