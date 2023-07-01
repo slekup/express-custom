@@ -2,7 +2,7 @@ import { StructureField, StructureType } from '@typings/core';
 import { ExportedStructure } from '@typings/exports';
 import { Schema } from 'builder-validation';
 
-interface StructureOptions extends Record<string, unknown> {
+export interface StructureOptions extends Record<string, unknown> {
   name: string;
   type: StructureType;
   fields: StructureField[];

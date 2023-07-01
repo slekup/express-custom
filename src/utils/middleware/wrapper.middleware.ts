@@ -12,18 +12,20 @@ type ErrorHandlingReturnType = (
 /**
  * Wraps a handler function in error handling.
  * @param controller The handler function.
+ * @param errorResponse The response to send if an error occurs.
  * @returns The handler function wrapped in error handling.
  */
-export default function withErrorHandling<
-  T extends ControllerParams = ControllerParams
->(controller: UserController<T>): ErrorHandlingReturnType {
+export default function withErrorHandling<T = unknown>(
+  controller: UserController<T>,
+  errorResponse: Record<string, unknown>
+): ErrorHandlingReturnType {
   return (req: Request, res: Response): void => {
     (async () => {
       try {
-        await controller(req, res);
+        await controller(req as ControllerParams<T>['req'] & T, res);
       } catch (error) {
         logger.error(error);
-        res.status(500).json({ status: 500, message: 'Internal Server Error' });
+        res.status(500).json(errorResponse);
       }
     })();
   };

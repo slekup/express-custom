@@ -7,7 +7,7 @@ import BaseApp from './Base/BaseApp';
 import Group from './Group';
 import Schema from './Schema';
 
-interface VersionOptions extends Record<string, unknown> {
+export interface VersionOptions extends Record<string, unknown> {
   version: number;
 }
 

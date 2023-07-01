@@ -1,10 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import {
-  ControllerParams,
-  InternalController,
-  UserController,
-} from '@typings/builders';
+import { InternalController, UserController } from '@typings/builders';
 import {
   EndpointNote,
   EndpointResponse,
@@ -18,15 +14,19 @@ import { withErrorHandling } from '@utils/middleware';
 import Controller from './Controller';
 import Schema from './Schema';
 
-interface EndpointOptions extends Record<string, unknown> {
+export interface EndpointOptions extends Record<string, unknown> {
   name: string;
   description: string;
   path: PathString;
   method: RequestMethod;
   controller?: UserController | Controller;
   notes?: EndpointNote[];
+  paramSchema?: Schema;
+  querySchema?: Schema;
+  bodySchema?: Schema;
   responses?: EndpointResponse[];
   disabled?: boolean;
+  errorResponse?: Record<string, unknown>;
 }
 
 /**
@@ -45,6 +45,7 @@ export default class Endpoint {
   public responses: EndpointResponse[];
   public controller?: InternalController;
   public ratelimit?: Partial<RateLimit>;
+  public errorResponse: Record<string, unknown>;
 
   /**
    * Creates a new instance of the Endpoint class.
@@ -55,6 +56,9 @@ export default class Endpoint {
    * @param options.method The method of the endpoint.
    * @param options.controller The controller of the endpoint.
    * @param options.notes The notes of the endpoint.
+   * @param options.paramSchema The schema to validate the client's request parameters against.
+   * @param options.querySchema The schema to validate the client's request queries against.
+   * @param options.bodySchema The schema to validate the client's request body against.
    * @param options.responses An array of responses for the endpoint.
    * @param options.disabled Whether the endpoint is temporarily disabled or not.
    */
@@ -91,6 +95,11 @@ export default class Endpoint {
         min: 1,
         max: 100,
         options: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+      })
+      .addObject({
+        name: 'errorResponse',
+        required: false,
+        properties: {},
       });
 
     // Test the options against the schema.
@@ -101,6 +110,11 @@ export default class Endpoint {
         );
     });
 
+    const errorResponse = options.errorResponse ?? {
+      status: 500,
+      message: 'Internal Server Error',
+    };
+
     // Assign the options to the endpoint.
     this.disabled = options.disabled ?? false;
     this.name = options.name;
@@ -110,13 +124,20 @@ export default class Endpoint {
     if (options.controller) {
       // If the controller function is passed directly
       if (typeof options.controller === 'function')
-        this.controller = withErrorHandling(options.controller);
+        this.controller = withErrorHandling(options.controller, errorResponse);
       // If an instance of the Controller class is passed
       else if (options.controller instanceof Controller)
-        this.controller = withErrorHandling(options.controller.callback);
+        this.controller = withErrorHandling(
+          options.controller.callback,
+          errorResponse
+        );
     }
     this.notes = options.notes ?? [];
+    if (options.paramSchema) this.paramSchema = options.paramSchema;
+    if (options.querySchema) this.querySchema = options.querySchema;
+    if (options.bodySchema) this.bodySchema = options.bodySchema;
     this.responses = options.responses ?? [];
+    this.errorResponse = errorResponse;
   }
 
   /**
@@ -180,15 +201,18 @@ export default class Endpoint {
    * @param controller The controlller function to run when the endpoint is called.
    * @returns The current Endpoint instance.
    */
-  public setController<T extends ControllerParams = ControllerParams>(
+  public setController<T = unknown>(
     controller: UserController<T> | Controller
   ): this {
     // If the controller function is passed directly
     if (typeof controller === 'function')
-      this.controller = withErrorHandling<T>(controller);
+      this.controller = withErrorHandling(controller, this.errorResponse);
     // If an instance of the Controller class is passed
     else if (controller instanceof Controller)
-      this.controller = withErrorHandling(controller.callback);
+      this.controller = withErrorHandling(
+        controller.callback,
+        this.errorResponse
+      );
     return this;
   }
 
