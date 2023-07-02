@@ -1,6 +1,6 @@
 {
   "name": "express-custom",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.",
   "keywords": [
     "express",
