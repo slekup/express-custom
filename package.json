@@ -51,7 +51,7 @@
     "format:check": "prettier --check \"src/**/*.ts\"",
     "lint": "eslint src/**/* --ext .ts && tsc --noEmit",
     "lint:fix": "eslint --fix src/**/* --ext .ts && tsc --noEmit",
-    "precommit": "npm run lint:fix && npm run format"
+    "prepare": "husky install"
   },
   "prettier": {
     "arrowParens": "always",
@@ -92,7 +92,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-tsdoc": "^0.2.17",
     "eslint-prettier": "^0.0.0-empty",
-    "husky": "^8.0.3",
+    "husky": "^8.0.0",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
     "tsup": "^7.1.0"
