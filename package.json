@@ -1,6 +1,6 @@
 {
   "name": "express-custom",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.",
   "keywords": [
     "express",
@@ -93,7 +93,7 @@
     "eslint-plugin-tsdoc": "^0.2.17",
     "eslint-prettier": "^0.0.0-empty",
     "husky": "^8.0.0",
-    "prettier": "^2.8.8",
+    "prettier": "^3.0.0",
     "rimraf": "^5.0.1",
     "tsup": "^7.1.0"
   }
