@@ -13,7 +13,7 @@
     "@mdx-js/react": "^2.3.0",
     "@next/mdx": "^13.4.10",
     "highlight.js": "^11.8.0",
-    "next": "^13.4.10",
+    "next": "^13.4.12",
     "next-mdx-remote": "^4.4.1",
     "next-themes": "^0.2.1",
     "react": "^18.2.0",
