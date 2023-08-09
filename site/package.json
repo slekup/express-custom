@@ -21,7 +21,7 @@
     "react-highlight": "^0.15.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.22.9",
+    "@babel/eslint-parser": "^7.22.10",
     "@next/eslint-plugin-next": "^13.4.13",
     "@types/mdx": "^2.0.6",
     "@types/node": "^20.4.7",
