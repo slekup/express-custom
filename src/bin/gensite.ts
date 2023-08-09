@@ -3,10 +3,10 @@
 const fileTimeStart = Date.now();
 
 import { exec } from 'child_process';
-import colors from 'colors';
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
+import colors from 'colors';
 
 import { ExportedApi } from '../typings/exports';
 import { ExpressCustomError } from '../utils/index';
