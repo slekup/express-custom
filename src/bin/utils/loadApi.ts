@@ -1,7 +1,7 @@
-import colors from 'colors';
 import fs from 'fs';
 import { createRequire } from 'module';
 import path from 'path';
+import colors from 'colors';
 import * as tsNode from 'ts-node';
 import * as tsconfigPaths from 'tsconfig-paths';
 import { CompilerOptions } from 'typescript';
