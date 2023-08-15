@@ -41,8 +41,8 @@ devDependencies:
     specifier: ^7.22.10
     version: 7.22.10(@babel/core@7.22.10)(eslint@8.47.0)
   '@next/eslint-plugin-next':
-    specifier: ^13.4.13
-    version: 13.4.13
+    specifier: ^13.4.15
+    version: 13.4.15
   '@types/mdx':
     specifier: ^2.0.6
     version: 2.0.6
