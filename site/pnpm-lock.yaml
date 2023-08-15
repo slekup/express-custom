@@ -12,8 +12,8 @@ dependencies:
     specifier: ^2.3.0
     version: 2.3.0(react@18.2.0)
   '@next/mdx':
-    specifier: ^13.4.13
-    version: 13.4.13(@mdx-js/loader@2.3.0)(@mdx-js/react@2.3.0)
+    specifier: ^13.4.16
+    version: 13.4.16(@mdx-js/loader@2.3.0)(@mdx-js/react@2.3.0)
   highlight.js:
     specifier: ^11.8.0
     version: 11.8.0
@@ -502,8 +502,8 @@ packages:
       glob: 7.1.7
     dev: true
 
-  /@next/mdx@13.4.13(@mdx-js/loader@2.3.0)(@mdx-js/react@2.3.0):
-    resolution: {integrity: sha512-rQHfeyPO6WC+mEqFCNibV8CWXBJ95uRfPv05Xb8ZMUr284grCIAaSfSRDDrwcoknizyfREDp33oV/isIujS4pA==}
+  /@next/mdx@13.4.16(@mdx-js/loader@2.3.0)(@mdx-js/react@2.3.0):
+    resolution: {integrity: sha512-4Yas2f0DFSi1BbtCAaMiv/EdGrBfflMEGBQf/QVAnVISihp/HwXiNhVN7wAt29vN9Mo/J4PtCKt8HQTYD7jbiA==}
     peerDependencies:
       '@mdx-js/loader': '>=0.15.0'
       '@mdx-js/react': '>=0.15.0'
