@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.22.10",
-    "@next/eslint-plugin-next": "^13.4.15",
+    "@next/eslint-plugin-next": "^13.4.18",
     "@types/mdx": "^2.0.6",
     "@types/node": "^20.4.10",
     "@types/react": "^18.2.20",

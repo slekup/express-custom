@@ -41,8 +41,8 @@ devDependencies:
     specifier: ^7.22.10
     version: 7.22.10(@babel/core@7.22.10)(eslint@8.47.0)
   '@next/eslint-plugin-next':
-    specifier: ^13.4.15
-    version: 13.4.15
+    specifier: ^13.4.18
+    version: 13.4.18
   '@types/mdx':
     specifier: ^2.0.6
     version: 2.0.6
@@ -490,14 +490,14 @@ packages:
     resolution: {integrity: sha512-fwz2QgVg08v7ZL7KmbQBLF2PubR/6zQdKBgmHEl3BCyWTEDsAQEijjw2gbFhI1tcKfLdOOJUXntz5vZ4S0Polg==}
     dev: false
 
-  /@next/eslint-plugin-next@13.4.13:
-    resolution: {integrity: sha512-RpZeXlPxQ9FLeYN84XHDqRN20XxmVNclYCraLYdifRsmibtcWUWdwE/ANp2C8kgesFRsvwfsw6eOkYNl9sLJ3A==}
+  /@next/eslint-plugin-next@13.4.15:
+    resolution: {integrity: sha512-R+cOYbVyJM30d4OaDgRSCbtqsaoHfjnRUUuKxm74rswR82mv0c8En7+SXXsEfIpLCmGNSqOP5zF8aEE5e09VQQ==}
     dependencies:
       glob: 7.1.7
     dev: true
 
-  /@next/eslint-plugin-next@13.4.15:
-    resolution: {integrity: sha512-R+cOYbVyJM30d4OaDgRSCbtqsaoHfjnRUUuKxm74rswR82mv0c8En7+SXXsEfIpLCmGNSqOP5zF8aEE5e09VQQ==}
+  /@next/eslint-plugin-next@13.4.18:
+    resolution: {integrity: sha512-GlOmUjZYYTjKl782mKk5a0bYEmKaouGaxPhi6t9yDILqrppU7JTIyONzLKQPszRXDCVZge0NFd4gwRs1ARZsMg==}
     dependencies:
       glob: 7.1.7
     dev: true
