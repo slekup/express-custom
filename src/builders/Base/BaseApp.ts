@@ -18,7 +18,7 @@ export default class BaseApp<T extends 'router' | 'app'> {
     | (T extends 'router' ? Router : never);
   protected path: PathString;
   protected ratelimit?: Partial<RateLimit>;
-  protected middlewares: Middleware[];
+  private type: 'router' | 'app';
 
   /**
    * Creates an instance of the BaseApp class.
@@ -27,6 +27,8 @@ export default class BaseApp<T extends 'router' | 'app'> {
    * @param options The options for the base app.
    */
   public constructor(type: 'router' | 'app', options: BaseAppOptions) {
+    this.type = type;
+
     // The constructor schema.
     const constructorSchema = new Schema()
       .addString({
@@ -56,12 +58,10 @@ export default class BaseApp<T extends 'router' | 'app'> {
     if (options.path) this.path = options.path;
     else this.path = '/';
 
-    if (type === 'app') {
-      this.raw = express() as T extends 'app' ? Express : never;
-    } else {
-      this.raw = Router() as T extends 'router' ? Router : never;
-    }
-    this.middlewares = [];
+    this.raw =
+      type === 'app'
+        ? (express() as T extends 'app' ? Express : never)
+        : (Router() as T extends 'router' ? Router : never);
   }
 
   /**
@@ -92,8 +92,18 @@ export default class BaseApp<T extends 'router' | 'app'> {
    * @returns The BaseApp class.
    */
   public addMiddleware(middleware: Middleware): this {
-    this.middlewares.push(middleware);
-    this.raw.use(middleware);
+    if (this.type === 'app') {
+      (this.raw as T extends 'app' ? Express : never).use(
+        this.path,
+        middleware
+      );
+    } else {
+      (this.raw as T extends 'router' ? Router : never).use(
+        this.path,
+        middleware
+      );
+    }
+
     return this;
   }
 }

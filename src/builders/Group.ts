@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { Middleware, PathString, RateLimit } from '@typings/core';
+import { PathString, RateLimit } from '@typings/core';
 import { ExportedGroup } from '@typings/exports';
 import { ExpressCustomError } from '@utils/index';
 import BaseApp from './Base/BaseApp';
@@ -84,7 +84,6 @@ export default class Group extends BaseApp<'router'> {
     path: PathString;
     defaultCategory: string;
     routes: Route[];
-    middlewares: Middleware[];
   }> {
     return {
       raw: this.raw,
@@ -92,7 +91,6 @@ export default class Group extends BaseApp<'router'> {
       path: this.path,
       defaultCategory: this.name,
       routes: this.routes,
-      middlewares: this.middlewares,
     };
   }
 
