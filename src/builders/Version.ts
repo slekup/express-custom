@@ -24,7 +24,7 @@ export default class Version extends BaseApp<'app'> {
    * @param options.version The version number of the API.
    */
   public constructor(options: VersionOptions) {
-    super('app');
+    super('app', {});
 
     // The constructor schema.
     const constructorSchema = new Schema().addNumber({
