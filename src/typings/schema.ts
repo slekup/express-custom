@@ -30,7 +30,7 @@ export type ValueTypes =
 
 export type ValueCheck = [
   ((value: string) => boolean) | ((value: string) => Promise<boolean>),
-  string
+  string,
 ];
 
 export type StructureString = `{${string}}` | `[${string}]`;

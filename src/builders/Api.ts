@@ -3,6 +3,7 @@ import { Server } from 'http';
 import path from 'path';
 
 import Schema from '@builders/Schema';
+import { PathString } from '@typings/core';
 import { Config, ExportedApi } from '@typings/exports';
 import { ExpressCustomError } from '@utils/index';
 import { errorMiddleware } from '@utils/middleware';
@@ -17,8 +18,8 @@ const doubleSlashRegex = /\/+/g;
 
 export interface ApiOptions extends Record<string, unknown> {
   url: string;
+  path: PathString | undefined;
   port: number;
-  path?: string;
   structures?: Structure[];
 }
 
@@ -30,7 +31,6 @@ export default class Api extends BaseApp<'app'> {
   private versions: Version[];
   private groups: Group[];
   private url: string;
-  private path: string;
   private structures: Structure[];
   private config?: Config;
 
@@ -42,7 +42,7 @@ export default class Api extends BaseApp<'app'> {
    * @param options.structures The structures used in the API endpoint schemas.
    */
   public constructor(options: ApiOptions) {
-    super('app');
+    super('app', { path: options.path });
 
     // The constructor schema.
     const constructorSchema = new Schema()
@@ -57,11 +57,6 @@ export default class Api extends BaseApp<'app'> {
         required: true,
         min: 0,
         max: 65536,
-      })
-      .addString({
-        name: 'path',
-        min: 1,
-        max: 50,
       });
 
     // Validate the constructor against the schema.
@@ -75,8 +70,6 @@ export default class Api extends BaseApp<'app'> {
     this.groups = [];
     this.url = options.url;
     this.port = options.port;
-    if (options.path) this.path = options.path;
-    else this.path = '/';
     this.structures = options.structures ?? [];
   }
 
@@ -109,6 +102,9 @@ export default class Api extends BaseApp<'app'> {
   public addGroup(group: Group): this {
     this.groups.push(group);
     const groupValues = group.values();
+
+    this.raw.use(groupValues.raw);
+
     const path = `${this.path}${groupValues.path}`.replaceAll(
       doubleSlashRegex,
       '/'

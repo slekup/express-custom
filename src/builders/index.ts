@@ -1,4 +1,5 @@
 export { default as Api, ApiOptions } from './Api';
+export { default as Controller } from './Controller';
 export { default as Endpoint, EndpointOptions } from './Endpoint';
 export { default as Group, GroupOptions } from './Group';
 export { default as Route, RouteOptions } from './Route';

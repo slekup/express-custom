@@ -1,8 +1,13 @@
 import express, { Express, Router } from 'express';
 import { Options, rateLimit } from 'express-rate-limit';
 
-import { Middleware, RateLimit } from '@typings/core';
+import { Middleware, PathString, RateLimit } from '@typings/core';
 import ExpressCustomError from '@utils/ExpressCustomError';
+import Schema from '../Schema';
+
+interface BaseAppOptions extends Record<string, unknown> {
+  path?: PathString | undefined;
+}
 
 /**
  * The BaseApp class, used to build on top of an express app or router.
@@ -11,21 +16,52 @@ export default class BaseApp<T extends 'router' | 'app'> {
   public raw:
     | (T extends 'app' ? Express : never)
     | (T extends 'router' ? Router : never);
+  protected path: PathString;
   protected ratelimit?: Partial<RateLimit>;
-  protected middlewares: Middleware[];
+  private type: 'router' | 'app';
 
   /**
    * Creates an instance of the BaseApp class.
    * Pass 'app' to create an express app, and 'router' for an express router.
    * @param type The type of the base app - 'app' or 'router'.
+   * @param options The options for the base app.
    */
-  public constructor(type: T = 'router' as T) {
-    if (type === 'app') {
-      this.raw = express() as T extends 'app' ? Express : never;
-    } else {
-      this.raw = Router() as T extends 'router' ? Router : never;
-    }
-    this.middlewares = [];
+  public constructor(type: 'router' | 'app', options: BaseAppOptions) {
+    this.type = type;
+
+    // The constructor schema.
+    const constructorSchema = new Schema()
+      .addString({
+        name: 'url',
+        required: true,
+        min: 1,
+        max: 100,
+      })
+      .addNumber({
+        name: 'port',
+        required: true,
+        min: 0,
+        max: 65536,
+      })
+      .addString({
+        name: 'path',
+        min: 1,
+        max: 50,
+      });
+
+    // Validate the constructor against the schema.
+    constructorSchema.validate(options).then((result) => {
+      if (typeof result === 'string')
+        throw new ExpressCustomError(`Api: ${result}`);
+    });
+
+    if (options.path) this.path = options.path;
+    else this.path = '/';
+
+    this.raw =
+      type === 'app'
+        ? (express() as T extends 'app' ? Express : never)
+        : (Router() as T extends 'router' ? Router : never);
   }
 
   /**
@@ -56,8 +92,18 @@ export default class BaseApp<T extends 'router' | 'app'> {
    * @returns The BaseApp class.
    */
   public addMiddleware(middleware: Middleware): this {
-    this.middlewares.push(middleware);
-    this.raw.use(middleware);
+    if (this.type === 'app') {
+      (this.raw as T extends 'app' ? Express : never).use(
+        this.path,
+        middleware
+      );
+    } else {
+      (this.raw as T extends 'router' ? Router : never).use(
+        this.path,
+        middleware
+      );
+    }
+
     return this;
   }
 }

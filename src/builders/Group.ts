@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { Middleware, PathString, RateLimit } from '@typings/core';
+import { PathString, RateLimit } from '@typings/core';
 import { ExportedGroup } from '@typings/exports';
 import { ExpressCustomError } from '@utils/index';
 import BaseApp from './Base/BaseApp';
@@ -8,7 +8,7 @@ import Route from './Route';
 import Schema from './Schema';
 
 export interface GroupOptions extends Record<string, unknown> {
-  path: PathString;
+  path: PathString | undefined;
   name: string;
   noRoutes?: boolean;
 }
@@ -17,7 +17,6 @@ export interface GroupOptions extends Record<string, unknown> {
  * The Group class, used to create a group of routes.
  */
 export default class Group extends BaseApp<'router'> {
-  private path: PathString;
   private name: string;
   private routes: Route[];
   private noRoutes: boolean;
@@ -30,7 +29,7 @@ export default class Group extends BaseApp<'router'> {
    * @param options.noRoutes Whether or not the group has routes.
    */
   public constructor(options: GroupOptions) {
-    super();
+    super('router', { path: options.path });
 
     // Create the schema for the constructor options.
     const constructorSchema = new Schema()
@@ -52,12 +51,13 @@ export default class Group extends BaseApp<'router'> {
     constructorSchema.validate(options).then((result) => {
       if (typeof result === 'string')
         throw new ExpressCustomError(
-          `Group (${options.name || options.path}): ${result}`
+          `Group (${options.name || (options.path ?? 'unknown')}): ${result}`
         );
     });
 
     // Assign the options to the instance.
-    this.path = options.path;
+    if (options.path) this.path = options.path;
+    else this.path = '/';
     this.name = options.name;
     this.routes = [];
     this.noRoutes = options.noRoutes ?? false;
@@ -84,7 +84,6 @@ export default class Group extends BaseApp<'router'> {
     path: PathString;
     defaultCategory: string;
     routes: Route[];
-    middlewares: Middleware[];
   }> {
     return {
       raw: this.raw,
@@ -92,7 +91,6 @@ export default class Group extends BaseApp<'router'> {
       path: this.path,
       defaultCategory: this.name,
       routes: this.routes,
-      middlewares: this.middlewares,
     };
   }
 
