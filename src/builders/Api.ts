@@ -13,9 +13,6 @@ import Group from './Group';
 import Structure from './Structure';
 import Version from './Version';
 
-// Replace multiple slashes with a single slash.
-const doubleSlashRegex = /\/+/g;
-
 export interface ApiOptions extends Record<string, unknown> {
   url: string;
   path: PathString | undefined;
@@ -80,17 +77,7 @@ export default class Api extends BaseApp<'app'> {
    */
   public addVersion(version: Version): this {
     this.versions.push(version);
-    const versionValues = version.values();
-
-    const path = `${this.path}${versionValues.path}`.replaceAll(
-      doubleSlashRegex,
-      '/'
-    );
-
-    this.raw.use(
-      path.endsWith('/') ? path.slice(0, -1) : path,
-      versionValues.raw
-    );
+    this.raw.use(this.path, version.raw);
     return this;
   }
 
@@ -101,18 +88,7 @@ export default class Api extends BaseApp<'app'> {
    */
   public addGroup(group: Group): this {
     this.groups.push(group);
-    const groupValues = group.values();
-
-    this.raw.use(groupValues.raw);
-
-    const path = `${this.path}${groupValues.path}`.replaceAll(
-      doubleSlashRegex,
-      '/'
-    );
-    this.raw.use(
-      path.endsWith('/') ? path.slice(0, -1) : path,
-      groupValues.raw
-    );
+    this.raw.use(this.path, group.raw);
     return this;
   }
 
@@ -126,32 +102,19 @@ export default class Api extends BaseApp<'app'> {
     this.validate();
 
     // Set the root route to display basic API information.
-    this.raw.get(
-      this.path.endsWith('/') ? this.path.slice(0, -1) : this.path,
-      (__, res) =>
-        res.json({
-          message: `API Root`,
-          versions: this.versions.map((version) => {
-            const versionValues = version.values();
-            return {
-              version: `v${versionValues.version}`,
-              url: `${this.url}/v${versionValues.version}`,
-            };
-          }),
-        })
+    this.raw.get(this.path, (__, res) =>
+      res.json({
+        message: `API Root`,
+        versions: this.versions.map((version) => ({
+          version: `v${version.version}`,
+          url: `${this.url}/v${version.version}`,
+        })),
+      })
     );
-
-    const path = this.path.replaceAll(doubleSlashRegex, '/');
 
     // Set the 404 and error handler middleware.
-    this.raw.use(
-      path.endsWith('/') ? path.slice(0, -1) : path,
-      errorMiddleware.notFound
-    );
-    this.raw.use(
-      path.endsWith('/') ? path.slice(0, -1) : path,
-      errorMiddleware.errorHandler
-    );
+    this.raw.use(this.path, errorMiddleware.notFound);
+    this.raw.use(this.path, errorMiddleware.errorHandler);
 
     // Start the API server.
     const server = this.raw.listen(this.port, callback);
@@ -342,7 +305,6 @@ export default class Api extends BaseApp<'app'> {
   private validate(): void {
     if (this.versions.length === 0 && this.groups.length === 0)
       throw new ExpressCustomError('No versions or groups provided to the API');
-
     this.versions.forEach((version) => version.validate());
     this.groups.forEach((group) => group.validate());
   }

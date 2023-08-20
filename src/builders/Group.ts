@@ -1,6 +1,4 @@
-import { Router } from 'express';
-
-import { PathString, RateLimit } from '@typings/core';
+import { PathString } from '@typings/core';
 import { ExportedGroup } from '@typings/exports';
 import { ExpressCustomError } from '@utils/index';
 import BaseApp from './Base/BaseApp';
@@ -72,26 +70,6 @@ export default class Group extends BaseApp<'router'> {
     this.routes.push(route);
     this.raw.use(this.path, route.raw);
     return this;
-  }
-
-  /**
-   * Returns the current group instance values.
-   * @returns The current group instance values.
-   */
-  public values(): Readonly<{
-    raw: Router;
-    ratelimit?: Partial<RateLimit> | undefined;
-    path: PathString;
-    defaultCategory: string;
-    routes: Route[];
-  }> {
-    return {
-      raw: this.raw,
-      ratelimit: this.ratelimit,
-      path: this.path,
-      defaultCategory: this.name,
-      routes: this.routes,
-    };
   }
 
   /**

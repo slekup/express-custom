@@ -1,4 +1,3 @@
-import { Router } from 'express';
 import rateLimit, { Options } from 'express-rate-limit';
 
 import { ExportedVersion } from '@typings/exports';
@@ -15,7 +14,7 @@ export interface VersionOptions extends Record<string, unknown> {
  * The Version class, used to create a version of the API.
  */
 export default class Version extends BaseApp<'app'> {
-  private version: number;
+  public version: number;
   private groups: Group[];
 
   /**
@@ -71,8 +70,7 @@ export default class Version extends BaseApp<'app'> {
    */
   public addGroup(group: Group): this {
     this.groups.push(group);
-    const groupValues = group.values();
-    this.raw.use(groupValues.raw);
+    this.raw.use(`/v${this.version}`, group.raw);
     return this;
   }
 
@@ -85,22 +83,6 @@ export default class Version extends BaseApp<'app'> {
       version: this.version,
       rateLimit: this.ratelimit,
       groups: this.groups.map((group) => group.export()),
-    };
-  }
-
-  /**
-   * Gets the version values.
-   * @returns The Version instance values.
-   */
-  public values(): Readonly<{
-    path: string;
-    raw: Router;
-    version: number;
-  }> {
-    return {
-      path: `/v${this.version}`,
-      raw: this.raw,
-      version: this.version,
     };
   }
 

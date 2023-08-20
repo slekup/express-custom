@@ -122,7 +122,6 @@ export default class Route extends BaseApp<'router'> {
     for (const value of Object.values(endpointFile)) {
       this.addEndpoint(value);
     }
-
     return this;
   }
 
