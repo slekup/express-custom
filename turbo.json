@@ -10,6 +10,6 @@
     "lint": { "dependsOn": ["^build"], "cache": false, "persistent": true },
     "docs:build": {},
     "docs:dev": {},
-    "docs:preview": {},
+    "docs:preview": {}
   }
 }

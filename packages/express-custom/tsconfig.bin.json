@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "module": "CommonJS",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -16,21 +14,11 @@
     "outDir": "./dist/bin",
     "baseUrl": "./src",
     "paths": {
-      "@builders/*": [
-        "builders/*"
-      ],
-      "@typings/*": [
-        "typings/*"
-      ],
-      "@utils/*": [
-        "utils/*"
-      ]
-    },
+      "@builders/*": ["builders/*"],
+      "@typings/*": ["typings/*"],
+      "@utils/*": ["utils/*"]
+    }
   },
-  "include": [
-    "src/bin/**/*",
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["./src/bin/**/*"],
+  "exclude": ["node_modules"]
 }

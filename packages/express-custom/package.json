@@ -44,8 +44,7 @@
   "scripts": {
     "build": "rimraf dist && pnpm copy && tsc --build tsconfig.bin.json && tsup --watch",
     "build:watch": "nodemon --watch src/** --ext ts,json --exec \"pnpm build\"",
-    "copy": "npm run copy:site",
-    "copy:site": "copyfiles -u 1 --exclude ../../apps/site/node_modules/** --exclude ../../apps/site/out/** --exclude ../../apps/site/.next/** ../../apps/site/**/* dist/site",
+    "copy": "copyfiles -u 1 --exclude ../../apps/site/node_modules/** --exclude ../../apps/site/.next/** ../../apps/site/**/* dist/site",
     "lint": "eslint src/**/* --ext .ts && tsc --noEmit"
   },
   "dependencies": {
