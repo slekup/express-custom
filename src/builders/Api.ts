@@ -17,8 +17,8 @@ const doubleSlashRegex = /\/+/g;
 
 export interface ApiOptions extends Record<string, unknown> {
   url: string;
-  port: number;
   path?: string;
+  port: number;
   structures?: Structure[];
 }
 
@@ -27,10 +27,10 @@ export interface ApiOptions extends Record<string, unknown> {
  */
 export default class Api extends BaseApp<'app'> {
   private port: number;
+  private path: string;
   private versions: Version[];
   private groups: Group[];
   private url: string;
-  private path: string;
   private structures: Structure[];
   private config?: Config;
 
@@ -74,9 +74,9 @@ export default class Api extends BaseApp<'app'> {
     this.versions = [];
     this.groups = [];
     this.url = options.url;
-    this.port = options.port;
     if (options.path) this.path = options.path;
     else this.path = '/';
+    this.port = options.port;
     this.structures = options.structures ?? [];
   }
 
