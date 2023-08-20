@@ -1,4 +1,5 @@
-node_modules/
-site/custom/
-dist/
+node_modules
+site/custom
+dist
 api.json
+.turbo

@@ -10,5 +10,5 @@ export default defineConfig({
   minify: true,
   sourcemap: true,
   clean: true,
-  watch: process.env.NODE_ENV === 'development',
+  watch: process.argv.includes('--watch'),
 });

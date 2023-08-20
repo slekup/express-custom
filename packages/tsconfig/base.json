@@ -1,4 +1,6 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Default",
   "compilerOptions": {
     // Modules
     "module": "ESNext",
@@ -33,7 +35,7 @@
     "inlineSources": true,
     "newLine": "lf",
     "noEmitHelpers": true,
-    "outDir": "dist",
+    "outDir": "packages/express-custom/dist",
     "removeComments": false,
     "sourceMap": true,
     "esModuleInterop": true,
@@ -45,25 +47,9 @@
     ],
     "target": "ESNext",
     // Other
-    "skipLibCheck": true,
-    "baseUrl": "./src",
-    "paths": {
-      "@builders/*": [
-        "builders/*"
-      ],
-      "@typings/*": [
-        "typings/*"
-      ],
-      "@utils/*": [
-        "utils/*"
-      ]
-    },
+    "skipLibCheck": true
   },
-  "include": [
-    "src/**/*",
-  ],
   "exclude": [
-    "node_modules",
-    "dist"
-  ],
+    "node_modules"
+  ]
 }
