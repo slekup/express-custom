@@ -14,8 +14,7 @@
     "docs:preview": "turbo run docs:preview",
     "format": "prettier --write \"**/*.ts\"",
     "postinstall": "manypkg check",
-    "lint": "turbo run lint",
-    "pub": "turbo run build lint && changeset version && changeset publish"
+    "lint": "turbo run lint"
   },
   "dependencies": {
     "@manypkg/cli": "^0.21.0",
