@@ -109,6 +109,9 @@ export default class Api extends BaseApp<'app'> {
   public addGroup(group: Group): this {
     this.groups.push(group);
     const groupValues = group.values();
+
+    this.raw.use(groupValues.raw);
+
     const path = `${this.path}${groupValues.path}`.replaceAll(
       doubleSlashRegex,
       '/'
