@@ -16,6 +16,17 @@
     "postinstall": "manypkg check",
     "lint": "turbo run lint"
   },
+  "prettier": {
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "printWidth": 80,
+    "quoteProps": "consistent",
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  },
   "dependencies": {
     "@manypkg/cli": "^0.21.0",
     "eslint": "^8.47.0",
