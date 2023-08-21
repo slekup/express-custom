@@ -3,10 +3,10 @@
 const fileTimeStart = Date.now();
 
 import { exec } from 'child_process';
+import colors from 'colors';
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
-import colors from 'colors';
 
 import { ExportedApi } from '../typings/exports';
 import { ExpressCustomError } from '../utils/index';
@@ -30,7 +30,7 @@ const exportRoutes = async (apiData: ExportedApi): Promise<void> => {
   try {
     // Write the routes to a JSON file in the site directory
     await fs.promises.writeFile(
-      path.join(__dirname, '../../site/api.json'),
+      path.join(__dirname, '../../apps/site/api.json'),
       JSON.stringify(apiData, null, 2)
     );
 
@@ -49,19 +49,19 @@ const installSiteDependencies = async (): Promise<void> => {
   const timeStart = Date.now();
   logger.info(`${cli.info} Installing site dependencies`);
 
-  if (fs.existsSync('../../site/node_modules')) {
+  if (fs.existsSync('../../apps/site/node_modules')) {
     logger.info(
       `${cli.info} Copying node_modules ${colors.yellow('please wait')}}`
     );
     await fs.promises.cp(
-      path.join(__dirname, '../../site/node_modules'),
+      path.join(__dirname, '../../apps/site/node_modules'),
       '../site/node_modules'
     );
   }
 
   try {
     const { stdout, stderr } = await promisify(exec)('npm install', {
-      cwd: path.join(__dirname, '../site'),
+      cwd: path.join(__dirname, '../apps/site'),
       // shell: true,
     });
 
@@ -93,7 +93,7 @@ const buildSite = async (): Promise<void> => {
 
   try {
     const { stdout, stderr } = await promisify(exec)('npx next build', {
-      cwd: path.join(__dirname, '../site'),
+      cwd: path.join(__dirname, '../apps/site'),
       // shell: true,
     });
 
@@ -129,12 +129,12 @@ const copySite = async (apiData: ExportedApi): Promise<void> => {
 
   try {
     // Copy the site to the ouput directory
-    await fs.promises.cp(path.join(__dirname, '../site/out'), targetPath);
+    await fs.promises.cp(path.join(__dirname, '../apps/site/out'), targetPath);
 
     // Copy the api.json file to the out directory
     await fs.promises.copyFile(
-      path.join(__dirname, '../site/api.json'),
-      path.join(__dirname, '../site/out/api.json')
+      path.join(__dirname, '../apps/site/api.json'),
+      path.join(__dirname, '../apps/site/out/api.json')
     );
 
     const time = `${Date.now() - timeStart}ms`;

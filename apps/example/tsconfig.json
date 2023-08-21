@@ -5,12 +5,10 @@
     }
   },
   "compilerOptions": {
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "module": "NodeNext",
     "target": "ESNext",
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "outDir": "dist",
     "strict": true,
     "alwaysStrict": true,
@@ -31,20 +29,10 @@
     "allowSyntheticDefaultImports": true,
     "removeComments": true,
     "paths": {
-      "@v1/*": [
-        "./src/v1/*"
-      ],
-      "@v2/*": [
-        "./src/v2/*"
-      ]
+      "@v1/*": ["./src/v1/*"],
+      "@v2/*": ["./src/v2/*"]
     }
   },
-  "include": [
-    "src/**/*",
-    "environment.d.ts",
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
+  "include": ["src/**/*", "environment.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }

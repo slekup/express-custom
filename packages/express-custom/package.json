@@ -42,9 +42,9 @@
     "package.json"
   ],
   "scripts": {
-    "build": "rimraf dist && pnpm copy && tsc --build tsconfig.bin.json && tsup",
+    "build": "rimraf dist && tsup && pnpm copy && tsc --build tsconfig.bin.json",
     "build:watch": "nodemon --watch src/** --ext ts,json --exec \"pnpm build\"",
-    "copy": "copyfiles -u 1 --exclude ../../apps/site/node_modules/** --exclude ../../apps/site/.next/** ../../apps/site/**/*.* dist/site",
+    "copy": "copyfiles -u 1 \"../../apps/site/**/*\" \"dist/site\" -e \"../../apps/site/node_modules/**\" -e \"../../apps/site/.next/**\" -V",
     "lint": "eslint src/**/* --ext .ts && tsc --noEmit"
   },
   "dependencies": {
