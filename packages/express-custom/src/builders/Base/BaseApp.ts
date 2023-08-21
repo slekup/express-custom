@@ -30,29 +30,16 @@ export default class BaseApp<T extends 'router' | 'app'> {
     this.type = type;
 
     // The constructor schema.
-    const constructorSchema = new Schema()
-      .addString({
-        name: 'url',
-        required: true,
-        min: 1,
-        max: 100,
-      })
-      .addNumber({
-        name: 'port',
-        required: true,
-        min: 0,
-        max: 65536,
-      })
-      .addString({
-        name: 'path',
-        min: 1,
-        max: 50,
-      });
+    const constructorSchema = new Schema().addString({
+      name: 'path',
+      min: 1,
+      max: 50,
+    });
 
     // Validate the constructor against the schema.
     constructorSchema.validate(options).then((result) => {
       if (typeof result === 'string')
-        throw new ExpressCustomError(`Api: ${result}`);
+        throw new ExpressCustomError(`Base App: ${result}`);
     });
 
     if (options.path) this.path = options.path;
