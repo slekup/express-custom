@@ -1,0 +1,26 @@
+{
+  "name": "eslint-config-express-custom",
+  "version": "0.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "eslint-config-next": "^13.4.19",
+    "eslint-config-turbo": "^1.9.3",
+    "eslint-plugin-react": "7.33.2"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.22.10",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.1.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsdoc": "^46.4.6",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-tsdoc": "^0.2.17"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

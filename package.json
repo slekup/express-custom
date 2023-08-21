@@ -1,57 +1,20 @@
 {
   "name": "express-custom",
-  "version": "0.1.9",
-  "description": "Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.",
-  "keywords": [
-    "express",
-    "custom",
-    "docs",
-    "documentation",
-    "api",
-    "nodejs"
-  ],
-  "homepage": "https://github.com/slekup/express-custom#readme",
-  "bugs": {
-    "url": "https://github.com/slekup/express-custom/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/slekup/express-custom"
-  },
-  "license": "MIT",
-  "author": "Slekup",
-  "exports": {
-    ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
-    }
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "create-api": "./dist/bin/bin/create-api.js",
-    "export-api": "./dist/bin/bin/export-api.js",
-    "gensite": "./dist/bin/bin/gensite.js"
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE",
-    "package.json"
+  "private": true,
+  "license": "CC-BY-NC-SA-4.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "build": "npm run lint:fix && npm run format && npm run build:nocheck",
-    "build:bin": "rimraf dist/bin && tsc --build tsconfig.bin.json",
-    "build:nocheck": "rimraf dist && tsup && npm run copy && npm run build:bin",
-    "copy": "npm run copy:site",
-    "copy:site": "copyfiles -u 1 --exclude site/node_modules/** --exclude site/out/** --exclude site/.next/** site/**/* dist/site",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\"",
-    "lint": "eslint src/**/* --ext .ts && tsc --noEmit",
-    "lint:fix": "eslint --fix src/**/* --ext .ts && tsc --noEmit",
-    "prepare": "husky install"
+    "build": "turbo run build",
+    "build:watch": "turbo run build:watch",
+    "docs:build": "turbo run docs:build",
+    "docs:dev": "turbo run docs:dev",
+    "docs:preview": "turbo run docs:preview",
+    "format": "prettier --write \"**/*.ts\"",
+    "postinstall": "manypkg check",
+    "lint": "turbo run lint"
   },
   "prettier": {
     "arrowParens": "always",
@@ -65,36 +28,16 @@
     "useTabs": false
   },
   "dependencies": {
-    "builder-validation": "^0.0.3",
-    "colors": "^1.4.0",
-    "express": "^4.18.2",
-    "express-rate-limit": "^6.9.0",
-    "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.1.6",
-    "winston": "^3.10.0"
-  },
-  "devDependencies": {
-    "@babel/eslint-parser": "^7.22.10",
-    "@types/express": "^4.17.17",
-    "@types/fs-extra": "^11.0.1",
-    "@types/node": "^20.5.1",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
-    "copyfiles": "^2.4.1",
+    "@manypkg/cli": "^0.21.0",
     "eslint": "^8.47.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-import-resolver-typescript": "^3.6.0",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-jsdoc": "^46.4.6",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-tsdoc": "^0.2.17",
-    "eslint-prettier": "0.0.0-empty",
-    "husky": "^8.0.3",
+    "eslint-config-express-custom": "workspace:*",
     "prettier": "^3.0.2",
-    "rimraf": "^5.0.1",
-    "tsup": "^7.2.0"
+    "turbo": "latest"
+  },
+  "packageManager": "pnpm@8.6.10",
+  "manypkg": {
+    "ignoredRules": [
+      "INTERNAL_MISMATCH"
+    ]
   }
 }

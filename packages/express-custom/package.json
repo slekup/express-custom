@@ -1,0 +1,68 @@
+{
+  "name": "express-custom",
+  "version": "0.1.10",
+  "description": "Enhance your express app with builders, Next.js documentation, schema validation, rate-limiting, error handling, and more with this easy-to-use library.",
+  "keywords": [
+    "express",
+    "custom",
+    "docs",
+    "documentation",
+    "api",
+    "nodejs"
+  ],
+  "homepage": "https://github.com/slekup/express-custom#readme",
+  "bugs": {
+    "url": "https://github.com/slekup/express-custom/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slekup/express-custom"
+  },
+  "license": "CC-BY-NC-SA-4.0",
+  "author": "Slekup",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "create-api": "./dist/bin/bin/create-api.js",
+    "export-api": "./dist/bin/bin/export-api.js",
+    "gensite": "./dist/bin/bin/gensite.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "scripts": {
+    "build": "rimraf dist && tsup && pnpm copy && tsc --build tsconfig.bin.json",
+    "build:watch": "nodemon --watch src/** --ext ts,json --exec \"pnpm build\"",
+    "copy": "copyfiles -u 1 \"../../apps/site/**/*\" \"dist/site\" -e \"../../apps/site/node_modules/**\" -e \"../../apps/site/.next/**\" -V",
+    "lint": "eslint src/**/* --ext .ts && tsc --noEmit"
+  },
+  "dependencies": {
+    "builder-validation": "^0.0.3",
+    "colors": "^1.4.0",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.9.0",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.1.6",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.1",
+    "copyfiles": "^2.4.1",
+    "eslint-config-express-custom": "workspace:*",
+    "nodemon": "^3.0.1",
+    "tsconfig": "workspace:*",
+    "tsup": "^7.2.0"
+  }
+}
